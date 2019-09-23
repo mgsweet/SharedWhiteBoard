@@ -1,3 +1,6 @@
+/**
+ * @author Aaron-Qiu, mgsweet@126.com, student_id:1101584
+ */
 package Client;
 
 import java.awt.Dimension;
@@ -40,7 +43,7 @@ import java.awt.event.FocusEvent;
 
 public class LobbyView {
 
-	private JFrame frmLobby;
+	protected JFrame frame;
 	private JTextField roomNameTextField;
 	private JTextField hostNameTextField;
 	
@@ -54,20 +57,20 @@ public class LobbyView {
 	private String addImagePath = "images/add.png";
 
 	/**
-	 * Launch the application.
+	 * When need to debug this page:
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LobbyView window = new LobbyView();
-					window.frmLobby.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					LobbyView window = new LobbyView();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.
@@ -166,20 +169,20 @@ public class LobbyView {
 	 */
 	private void initialize() {
 		
-		frmLobby = new JFrame();
-		frmLobby.setResizable(false);
-		frmLobby.setTitle("SharedWhiteBoard - Lobby");
-		frmLobby.setBounds(100, 100, 450, 300);
-		frmLobby.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmLobby.setMinimumSize(new Dimension(600, 500));
-		frmLobby.getContentPane().setLayout(new BorderLayout(0, 0));
+		frame = new JFrame();
+		frame.setResizable(false);
+		frame.setTitle("SharedWhiteBoard - Lobby");
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setMinimumSize(new Dimension(600, 500));
+		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		roomsListPanel = new JPanel();
 		//panel.setPreferredSize(new Dimension(0, 500));
 		scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		frmLobby.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(roomsListPanel);
 		roomsListPanel.setLayout(null);
 		
@@ -206,7 +209,7 @@ public class LobbyView {
 	
 		JPanel controlBarPanel = new JPanel();
 		controlBarPanel.setPreferredSize(new Dimension(0, 100));
-		frmLobby.getContentPane().add(controlBarPanel, BorderLayout.SOUTH);
+		frame.getContentPane().add(controlBarPanel, BorderLayout.SOUTH);
 		controlBarPanel.setLayout(new BorderLayout(0, 0));
 		
 		JButton btnRefresh = new JButton("REFRESH");

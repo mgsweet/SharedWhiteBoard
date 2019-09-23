@@ -5,6 +5,8 @@ package Client;
 
 import java.awt.EventQueue;
 
+import java.util.regex.*;
+
 import javax.swing.JFrame;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -17,34 +19,95 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class SignInView {
 
-	private JFrame frame;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	protected JFrame frame;
+	private JTextField userIdTextField;
+	private JTextField addressTextField;
+	private JTextField portTextField;
+	private JLabel lblIdWarn = null;
+	private JLabel lblAddressWarn = null;
+	private JLabel lblPortWarn = null;
+	private Client controler = null;
+	
+	private String userId = "";
+	private String address = "";
+	private int port = -1;
+	
+	private Boolean validateFormat() {
+		Boolean checkId = false;
+		Boolean checkAddress = false;
+		Boolean checkPort = false;
+		String idPatten = "^\\w{1,8}$";
+		String portPatten = "^\\d+$";
+		String addressPatten = "^.{1,20}$";
+		// check userId
+		userId = userIdTextField.getText();
+		if (!Pattern.matches(idPatten, userId)) {
+			lblIdWarn.setVisible(true);
+			checkId = false;
+		} else {
+			lblIdWarn.setVisible(false);
+			checkId = true;
+		}
+		
+		// check address
+		address = addressTextField.getText();
+		if (!Pattern.matches(addressPatten, address)) {
+			lblAddressWarn.setVisible(true);
+			checkAddress = false;
+		} else {
+			lblAddressWarn.setVisible(false);
+			checkAddress = true;
+		}
+		
+		//check port
+		String portStr = portTextField.getText();
+		if (!Pattern.matches(idPatten, portStr)) {
+			lblPortWarn.setVisible(true);
+			checkPort = false;
+		} else {
+			try {
+				port = Integer.parseInt(portStr);
+				if (port <= 1024 || port >= 49151) {
+					lblPortWarn.setVisible(true);
+					checkPort = false;
+				} else {
+					lblPortWarn.setVisible(false);
+					checkPort = true;
+				}
+			} catch (Exception e) {
+				lblPortWarn.setVisible(true);
+				checkPort = false;
+			}
+		}
+		return checkId && checkPort && checkAddress;
+	}
 
 	/**
-	 * Launch the application.
+	 * When you need to debug this view:
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SignInView window = new SignInView();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					SignInView window = new SignInView();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.
 	 */
-	public SignInView() {
+	public SignInView(Client client) {
+		this.controler = client;
 		initialize();
 	}
 
@@ -62,6 +125,18 @@ public class SignInView {
 		JPanel panel = new JPanel();
 		
 		JButton btnJoin = new JButton("Join");
+		btnJoin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (validateFormat()) {
+					controler.userId = userId;
+					controler.address = address;
+					controler.port = port;
+					controler.signInView.frame.setVisible(false);
+					controler.lobbyView.frame.setVisible(true);
+					//TODO
+				}
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -96,24 +171,24 @@ public class SignInView {
 		
 		JLabel lblPort = new JLabel("Port:");
 		
-		textField = new JTextField();
-		textField.setColumns(10);
+		userIdTextField = new JTextField();
+		userIdTextField.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
+		addressTextField = new JTextField();
+		addressTextField.setColumns(10);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
+		portTextField = new JTextField();
+		portTextField.setColumns(10);
 		
-		JLabel lblIDWarn = new JLabel("\"A-Za-z0-9_\"");
-		lblIDWarn.setForeground(Color.RED);
-		lblIDWarn.setVisible(false);
+		lblIdWarn = new JLabel("\"\\w{1,8}\"");
+		lblIdWarn.setForeground(Color.RED);
+		lblIdWarn.setVisible(false);
 		
-		JLabel lblAddressWarn = new JLabel("\"Format Wrong!\"");
+		lblAddressWarn = new JLabel("\"Invalid Port!\"");
 		lblAddressWarn.setForeground(Color.RED);
 		lblAddressWarn.setVisible(false);
 		
-		JLabel lblPortWarn = new JLabel("\"FormatWrong\"");
+		lblPortWarn = new JLabel("\"Format Wrong\"");
 		lblPortWarn.setForeground(Color.RED);
 		lblPortWarn.setVisible(false);
 		
@@ -128,17 +203,17 @@ public class SignInView {
 						.addComponent(lblPort))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(textField)
+						.addComponent(userIdTextField)
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+							.addComponent(portTextField, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblPortWarn))
-						.addComponent(textField_1))
+						.addComponent(addressTextField))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblIDWarn)
+						.addComponent(lblIdWarn)
 						.addComponent(lblAddressWarn))
-					.addContainerGap(29, Short.MAX_VALUE))
+					.addContainerGap(10, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -146,17 +221,17 @@ public class SignInView {
 					.addGap(33)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblUserId)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblIDWarn))
+						.addComponent(userIdTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblIdWarn))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblServerAddress)
-						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(addressTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblAddressWarn))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblPort)
-						.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+						.addComponent(portTextField, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblPortWarn))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);

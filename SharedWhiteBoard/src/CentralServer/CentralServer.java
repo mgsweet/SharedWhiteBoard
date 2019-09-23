@@ -14,6 +14,10 @@ public class CentralServer {
 	private ServerSocket server;
 	private RoomManager rm;
 	
+	public static void main() {
+		
+	}
+	
 	public CentralServer() {
 		rm = new RoomManager();
 	}
