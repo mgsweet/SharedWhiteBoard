@@ -43,35 +43,34 @@ public class RequestHandler extends Thread {
 				// return roomID
 				int reqID = rm.addRoom(ipAddress, port, hostName, roomName, password);
 				requestJson.put("roomID", String.valueOf(reqID));
-				writer.writeUTF(requestJson.toJSONString());
-				writer.flush();
 				break;
 			case StateCode.REMOVE_ROOM:
 				roomId = Integer.parseInt(reqJSON.get("roomID").toString());
 				int opeartionState = rm.removeRoom(roomId);
 				requestJson.put("opeartionState", String.valueOf(opeartionState));
-				writer.writeUTF(requestJson.toJSONString());
-				writer.flush();
 				break;
 			case StateCode.GET_ROOMS_LIST: 
 				Map roomsList = rm.getRoomsList();
 				requestJson.put("roomsList", roomsList);
-				writer.writeUTF(requestJson.toJSONString());
-				writer.flush();
 				break;
 			case StateCode.GET_ROOM_INFO:
 				roomId = Integer.parseInt(reqJSON.get("roomID").toString());
 				password = reqJSON.get("password").toString();
 				if (rm.checkRoomPassword(roomId, password)) {
-					
+					Room room = rm.getRoomInfo(roomId);
+					requestJson.put("opeartionState", String.valueOf(StateCode.SUCCESS));
+					requestJson.put("roomInfo", room);
 				} else {
-					
+					requestJson.put("opeartionState", String.valueOf(StateCode.FAIL));
 				}
 				break;
 			default:
 				System.out.print("Err: Unknown Command: " + command);
 				break;
 			}
+			// Send back to client
+			writer.writeUTF(requestJson.toJSONString());
+			writer.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
