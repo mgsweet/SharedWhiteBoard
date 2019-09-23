@@ -144,8 +144,7 @@ public class LobbyView {
 			System.out.println("Get rooms list!");
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	
+		}	
 		// repaint the roomslist panel
 		roomsBtnVec.clear();
 		reFreshRoomsListPanel();
@@ -164,10 +163,9 @@ public class LobbyView {
 			tempBtn.setIcon(joinIcon);
 			tempBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
-					//System.out.println(String.valueOf(entry.getKey()));
+					JOptionPane.showInputDialog(frame, "Please Enter Password:", roomName, JOptionPane.OK_CANCEL_OPTION);
+					//TODO
 				}
-				// todo
 			});
 			roomsBtnVec.add(tempBtn);
 			
@@ -186,10 +184,6 @@ public class LobbyView {
 		if (i % 2 == 0) {
 		    currentPanel.add(blankPanel);
 		}
-	}
-	
-	private void createRoom() {
-		//TODO
 	}
 
 	/**
@@ -223,7 +217,7 @@ public class LobbyView {
 		btnCreateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Create Room");
-				//TODO
+				RoomCreateDialog.showCreateRoomDialog(frame, frame);
 			}
 		});
 		ImageIcon addIcon = new ImageIcon(addImagePath);
