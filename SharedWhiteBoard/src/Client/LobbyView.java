@@ -13,6 +13,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.FlowLayout;
 
 import javax.swing.Box;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -36,8 +39,17 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import StateCode.StateCode;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -53,35 +65,22 @@ public class LobbyView {
 	private JPanel blankPanel = null;
 	private JScrollPane scrollPane = null;
 	private Vector<JButton> roomsBtnVec;
+	private Client controler = null;
 	
 	private String addImagePath = "images/add.png";
-
-	/**
-	 * When need to debug this page:
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					LobbyView window = new LobbyView();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
+	private String joinImagePath = "images/join.png";
 
 	/**
 	 * Create the application.
 	 */
-	public LobbyView() {
+	public LobbyView(Client contorler) {
+		this.controler = contorler;
 		roomsBtnVec = new Vector<JButton>();
 		initialize();
 		refreshRoomsList();
 	}
 	
-	private void filtRoomsList() {
+	private void reFreshRoomsListPanel() {
 		roomsListPanel.removeAll();
 		roomsListPanel.setPreferredSize(new Dimension(0, 170));
 		firstPanel.removeAll();
@@ -89,8 +88,12 @@ public class LobbyView {
 		roomsListPanel.repaint();
 		roomsListPanel.add(firstPanel);
 		firstPanel.add(btnCreateRoom);
-		JPanel currentPanel = firstPanel;
+	}
 	
+	private void filtRoomsList() {
+		reFreshRoomsListPanel();
+		
+		JPanel currentPanel = firstPanel;
 		int i = 0;
 		for (JButton btn : roomsBtnVec) {
 			if (i % 2 != 0) {
@@ -113,35 +116,56 @@ public class LobbyView {
 		}
 	}
 	
-	private void refreshRoomsList() {
-		// TODO
-		Map<Integer, String> roomsList = new HashMap<Integer, String>();
-		roomsList.put(0, "RoomName0 HostName0");
-		roomsList.put(1, "RoomName1 HostName1");
-		roomsList.put(2, "RoomName2 HostName2");
-		roomsList.put(3, "RoomName3 HostName3");
-		roomsList.put(4, "RoomName4 HostName4");
-		roomsList.put(5, "RoomName5 HostName5");
-		roomsList.put(6, "RoomName6 HostName6");
-		roomsList.put(7, "RoomName7 HostName7");
-		// Above test, stub function, ignore
-		// Clear all btn in roomListPanel
-		roomsListPanel.removeAll();
+	private JSONObject parseResString(String res) {
+		JSONObject resJSON = null;
+		try {
+			JSONParser parser = new JSONParser();
+			resJSON = (JSONObject) parser.parse(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return resJSON;
+	}
+	
+	protected void refreshRoomsList() {
+		// sent request to central server to gain roomlists
+		try {
+			System.out.println("Request for rooms list...");
+			Socket client = new Socket(controler.address, controler.port);
+			DataInputStream reader = new DataInputStream(client.getInputStream());
+			DataOutputStream writer = new DataOutputStream(client.getOutputStream());
+			JSONObject reqJson = new JSONObject();
+			reqJson.put("command", StateCode.GET_ROOMS_LIST);
+			writer.writeUTF(reqJson.toJSONString());
+			writer.flush();
+			String res = reader.readUTF();
+			JSONObject resJson = parseResString(res);
+			controler.roomsList = (Map<Integer, String>) resJson.get("roomsList");
+			System.out.println("Get rooms list!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		// repaint the roomslist panel
 		roomsBtnVec.clear();
-		roomsListPanel.add(firstPanel);
-		firstPanel.add(btnCreateRoom);
+		reFreshRoomsListPanel();
 		
 		int i = 0;
 		JPanel currentPanel = firstPanel;		
-		for (Map.Entry<Integer, String> entry: roomsList.entrySet()) {
+		for (Map.Entry<Integer, String> entry: controler.roomsList.entrySet()) {
 			JButton tempBtn = new JButton();
 			String[] roomInfo = entry.getValue().split(" ");
 			String roomName = roomInfo[0];
 			String hostName = roomInfo[1];
 			tempBtn.setText(roomName + " - " + hostName);
+			ImageIcon joinIcon = new ImageIcon(joinImagePath);
+			joinIcon.setImage(joinIcon.getImage().getScaledInstance(50, 50,
+					Image.SCALE_DEFAULT));
+			tempBtn.setIcon(joinIcon);
 			tempBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					System.out.println(String.valueOf(entry.getKey()));
+					
+					//System.out.println(String.valueOf(entry.getKey()));
 				}
 				// todo
 			});
@@ -163,12 +187,15 @@ public class LobbyView {
 		    currentPanel.add(blankPanel);
 		}
 	}
+	
+	private void createRoom() {
+		//TODO
+	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
 		frame = new JFrame();
 		frame.setResizable(false);
 		frame.setTitle("SharedWhiteBoard - Lobby");
@@ -196,8 +223,8 @@ public class LobbyView {
 		btnCreateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Create Room");
+				//TODO
 			}
-			// todo
 		});
 		ImageIcon addIcon = new ImageIcon(addImagePath);
 		addIcon.setImage(addIcon.getImage().getScaledInstance(50, 50,

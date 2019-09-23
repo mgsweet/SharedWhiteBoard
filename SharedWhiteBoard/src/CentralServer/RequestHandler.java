@@ -50,8 +50,9 @@ public class RequestHandler extends Thread {
 				requestJson.put("opeartionState", String.valueOf(opeartionState));
 				break;
 			case StateCode.GET_ROOMS_LIST: 
-				Map roomsList = rm.getRoomsList();
+				Map<Integer, String> roomsList = rm.getRoomsList();
 				requestJson.put("roomsList", roomsList);
+				System.out.println("A client request for roomlist info.");
 				break;
 			case StateCode.GET_ROOM_INFO:
 				roomId = Integer.parseInt(reqJSON.get("roomID").toString());

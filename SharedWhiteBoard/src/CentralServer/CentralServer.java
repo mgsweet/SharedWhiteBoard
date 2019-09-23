@@ -10,27 +10,51 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class CentralServer {
-	private int port = 4444;
+	private int port = 0;
 	private ServerSocket server;
 	private RoomManager rm;
 	
-	public static void main() {
-		
+	public static void main(String[] args) {
+		try {
+			CentralServer centralServer = null;
+			
+			if (args.length != 0) {
+				if (Integer.parseInt(args[0]) <= 1024 || Integer.parseInt(args[0]) >= 49151) {
+					System.out.println("Invalid Port Number: Port number should be between 1024 and 49151!");
+					System.exit(-1);
+				} else {
+					centralServer = new CentralServer(Integer.parseInt(args[0]));
+				}
+			} else {
+				centralServer = new CentralServer();
+			}
+			centralServer.run();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("Lack of Parameters:\nPlease run like \"java - jar DictServer.jar <port> <dictionary-file>\"!");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid Port Number: Port number should be between 1024 and 49151!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public CentralServer() {
+	public CentralServer() throws IOException {
+		this.port = 4444;
 		rm = new RoomManager();
+		init();
+	}
+	
+	public CentralServer(int port) throws IOException {
+		this.port = port;
+		rm = new RoomManager();
+		init();
 	}
 	
 	public void run() throws IOException {
-		try {
-			while (true) {
-				Socket client = server.accept();
-				RequestHandler rh = new RequestHandler(client, rm);
-				rh.start();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		while (true) {
+			Socket client = server.accept();
+			RequestHandler rh = new RequestHandler(client, rm);
+			rh.start();
 		}
 	}
 	
@@ -39,12 +63,8 @@ public class CentralServer {
 	}
 	
 	private void init() throws IOException {
-		try {
-			server = new ServerSocket(this.port);
-			printInitialStats();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		server = new ServerSocket(this.port);
+		printInitialStats();
 	}
 	
 	private void printInitialStats() throws UnknownHostException {

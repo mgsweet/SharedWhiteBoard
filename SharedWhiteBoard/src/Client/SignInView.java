@@ -3,14 +3,10 @@
  */
 package Client;
 
-import java.awt.EventQueue;
-
 import java.util.regex.*;
 
 import javax.swing.JFrame;
-import java.awt.GridBagLayout;
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.Font;
@@ -86,23 +82,7 @@ public class SignInView {
 		}
 		return checkId && checkPort && checkAddress;
 	}
-
-	/**
-	 * When you need to debug this view:
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					SignInView window = new SignInView();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
+	
 	/**
 	 * Create the application.
 	 */
@@ -131,9 +111,7 @@ public class SignInView {
 					controler.userId = userId;
 					controler.address = address;
 					controler.port = port;
-					controler.signInView.frame.setVisible(false);
-					controler.lobbyView.frame.setVisible(true);
-					//TODO
+					controler.switchToLobby();
 				}
 			}
 		});
@@ -172,12 +150,15 @@ public class SignInView {
 		JLabel lblPort = new JLabel("Port:");
 		
 		userIdTextField = new JTextField();
+		userIdTextField.setText("Aaron");
 		userIdTextField.setColumns(10);
 		
 		addressTextField = new JTextField();
+		addressTextField.setText("10.0.0.7");
 		addressTextField.setColumns(10);
 		
 		portTextField = new JTextField();
+		portTextField.setText("4444");
 		portTextField.setColumns(10);
 		
 		lblIdWarn = new JLabel("\"\\w{1,8}\"");
