@@ -1,0 +1,77 @@
+/**
+ * @author Aaron-Qiu
+ */
+package WhiteBoard;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import Shape.MyOval;
+import Shape.MyPoint;
+import Shape.MyShape;
+
+public class PaintBoardPanel extends JPanel{
+	private int x = 200;
+	private int y = 200;
+	// Use to record all the shapes.
+	private Vector<MyShape> paintHistory;
+	// Use to store the temporary shape.
+	private MyShape bufferShape;
+	
+	public PaintBoardPanel() {
+		super();
+		bufferShape = null;
+		paintHistory = new Vector<MyShape>();
+		this.setBackground(Color.WHITE);
+	}
+	
+	public void addShape(MyShape shape) {
+		paintHistory.add(shape);
+		System.out.println(paintHistory.size());
+	}
+	
+	public void setBufferShape(MyShape bufferShape) {
+		this.bufferShape = bufferShape;
+	}
+	
+	/**
+	 * The function repaint can invoke this paint function.
+	 */
+	@Override
+	public void paint(Graphics graphics) {
+		super.paint(graphics);
+		Graphics2D g = (Graphics2D) graphics;
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+        		RenderingHints.VALUE_ANTIALIAS_ON);
+        for (MyShape myShape: paintHistory) {
+			myShape.draw(g);
+		}
+        
+        // When mouse haven't been released
+        if (bufferShape != null) {
+        	bufferShape.draw(g);
+        }  
+	}
+	
+	private Image offScreenImage;
+	
+	@Override
+    public void update(Graphics g) {
+        if (offScreenImage == null) {
+            offScreenImage = this.createImage(getWidth(), getHeight());
+        }
+        Graphics gImage = offScreenImage.getGraphics();
+        paint(gImage);
+        g.drawImage(offScreenImage, 0, 0, null);
+        System.out.println("update");
+    }
+}

@@ -31,11 +31,11 @@ public class RoomManager {
 		roomsList.put(0, "RoomName0 HostName0");
 		roomsList.put(1, "RoomName1 HostName1");
 		roomsList.put(2, "RoomName2 HostName2");
-//		roomsList.put(3, "RoomName3 HostName3");
-//		roomsList.put(4, "RoomName4 HostName4");
-//		roomsList.put(5, "RoomName5 HostName5");
-//		roomsList.put(6, "RoomName6 HostName6");
-//		roomsList.put(7, "RoomName7 HostName7");
+		roomsList.put(3, "RoomName3 HostName3");
+		roomsList.put(4, "RoomName4 HostName4");
+		roomsList.put(5, "RoomName5 HostName5");
+		roomsList.put(6, "RoomName6 HostName6");
+		roomsList.put(7, "RoomName7 HostName7");
 		return roomsList;
 		
 //		Map<Integer, String> reqRooms = new HashMap<Integer, String>();
