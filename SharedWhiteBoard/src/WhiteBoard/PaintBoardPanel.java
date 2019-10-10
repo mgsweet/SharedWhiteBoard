@@ -34,7 +34,15 @@ public class PaintBoardPanel extends JPanel{
 	
 	public void addShape(MyShape shape) {
 		paintHistory.add(shape);
-		System.out.println(paintHistory.size());
+//		System.out.println(paintHistory.size());
+	}
+	
+	public synchronized void clearShapes() {
+		bufferShape = null;
+		paintHistory.clear();
+		removeAll();
+		revalidate();
+		repaint();
 	}
 	
 	public void setBufferShape(MyShape bufferShape) {
@@ -45,7 +53,7 @@ public class PaintBoardPanel extends JPanel{
 	 * The function repaint can invoke this paint function.
 	 */
 	@Override
-	public void paint(Graphics graphics) {
+	public synchronized void paint(Graphics graphics) {
 		super.paint(graphics);
 		Graphics2D g = (Graphics2D) graphics;
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
@@ -63,7 +71,6 @@ public class PaintBoardPanel extends JPanel{
 	}
 	
 	private Image offScreenImage;
-	
 	@Override
     public void update(Graphics g) {
         if (offScreenImage == null) {
@@ -72,6 +79,5 @@ public class PaintBoardPanel extends JPanel{
         Graphics gImage = offScreenImage.getGraphics();
         paint(gImage);
         g.drawImage(offScreenImage, 0, 0, null);
-        System.out.println("update");
     }
 }

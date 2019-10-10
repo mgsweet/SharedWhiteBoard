@@ -8,3 +8,5 @@ demos
 
 # ignore org file
 org*
+
+bin

@@ -22,6 +22,19 @@ public class MyRect implements MyShape{
         this.startP = startP;
         this.width = Math.abs(startP.getX() - endP.getX());
         this.height = Math.abs(startP.getY() - endP.getY());;
+        if (startP.getX() < endP.getX()) {
+            if (startP.getY() < endP.getY()) {
+                this.startP = startP;
+            } else {
+            	this.startP = new MyPoint(startP.getX(), endP.getY());
+            }
+        } else {
+            if (startP.getY() < endP.getY()) {
+            	this.startP = new MyPoint(endP.getX(), startP.getY());
+            } else {
+            	this.startP = endP;
+            }
+        }
         this.color = color;
         this.thickness = thickness;
         this.isRoundRect = isRoundRect;

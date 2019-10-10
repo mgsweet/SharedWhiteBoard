@@ -1,6 +1,7 @@
 package Shape;
 
 import java.awt.Graphics;
+import java.awt.Point;
 
 public class MyPoint {
 	private int x;
@@ -25,5 +26,10 @@ public class MyPoint {
 
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	public boolean equals(Point p) {
+		// TODO Auto-generated method stub
+		return (this.x == p.getX() && this.y == p.getY());
 	}
 }

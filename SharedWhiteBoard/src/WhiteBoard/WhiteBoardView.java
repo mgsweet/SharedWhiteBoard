@@ -2,6 +2,7 @@ package WhiteBoard;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -31,37 +32,43 @@ public class WhiteBoardView {
 
 	private JFrame frame;
 	private JColorChooser colorChooser;
-	private Color currentColor;
 	private DrawListener drawListener;
 	private PaintBoardPanel paintBoardPanel;
 	private JButton btnCurrentColor;
-	
-	private static Color[] defaultColors = {
-			Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY,
-			Color.RED, Color.GREEN, Color.ORANGE, Color.YELLOW,
-			Color.PINK, Color.DARK_GRAY, Color.LIGHT_GRAY, Color.CYAN,
-			Color.MAGENTA, new Color(250, 128, 114), new Color(210, 105, 30), new Color(160, 32, 240)
-	};
-	
+	// Color
+	private Color currentColor;
+	private Color backgroundColor = null;
+
+	private static Color[] defaultColors = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
+			Color.ORANGE, Color.YELLOW, Color.PINK, Color.DARK_GRAY, Color.LIGHT_GRAY, Color.CYAN, Color.MAGENTA,
+			new Color(250, 128, 114), new Color(210, 105, 30), new Color(160, 32, 240) };
+
 	/**
 	 * Get frame window.
 	 */
 	public JFrame getFrame() {
 		return this.frame;
 	}
-	
+
 	/**
 	 * Get getPaintBoardFrame window.
 	 */
 	public PaintBoardPanel getPaintBoardPanel() {
 		return this.paintBoardPanel;
 	}
-	
+
 	/**
 	 * Get current select color.
 	 */
 	public Color getCurrentColor() {
 		return currentColor;
+	}
+
+	/**
+	 * Get background color.
+	 */
+	public Color getBackgroundColor() {
+		return backgroundColor;
 	}
 
 	/**
@@ -85,42 +92,9 @@ public class WhiteBoardView {
 	 */
 	public WhiteBoardView() {
 		currentColor = Color.BLACK;
+		backgroundColor = Color.WHITE;
 		colorChooser = new JColorChooser(currentColor);
 		initialize();
-	}
-
-	/**
-	 * Create the file menu in the menu bar.
-	 */
-	private JMenu createFileMenu() {
-		JMenu menu = new JMenu("File(F)");
-		menu.setMnemonic(KeyEvent.VK_F); // 设置快速访问符
-		JMenuItem item = new JMenuItem("New(N)", KeyEvent.VK_N);
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-		menu.add(item);
-		item = new JMenuItem("Open(O)", KeyEvent.VK_O);
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		menu.add(item);
-		item = new JMenuItem("Save(S)", KeyEvent.VK_S);
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		menu.add(item);
-		menu.addSeparator();
-		item = new JMenuItem("Exit(E)", KeyEvent.VK_E);
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-		menu.add(item);
-		return menu;
-	}
-
-	/**
-	 * Create the edit menu in the menu bar.
-	 */
-	private JMenu createEditMenu() {
-		JMenu menu = new JMenu("Edit(E)");
-		menu.setMnemonic(KeyEvent.VK_E);
-		JMenuItem item = new JMenuItem("Undo(U)", KeyEvent.VK_U);
-		item.setEnabled(false);
-		menu.add(item);
-		return menu;
 	}
 
 	/**
@@ -132,36 +106,51 @@ public class WhiteBoardView {
 		frame.setSize(1000, 800);
 		frame.setTitle("white board");
 		frame.setResizable(true);
-		
+
 		// Add Action Listener
 		drawListener = new DrawListener(this);
-		
-		// Add menu bar
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		menuBar.add(createFileMenu());
-		menuBar.add(createEditMenu());
 
 		// Add draw tool panel.
 		JPanel drawToolPanel = new JPanel();
 		drawToolPanel.setPreferredSize(new Dimension(110, 0));
 		frame.getContentPane().add(drawToolPanel, BorderLayout.WEST);
-		
+
+		// Add Painting broad.
 		paintBoardPanel = new PaintBoardPanel();
 		paintBoardPanel.setBackground(Color.white);
 		paintBoardPanel.addMouseListener(drawListener);
 		paintBoardPanel.addMouseMotionListener(drawListener);
+		paintBoardPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		frame.getContentPane().add(paintBoardPanel, BorderLayout.CENTER);
+
+		JPanel userPanel = new JPanel();
+		userPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		userPanel.setPreferredSize(new Dimension(200, 0));
+		userPanel.setBackground(Color.WHITE);
+		frame.getContentPane().add(userPanel, BorderLayout.EAST);
+		userPanel.setLayout(new BorderLayout(0, 0));
 		
-		JPanel chatPanel = new JPanel();
-		chatPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		chatPanel.setPreferredSize(new Dimension(200, 600));
-		chatPanel.setBackground(Color.WHITE);
-		frame.getContentPane().add(chatPanel, BorderLayout.EAST);
+		JPanel userControlPanel = new JPanel();
+		userControlPanel.setPreferredSize(new Dimension(0, 300));
+		userPanel.add(userControlPanel, BorderLayout.NORTH);
+		userControlPanel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel lab1 = new JLabel("chatting room");
-		chatPanel.add(lab1);
+		JLabel lblUserList = new JLabel("User List:");
+		userControlPanel.add(lblUserList, BorderLayout.NORTH);
+		
+		ClientListScrollPanel clientListScrollPanel = new ClientListScrollPanel();
+		userControlPanel.add(clientListScrollPanel, BorderLayout.CENTER);
+		
+		JPanel chatRoomControlPanel = new JPanel();
+		userPanel.add(chatRoomControlPanel, BorderLayout.CENTER);
+		chatRoomControlPanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblChatRoom = new JLabel("Chat Room:");
+		chatRoomControlPanel.add(lblChatRoom, BorderLayout.NORTH);
 		drawToolPanel.setLayout(new BorderLayout(0, 0));
+		
+		// TODO 
+		// need a panel subclass
 		
 		JPanel toolPanel = new JPanel();
 		toolPanel.setBorder(new TitledBorder(null, "Tool Bar", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -171,34 +160,37 @@ public class WhiteBoardView {
 
 		// Add tool bar button
 		JButton btnPen = new JButton("pen");
+		btnPen.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		toolPanel.add(btnPen);
 		btnPen.addActionListener(drawListener);
-		
+
 		JButton btnLine = new JButton("line");
+		btnLine.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnLine.addActionListener(drawListener);
 		toolPanel.add(btnLine);
 
 		JButton btnCircle = new JButton("circle");
+		btnCircle.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnCircle.addActionListener(drawListener);
 		toolPanel.add(btnCircle);
 
-		JButton btnSpray = new JButton("spray");
-		btnSpray.addActionListener(drawListener);
-		toolPanel.add(btnSpray);
-
 		JButton btnEraser = new JButton("eraser");
+		btnEraser.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnEraser.addActionListener(drawListener);
 		toolPanel.add(btnEraser);
 
 		JButton btnRect = new JButton("rect");
+		btnRect.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnRect.addActionListener(drawListener);
 		toolPanel.add(btnRect);
 
 		JButton btnOval = new JButton("oval");
+		btnOval.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnOval.addActionListener(drawListener);
 		toolPanel.add(btnOval);
 
 		JButton btnRoundrect = new JButton("roundrect");
+		btnRoundrect.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnRoundrect.addActionListener(drawListener);
 		toolPanel.add(btnRoundrect);
 
@@ -211,31 +203,34 @@ public class WhiteBoardView {
 		colorPanel.add(currentColorPanel, BorderLayout.NORTH);
 		currentColorPanel.setPreferredSize(new Dimension(0, 40));
 		currentColorPanel.setLayout(new BorderLayout());
-		
+
 		JLabel lblCurrentColor = new JLabel(" Current:");
 		currentColorPanel.add(lblCurrentColor, BorderLayout.CENTER);
-		
+
 		JPanel marginCC1Panel = new JPanel();
 		marginCC1Panel.setPreferredSize(new Dimension(40, 40));
 		currentColorPanel.add(marginCC1Panel, BorderLayout.EAST);
-		
+
 		btnCurrentColor = new JButton();
 		marginCC1Panel.add(btnCurrentColor);
 		btnCurrentColor.setBorderPainted(false);
+		btnCurrentColor.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnCurrentColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				colorChooser.showDialog(frame, "Color Chooser", currentColor);
+				currentColor = colorChooser.showDialog(frame, "Color Chooser", currentColor);
+				btnCurrentColor.setBackground(currentColor);
+				System.out.println("Operation: Change color.");
 			}
 		});
-		
+
 		btnCurrentColor.setBackground(currentColor);
 		btnCurrentColor.setOpaque(true);
 		btnCurrentColor.setPreferredSize(new Dimension(30, 30));
-		
+
 		JPanel defaultColorPanel = new JPanel();
 		colorPanel.add(defaultColorPanel, BorderLayout.CENTER);
 		defaultColorPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
+
 		// Add 16 default color
 		JButton tempButton = null;
 		for (int i = 0; i < 16; i++) {
@@ -243,16 +238,23 @@ public class WhiteBoardView {
 			tempButton.setBorderPainted(false);
 			tempButton.setBackground(defaultColors[i]);
 			tempButton.setOpaque(true);
+			tempButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			tempButton.setPreferredSize(new Dimension(40, 40));
 			tempButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					currentColor = ((JButton)e.getSource()).getBackground();
+					currentColor = ((JButton) e.getSource()).getBackground();
 					btnCurrentColor.setBackground(currentColor);
-					System.out.print(currentColor);
+					System.out.println("Operation: Change color.");
 				}
 			});
 			defaultColorPanel.add(tempButton);
 		}
+
+		// Add menu bar at the last, need to wait for creation of paintBoardPanel.
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		menuBar.add(new FileMenu(this));
+		menuBar.add(new EditMenu(this));
 
 		frame.setVisible(true);
 
