@@ -1,3 +1,9 @@
+/**
+ * My Shape interface
+ * 
+ * @author Aaron-Qiu
+ *
+ */
 package Shape;
 
 import java.awt.Color;

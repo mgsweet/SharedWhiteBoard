@@ -1,3 +1,9 @@
+/**
+ * Use for pen and eraser.
+ * 
+ * @author Aaron-Qiu
+ *
+ */
 package Shape;
 
 import java.awt.BasicStroke;

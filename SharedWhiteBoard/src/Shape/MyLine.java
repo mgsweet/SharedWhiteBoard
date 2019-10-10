@@ -1,3 +1,9 @@
+/**
+ * My Shape
+ * 
+ * @author Aaron-Qiu
+ *
+ */
 package Shape;
 
 import java.awt.BasicStroke;
@@ -18,9 +24,8 @@ public class MyLine implements MyShape {
 	}
 	
 	public void draw(Graphics2D g) {
-		BasicStroke bs = new BasicStroke(thickness, BasicStroke.CAP_ROUND,
-                BasicStroke.JOIN_BEVEL);
-        g.setStroke(bs);
+        g.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND,
+                BasicStroke.JOIN_BEVEL));
         g.setColor(color);
 		g.drawLine(startP.getX(), startP.getY(), endP.getX(), endP.getY());
 	}

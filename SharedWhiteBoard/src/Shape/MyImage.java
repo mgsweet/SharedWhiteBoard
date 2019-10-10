@@ -1,3 +1,9 @@
+/**
+ * My Image
+ * 
+ * @author Aaron-Qiu
+ *
+ */
 package Shape;
 
 import java.awt.BasicStroke;
