@@ -20,6 +20,9 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileView;
 
+import Shape.MyImage;
+import Shape.MyPoint;
+import Shape.MyShape;
 import WhiteBoard.WhiteBoardView;
 
 public class FileOpenListener implements ActionListener {
@@ -38,15 +41,15 @@ public class FileOpenListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Image image=null;
 		System.out.println("Operation: Open File.");
 		chooser.setCurrentDirectory(new File("."));
 		int returnVal = chooser.showOpenDialog(wbv.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File imagefile = chooser.getSelectedFile();
-			JLabel label = new JLabel();
-			label.setIcon(new ImageIcon(imagefile.getPath()));
+			File imageFile = chooser.getSelectedFile();
 			wbv.getPaintBoardPanel().clearShapes();
-			wbv.getPaintBoardPanel().add(label);
+			MyShape myShape = new MyImage(new MyPoint(0, 0), imageFile);
+			wbv.getPaintBoardPanel().addShape(myShape);
 			wbv.getPaintBoardPanel().revalidate();
 			wbv.getPaintBoardPanel().repaint();
 		}

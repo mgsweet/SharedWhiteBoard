@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class MyCircle implements MyShape {
-	private final int type = 3;
     private MyPoint center;
     private int radius;
     private Color color;

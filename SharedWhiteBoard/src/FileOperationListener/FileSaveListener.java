@@ -46,13 +46,6 @@ public class FileSaveListener implements ActionListener {
 		wbv.getPaintBoardPanel().paint(graphics);
 		graphics.dispose();
 
-		// Resize the image to be saved
-		// Image newImage = image.getScaledInstance(28, 28, Image.SCALE_SMOOTH);
-		// BufferedImage myImage = new BufferedImage(28,28,BufferedImage.TYPE_INT_RGB);
-		// Graphics graphics1 = myImage.getGraphics();
-		// graphics1.drawImage(newImage, 0, 0, null);
-		// graphics1.dispose();
-
 		if (action == "saveAs") {
 			JFileChooser jf = new JFileChooser(".");
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG/JPEG/PNG files", "jpg", "jpeg",
