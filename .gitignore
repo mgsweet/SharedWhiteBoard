@@ -7,6 +7,6 @@ demos
 .metadata
 
 # ignore org file
-org*
+# org*
 
-bin
+# bin
