@@ -222,7 +222,7 @@ public class WhiteBoardView {
 			public void actionPerformed(ActionEvent e) {
 				currentColor = colorChooser.showDialog(frame, "Color Chooser", currentColor);
 				btnCurrentColor.setBackground(currentColor);
-				System.out.println("Operation: Change color.");
+//				System.out.println("Operation: Change color.");
 			}
 		});
 

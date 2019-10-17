@@ -7,6 +7,12 @@ import java.util.Vector;
 import Remote.IRemotePaint;
 import Shape.MyShape;
 
+/**
+ * 
+ * @author Aaron-Qiu
+ *
+ */
+
 public class PaintManager {
 	// Use to record all the shapes.
 	private Vector<MyShape> paintHistory = null;
@@ -20,8 +26,26 @@ public class PaintManager {
 	private int mode;
 	// Default mode.
 	public static final int SERVER_MODE = 0;
-	public static final int CLIENT_MODE = 0;
-	public static final int OFFLINE_MODE = 0;
+	public static final int CLIENT_MODE = 1;
+	public static final int OFFLINE_MODE = 2;
+	
+	/**
+	 * Use in the client mode, when 
+	 */
+	public void pullRemoteHistory() {
+		if (mode == CLIENT_MODE) {
+			try {
+				if (serveRemotePaint != null) {
+					paintHistory = serveRemotePaint.getHistory();
+				} else {
+					System.out.println("Err: serveRemotePaint is null!");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			paintArea.repaint();
+		}
+	}
 
 	/**
 	 * 

@@ -61,7 +61,7 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 		if (toolName.equals("line")) {
 			myShape = new MyLine(startP, endP, color, thickness);
 		} else if (toolName.equals("circle")) {
-			myShape = new MyCircle (startP, endP, color, thickness);
+			myShape = new MyCircle(startP, endP, color, thickness);
 		} else if (toolName.equals("rect")) {
 			myShape = new MyRect(false, startP, endP, color, thickness);
 		} else if (toolName.equals("roundrect")) {

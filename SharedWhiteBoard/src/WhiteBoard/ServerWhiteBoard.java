@@ -39,7 +39,9 @@ public class ServerWhiteBoard {
 //			ServerSocket registrySocket = new ServerSocket(0);
 //			registryPort = registrySocket.getLocalPort();
 //			registrySocket.close();
-			registryPort = 4444;
+			
+			// Debug Only
+			registryPort = 4444; 
 
 			// Start RMI registry
 			LocateRegistry.createRegistry(registryPort);

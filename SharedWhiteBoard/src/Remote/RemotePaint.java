@@ -8,11 +8,15 @@ import Shape.MyShape;
 import WhiteBoard.PaintBoardPanel;
 import WhiteBoard.PaintManager;
 
+/**
+ * 
+ * @author Aaron-Qiu
+ *
+ */
+
 public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	// All the painting action should be do by the paintManager.
 	PaintManager paintManager;
 	// Use to store the current paintint area
 	private PaintBoardPanel paintArea;
@@ -23,7 +27,6 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	
 	@Override
 	public void addShape(MyShape shape) throws RemoteException {
-		System.out.println("Client add shape.");
 		paintManager.addShape(shape);
 	}
 	
@@ -42,5 +45,10 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	public void addClientRMI(String ip, int port) throws RemoteException {
 		System.out.println("A new client join: " + ip + ' ' + port);
 		paintManager.addClientRMI(ip, port);
+	}
+	
+	@Override
+	public Vector<MyShape> getHistory() throws RemoteException {
+		return paintManager.getPaintHistory();
 	}
 }

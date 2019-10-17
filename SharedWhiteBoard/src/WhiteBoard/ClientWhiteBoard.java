@@ -41,7 +41,8 @@ public class ClientWhiteBoard {
 			Registry serverRegistry = LocateRegistry.getRegistry(clientIp.getHostAddress(), clientRegistryPort);
 			IRemotePaint remotePaint = new RemotePaint(paintManager);
 			serverRegistry.bind("client", remotePaint);
-
+			
+			// Out put current connect state.
 			printInitialStates();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,6 +70,8 @@ public class ClientWhiteBoard {
 	private void run() {
 		try {
 			WhiteBoardView window = new WhiteBoardView(this.paintManager);
+			// Get current paint history from server. This should be done after the view creates.
+			paintManager.pullRemoteHistory();
 			window.getFrame().setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
