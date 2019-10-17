@@ -109,8 +109,7 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 		}
 //		wbv.getPaintBoardPanel().revalidate();
 		wbv.getPaintBoardPanel().setBufferShape(null);
-		wbv.getPaintManager().paint(myShape);
-		wbv.getPaintBoardPanel().repaint();
+		wbv.getPaintManager().addShape(myShape);
 	}
 
 	public void mouseDragged(MouseEvent e) {

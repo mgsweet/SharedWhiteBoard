@@ -21,7 +21,6 @@ public class PaintBoardPanel extends JPanel{
 	private int x = 200;
 	private int y = 200;
 	
-	// 
 	private PaintManager paintManager;
 	// Use to store the temporary shape.
 	private MyShape bufferShape;
@@ -34,10 +33,7 @@ public class PaintBoardPanel extends JPanel{
 	
 	public synchronized void clearShapes() {
 		bufferShape = null;
-		paintManager.clear();
-		removeAll();
-		revalidate();
-		repaint();
+		paintManager.clearAll();
 	}
 	
 	public void setBufferShape(MyShape bufferShape) {

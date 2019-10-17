@@ -108,7 +108,7 @@ public class WhiteBoardView {
 		currentColor = Color.BLACK;
 		backgroundColor = Color.WHITE;
 		colorChooser = new JColorChooser(currentColor);
-		this.paintManager = new PaintManager();
+		this.paintManager = new PaintManager(PaintManager.OFFLINE_MODE);
 		initialize();
 	}
 	
@@ -148,6 +148,9 @@ public class WhiteBoardView {
 		paintBoardPanel.addMouseMotionListener(drawListener);
 		paintBoardPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		frame.getContentPane().add(paintBoardPanel, BorderLayout.CENTER);
+		
+		// Set the paint area in paintManager to the current paintBoard panel.
+		paintManager.setPaintArea(paintBoardPanel);
 
 		JPanel userPanel = new JPanel();
 		userPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));

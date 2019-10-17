@@ -20,7 +20,7 @@ public class ServerWhiteBoard {
 	}
 
 	public ServerWhiteBoard() {
-		this.paintManager = new PaintManager();
+		this.paintManager = new PaintManager(paintManager.SERVER_MODE);
 		serverInit();
 	}
 
@@ -43,7 +43,7 @@ public class ServerWhiteBoard {
 			// Start RMI registry
 			LocateRegistry.createRegistry(registryPort);
 			Registry serverRegistry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
-			IRemotePaint remotePaint = new RemotePaint();
+			IRemotePaint remotePaint = new RemotePaint(paintManager);
 			serverRegistry.bind("RemotePaint", remotePaint);
 
 			printInitialStates();
