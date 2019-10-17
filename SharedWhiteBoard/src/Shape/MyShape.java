@@ -11,6 +11,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.Serializable;
 
-public interface MyShape {
+public interface MyShape extends Serializable {
 	void draw(Graphics2D g);
 }

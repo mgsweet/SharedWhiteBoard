@@ -1,5 +1,7 @@
 package WhiteBoard;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Vector;
 
 import Remote.IRemotePaint;
@@ -16,27 +18,73 @@ public class PaintManager {
 	private IRemotePaint serveRemotePaint;
 	// There are three kind of mode: server, client and offline
 	private int mode;
+	// Default mode.
 	public static final int SERVER_MODE = 0;
 	public static final int CLIENT_MODE = 0;
 	public static final int OFFLINE_MODE = 0;
 
+	/**
+	 * 
+	 * @param mode There are three kind of mode: server, client and offline
+	 */
 	public PaintManager(int mode) {
 		this.mode = mode;
 		paintHistory = new Vector<MyShape>();
-		
+
 		if (mode == SERVER_MODE) {
 			clientRemotePaints = new Vector<IRemotePaint>();
 		}
 	}
+	
+	/**
+	 * Add a client clientRMI, onlu work in SERVER_MODE.
+	 * @param ip
+	 * @param port
+	 */
+	public void addClientRMI(String ip, int port) {
+		if (mode == SERVER_MODE) {
+			try {
+				Registry clientRegistry = LocateRegistry.getRegistry(ip, port);
+				IRemotePaint remotePaint = (IRemotePaint) clientRegistry.lookup("client");
+				clientRemotePaints.add(remotePaint);
+			} catch (Exception e) {
+				System.out.println("Can not get the client.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Set the set ServeRemotePaint, only work in CLIENT_MODE
+	 * @param serverRemotePaint
+	 */
+	public void setServerRMI(IRemotePaint serverRemotePaint) {
+		if (mode == CLIENT_MODE) {
+			this.serveRemotePaint = serverRemotePaint;
+		}
+	}
 
+	/**
+	 * Use to get the paint area.
+	 * 
+	 * @return The current PaintBoardPanel object.
+	 */
 	public PaintBoardPanel getPaintArea() {
 		return paintArea;
 	}
-	
+
+	/**
+	 * Set the current painting area.
+	 * 
+	 * @param paintArea the PaintBoardPanel where you want to paint.
+	 */
 	public void setPaintArea(PaintBoardPanel paintArea) {
 		this.paintArea = paintArea;
 	}
-	
+
+	/**
+	 * Remove all things inside the current painting area.
+	 */
 	public void resetAll() {
 		paintHistory.clear();
 		paintArea.removeAll();
@@ -44,6 +92,12 @@ public class PaintManager {
 		paintArea.repaint();
 	}
 
+	/**
+	 * Use to add shape to the history. Would affect both server and client.
+	 * 
+	 * @param shape a MyShape object which you want to add to the current painting
+	 *              area
+	 */
 	public void addShape(MyShape shape) {
 		if (mode == SERVER_MODE) {
 			paintHistory.add(shape);
@@ -66,6 +120,9 @@ public class PaintManager {
 		}
 	}
 
+	/**
+	 * Use to clear the history, which would affect both server and client.
+	 */
 	public void clearAll() {
 		if (mode == SERVER_MODE) {
 			paintHistory.clear();
@@ -84,10 +141,20 @@ public class PaintManager {
 		}
 	}
 
+	/**
+	 * Get the painting history.
+	 * 
+	 * @return paint history.
+	 */
 	public Vector<MyShape> getPaintHistory() {
 		return paintHistory;
 	}
 
+	/**
+	 * Set the painting history.
+	 * 
+	 * @param paintHistory
+	 */
 	public void setPaintHistory(Vector<MyShape> paintHistory) {
 		this.paintHistory = paintHistory;
 		paintArea.repaint();

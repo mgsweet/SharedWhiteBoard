@@ -23,6 +23,7 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	
 	@Override
 	public void addShape(MyShape shape) throws RemoteException {
+		System.out.println("Client add shape.");
 		paintManager.addShape(shape);
 	}
 	
@@ -35,5 +36,11 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	@Override
 	public void clearHistory() throws RemoteException {
 		paintManager.resetAll();
+	}
+	
+	@Override
+	public void addClientRMI(String ip, int port) throws RemoteException {
+		System.out.println("A new client join: " + ip + ' ' + port);
+		paintManager.addClientRMI(ip, port);
 	}
 }

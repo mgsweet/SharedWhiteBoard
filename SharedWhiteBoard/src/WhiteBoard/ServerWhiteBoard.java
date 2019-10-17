@@ -20,7 +20,7 @@ public class ServerWhiteBoard {
 	}
 
 	public ServerWhiteBoard() {
-		this.paintManager = new PaintManager(paintManager.SERVER_MODE);
+		this.paintManager = new PaintManager(PaintManager.SERVER_MODE);
 		serverInit();
 	}
 
@@ -36,15 +36,16 @@ public class ServerWhiteBoard {
 			ip = InetAddress.getLocalHost();
 
 			// Get a random port (Available one).
-			ServerSocket registrySocket = new ServerSocket(0);
-			registryPort = registrySocket.getLocalPort();
-			registrySocket.close();
+//			ServerSocket registrySocket = new ServerSocket(0);
+//			registryPort = registrySocket.getLocalPort();
+//			registrySocket.close();
+			registryPort = 4444;
 
 			// Start RMI registry
 			LocateRegistry.createRegistry(registryPort);
 			Registry serverRegistry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
 			IRemotePaint remotePaint = new RemotePaint(paintManager);
-			serverRegistry.bind("RemotePaint", remotePaint);
+			serverRegistry.bind("server", remotePaint);
 
 			printInitialStates();
 		} catch (Exception e) {

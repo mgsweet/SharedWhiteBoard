@@ -1,19 +1,13 @@
 package WhiteBoard;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Random;
-import java.util.Vector;
 
 import javax.swing.JButton;
 
@@ -21,7 +15,6 @@ import Shape.MyCircle;
 import Shape.MyFreeDraw;
 import Shape.MyLine;
 import Shape.MyOval;
-import Shape.MyLine;
 import Shape.MyPoint;
 import Shape.MyRect;
 import Shape.MyShape;
@@ -29,19 +22,6 @@ import Shape.MyShape;
 public class DrawListener extends MouseAdapter implements ActionListener {
 	private MyPoint startP, endP;
 	private WhiteBoardView wbv;
-	private boolean flag = false;
-	private static final double BREADTH = 15.0;
-	private int dragType;
-	private static final int DRAG_MOVE = 1;
-	private static final int DRAG_UP = 2;
-	private static final int DRAG_UPLEFT = 3;
-	private static final int DRAG_UPRIGHT = 4;
-	private static final int DRAG_LEFT = 5;
-	private static final int DRAG_RIGHT = 6;
-	private static final int DRAG_BOTTOM = 7;
-	private static final int DRAG_BOTTOMLEFT = 8;
-	private static final int DRAG_BOTTOMRIGHT = 9;
-	private static final String pictureBox1 = null;
 
 	private String toolName = "pen";
 	private Color color = null;
@@ -67,7 +47,7 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 	}
 
 	public void mousePressed(MouseEvent e) {
-		System.out.println("Operation: " + "mousePressed " + toolName);
+//		System.out.println("Operation: " + "mousePressed " + toolName);
 		color = wbv.getCurrentColor();
 		startP = new MyPoint(e.getX(), e.getY());
 		drawBuffer = wbv.getPaintBoardPanel().createImage(wbv.getPaintBoardPanel().getWidth(),
@@ -75,7 +55,7 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		System.out.println("Operation: " + "mouseReleased " + toolName);
+//		System.out.println("Operation: " + "mouseReleased " + toolName);
 		endP = new MyPoint(e.getX(), e.getY());
 		MyShape myShape = null;
 		if (toolName.equals("line")) {

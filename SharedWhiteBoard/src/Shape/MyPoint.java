@@ -8,8 +8,9 @@ package Shape;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.io.Serializable;
 
-public class MyPoint {
+public class MyPoint implements Serializable {
 	private int x;
 	private int y;
 	

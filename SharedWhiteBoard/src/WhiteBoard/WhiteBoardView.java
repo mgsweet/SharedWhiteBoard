@@ -104,13 +104,13 @@ public class WhiteBoardView {
 	/**
 	 * Create the view without Paint Manager.
 	 */
-	public WhiteBoardView() {
-		currentColor = Color.BLACK;
-		backgroundColor = Color.WHITE;
-		colorChooser = new JColorChooser(currentColor);
-		this.paintManager = new PaintManager(PaintManager.OFFLINE_MODE);
-		initialize();
-	}
+//	public WhiteBoardView() {
+//		currentColor = Color.BLACK;
+//		backgroundColor = Color.WHITE;
+//		colorChooser = new JColorChooser(currentColor);
+//		this.paintManager = new PaintManager(PaintManager.OFFLINE_MODE);
+//		initialize();
+//	}
 	
 	/**
 	 * Create the view with Paint Manager.

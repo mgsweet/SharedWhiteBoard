@@ -1,6 +1,8 @@
 package WhiteBoard;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -8,33 +10,68 @@ import Remote.IRemotePaint;
 import Remote.RemotePaint;
 
 public class ClientWhiteBoard {
+	private PaintManager paintManager;
+	private int clientRegistryPort;
+	private InetAddress clientIp;
 	
-//	private PaintManager paintManager;
-//	
-//	public void ClientWhiteBoard() {
-//		paintManager = new PaintManager();
-//	}
-//	
-//	private void init() {
-//		try {
-//			ServerSocket serverSocket = new ServerSocket();
-//			int localPort = new ServerSocket().getLocalPort();
-//			System.out.println(localPort);
-//			LocateRegistry.createRegistry(localPort);
-//			Registry serverRegistry = LocateRegistry.getRegistry();
-//			IRemotePaint remotePaint = new RemotePaint();
-//			serverRegistry.bind("RemotePaint", remotePaint);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	private void run() {
-//		try {
-//			WhiteBoardView window = new WhiteBoardView();
-//			window.getFrame().setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public static void main(String[] args) {
+		ClientWhiteBoard clientWhiteBoard = new ClientWhiteBoard();
+		clientWhiteBoard.run();
+		
+	}
+	
+	public ClientWhiteBoard() {
+		this.paintManager = new PaintManager(PaintManager.CLIENT_MODE);
+		clientInit();
+		connect2Server("127.0.0.1", 4444);
+	}
+	
+	private void clientInit() {
+		try {
+			// Get IP address.
+			clientIp = InetAddress.getLocalHost();
+
+			// Get a random port (Available one).
+			ServerSocket registrySocket = new ServerSocket(0);
+			clientRegistryPort = registrySocket.getLocalPort();
+			registrySocket.close();
+
+			// Start RMI registry
+			LocateRegistry.createRegistry(clientRegistryPort);
+			Registry serverRegistry = LocateRegistry.getRegistry(clientIp.getHostAddress(), clientRegistryPort);
+			IRemotePaint remotePaint = new RemotePaint(paintManager);
+			serverRegistry.bind("client", remotePaint);
+
+			printInitialStates();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void connect2Server(String serverIp, int serverPort) {
+		try {
+			Registry registry = LocateRegistry.getRegistry(serverIp, serverPort);
+			IRemotePaint serverRemotePaint = (IRemotePaint) registry.lookup("server");
+			paintManager.setServerRMI(serverRemotePaint);
+			serverRemotePaint.addClientRMI(clientIp.getHostAddress(), clientRegistryPort);
+		} catch (Exception e) {
+			System.out.println("Can not connect to server.");
+			e.printStackTrace();
+		}
+	}
+	
+	private void printInitialStates() throws UnknownHostException {
+		System.out.println("Client Running...");
+		System.out.println("Current IP address : " + clientIp.getHostAddress());
+		System.out.println("Registry Port = " + clientRegistryPort);
+	}
+	
+	private void run() {
+		try {
+			WhiteBoardView window = new WhiteBoardView(this.paintManager);
+			window.getFrame().setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
