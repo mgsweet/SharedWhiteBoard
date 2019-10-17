@@ -17,6 +17,13 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.JTextPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
 
 /**
  * 
@@ -34,19 +41,22 @@ public class WhiteBoardView {
 	// Color
 	private Color currentColor;
 	private Color backgroundColor = null;
+	// Thickness
+	private int thickness;
 	// Title of the window
 	private String title;
-	
+
 	// Paint history recorder
 	private PaintManager paintManager;
- 
+
 	// Default color display in the left bottom.
 	private static Color[] DEFAULTCOLORS = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
 			Color.ORANGE, Color.YELLOW, Color.PINK, Color.DARK_GRAY, Color.LIGHT_GRAY, Color.CYAN, Color.MAGENTA,
 			new Color(250, 128, 114), new Color(210, 105, 30), new Color(160, 32, 240) };
-	
+
 	// Use to create tool button.
-	private static String[] TOOLNAME = {"pen", "line", "circle", "eraser", "rect", "oval", "roundrect"};
+	private static String[] TOOLNAME = { "pen", "line", "circle", "eraser", "rect", "oval", "roundrect", "text" };
+	private JTextField thicknessTextField;
 
 	/**
 	 * Get frame window.
@@ -70,12 +80,21 @@ public class WhiteBoardView {
 	}
 
 	/**
+	 * Get thickness.
+	 * 
+	 * @return
+	 */
+	public int getThickness() {
+		return thickness;
+	}
+
+	/**
 	 * Get background color.
 	 */
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
-	
+
 	/**
 	 * Get paint history manager
 	 */
@@ -87,19 +106,21 @@ public class WhiteBoardView {
 	 * Create the view without Paint Manager.
 	 */
 //	public WhiteBoardView() {
+//		this.title = "Offline WhiteBoard";
 //		currentColor = Color.BLACK;
 //		backgroundColor = Color.WHITE;
 //		colorChooser = new JColorChooser(currentColor);
 //		this.paintManager = new PaintManager(PaintManager.OFFLINE_MODE);
 //		initialize();
 //	}
-	
+
 	/**
 	 * Create the view with Paint Manager.
 	 */
 	public WhiteBoardView(PaintManager paintManager, String title) {
 		this.title = title;
 		currentColor = Color.BLACK;
+		thickness = 2;
 		backgroundColor = Color.WHITE;
 		colorChooser = new JColorChooser(currentColor);
 		this.paintManager = paintManager;
@@ -112,7 +133,7 @@ public class WhiteBoardView {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1000, 800);
+		frame.setSize(1000, 700);
 		frame.setTitle(title);
 		frame.setResizable(true);
 
@@ -131,7 +152,7 @@ public class WhiteBoardView {
 		paintBoardPanel.addMouseMotionListener(drawListener);
 		paintBoardPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		frame.getContentPane().add(paintBoardPanel, BorderLayout.CENTER);
-		
+
 		// Set the paint area in paintManager to the current paintBoard panel.
 		paintManager.setPaintArea(paintBoardPanel);
 
@@ -141,29 +162,29 @@ public class WhiteBoardView {
 		userPanel.setBackground(Color.WHITE);
 		frame.getContentPane().add(userPanel, BorderLayout.EAST);
 		userPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		JPanel userControlPanel = new JPanel();
 		userControlPanel.setPreferredSize(new Dimension(0, 300));
 		userPanel.add(userControlPanel, BorderLayout.NORTH);
 		userControlPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		JLabel lblUserList = new JLabel("User List:");
 		userControlPanel.add(lblUserList, BorderLayout.NORTH);
-		
+
 		ClientListScrollPanel clientListScrollPanel = new ClientListScrollPanel();
 		userControlPanel.add(clientListScrollPanel, BorderLayout.CENTER);
-		
+
 		JPanel chatRoomControlPanel = new JPanel();
 		userPanel.add(chatRoomControlPanel, BorderLayout.CENTER);
 		chatRoomControlPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		JLabel lblChatRoom = new JLabel("Chat Room:");
 		chatRoomControlPanel.add(lblChatRoom, BorderLayout.NORTH);
 		drawToolPanel.setLayout(new BorderLayout(0, 0));
-		
-		// TODO 
+
+		// TODO
 		// need a panel subclass
-		
+
 		JPanel toolPanel = new JPanel();
 		toolPanel.setBorder(new TitledBorder(null, "Tool Bar", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		toolPanel.setLayout(new GridLayout(0, 1, 0, 0));
@@ -205,7 +226,6 @@ public class WhiteBoardView {
 			public void actionPerformed(ActionEvent e) {
 				currentColor = colorChooser.showDialog(frame, "Color Chooser", currentColor);
 				btnCurrentColor.setBackground(currentColor);
-//				System.out.println("Operation: Change color.");
 			}
 		});
 
@@ -216,6 +236,34 @@ public class WhiteBoardView {
 		JPanel defaultColorPanel = new JPanel();
 		colorPanel.add(defaultColorPanel, BorderLayout.CENTER);
 		defaultColorPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		JPanel thicknessPanel = new JPanel();
+		thicknessPanel
+				.setBorder(new TitledBorder(null, "Thickness Bar", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		thicknessPanel.setPreferredSize(new Dimension(0, 50));
+		drawToolPanel.add(thicknessPanel, BorderLayout.SOUTH);
+		thicknessPanel.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblThickness = new JLabel("Thickness:");
+		thicknessPanel.add(lblThickness, BorderLayout.WEST);
+
+		JPanel thicknessTextPanel = new JPanel();
+		thicknessPanel.add(thicknessTextPanel, BorderLayout.CENTER);
+		thicknessTextPanel.setLayout(new BorderLayout(0, 0));
+
+		thicknessTextField = new JTextField();
+		thicknessTextField.setDocument(new NumberTextField());
+		thicknessTextField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				thickness = Integer.parseInt(thicknessTextField.getText());  
+				thicknessTextField.setFocusable(false);
+				thicknessTextField.setFocusable(true);
+			}
+		});
+		thicknessTextField.setText(Integer.toString(thickness));
+		thicknessTextField.setHorizontalAlignment(SwingConstants.CENTER);
+		thicknessTextPanel.add(thicknessTextField);
+		thicknessTextField.setColumns(2);
 
 		// Add default colors
 		JButton btnDefaultColors = null;
@@ -243,6 +291,6 @@ public class WhiteBoardView {
 		menuBar.add(new EditMenu(this));
 
 		frame.setVisible(true);
-		
+
 	}
 }

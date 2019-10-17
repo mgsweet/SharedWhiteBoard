@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 import Shape.MyCircle;
 import Shape.MyFreeDraw;
@@ -18,6 +19,7 @@ import Shape.MyOval;
 import Shape.MyPoint;
 import Shape.MyRect;
 import Shape.MyShape;
+import Shape.MyText;
 
 public class DrawListener extends MouseAdapter implements ActionListener {
 	private MyPoint startP, endP;
@@ -32,14 +34,15 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 	DrawListener(WhiteBoardView wbv) {
 		currentFreeDraw = null;
 		this.wbv = wbv;
-		this.thickness = 2;
 		color = wbv.getCurrentColor();
+		this.thickness = wbv.getThickness();
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("")) {
 			JButton button = (JButton) e.getSource();
 			color = wbv.getCurrentColor();
+			thickness = wbv.getThickness();
 		} else {
 			JButton button = (JButton) e.getSource();
 			toolName = button.getActionCommand();
@@ -49,6 +52,7 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 	public void mousePressed(MouseEvent e) {
 //		System.out.println("Operation: " + "mousePressed " + toolName);
 		color = wbv.getCurrentColor();
+		thickness = wbv.getThickness();
 		startP = new MyPoint(e.getX(), e.getY());
 		drawBuffer = wbv.getPaintBoardPanel().createImage(wbv.getPaintBoardPanel().getWidth(),
 				wbv.getPaintBoardPanel().getHeight());
@@ -84,12 +88,18 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 			}
 			myShape = currentFreeDraw;
 			currentFreeDraw = null;
+		} else if (toolName.equals("text")) {
+			String text = JOptionPane.showInputDialog(wbv.getFrame(), "Text:");
+			System.out.println(text);
+			if (text != null && text != "") {
+				myShape = new MyText(endP, text, thickness * 10, color);
+			}
 		} else {
 			System.out.println("Error: Unkown Tool Name!");
 		}
 //		wbv.getPaintBoardPanel().revalidate();
 		wbv.getPaintBoardPanel().setBufferShape(null);
-		wbv.getPaintManager().addShape(myShape);
+		if (myShape != null) wbv.getPaintManager().addShape(myShape);
 	}
 
 	public void mouseDragged(MouseEvent e) {
@@ -119,6 +129,8 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 			bufferShape = new MyRect(true, startP, endP, color, thickness);
 		} else if (toolName.equals("oval")) {
 			bufferShape = new MyOval(startP, endP, color, thickness);
+		} else if (toolName.equals("text")) {
+			bufferShape = null;
 		} else {
 			System.out.println("Error: Unkown Tool Name!");
 		}

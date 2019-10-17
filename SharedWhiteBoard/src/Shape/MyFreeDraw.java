@@ -42,7 +42,7 @@ public class MyFreeDraw implements MyShape {
 		if (mode == PEN) {
 			g.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
 		} else if (mode == ERASER) {
-			g.setStroke(new BasicStroke(40, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+			g.setStroke(new BasicStroke(thickness * 2 + 40, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
 		}
 		g.setColor(color);
 		for (int i = 0; i < points.size() - 1; i++) {
