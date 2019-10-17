@@ -57,7 +57,8 @@ public class ServerWhiteBoard {
 
 	private void run() {
 		try {
-			WhiteBoardView window = new WhiteBoardView(this.paintManager);
+			String title = "Server-" + ip.getHostAddress() + ":" + registryPort;
+			WhiteBoardView window = new WhiteBoardView(this.paintManager, title);
 			window.getFrame().setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();

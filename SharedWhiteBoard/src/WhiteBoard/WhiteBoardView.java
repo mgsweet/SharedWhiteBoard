@@ -4,29 +4,25 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.colorchooser.DefaultColorSelectionModel;
+
+/**
+ * 
+ * @author Aaron-Qiu
+ *
+ */
 
 public class WhiteBoardView {
 
@@ -38,6 +34,8 @@ public class WhiteBoardView {
 	// Color
 	private Color currentColor;
 	private Color backgroundColor = null;
+	// Title of the window
+	private String title;
 	
 	// Paint history recorder
 	private PaintManager paintManager;
@@ -86,22 +84,6 @@ public class WhiteBoardView {
 	}
 
 	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					WhiteBoardView window = new WhiteBoardView();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
-	/**
 	 * Create the view without Paint Manager.
 	 */
 //	public WhiteBoardView() {
@@ -115,7 +97,8 @@ public class WhiteBoardView {
 	/**
 	 * Create the view with Paint Manager.
 	 */
-	public WhiteBoardView(PaintManager paintManager) {
+	public WhiteBoardView(PaintManager paintManager, String title) {
+		this.title = title;
 		currentColor = Color.BLACK;
 		backgroundColor = Color.WHITE;
 		colorChooser = new JColorChooser(currentColor);
@@ -130,7 +113,7 @@ public class WhiteBoardView {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1000, 800);
-		frame.setTitle("white board");
+		frame.setTitle(title);
 		frame.setResizable(true);
 
 		// Add Action Listener

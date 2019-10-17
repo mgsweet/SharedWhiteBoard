@@ -69,7 +69,9 @@ public class ClientWhiteBoard {
 	
 	private void run() {
 		try {
-			WhiteBoardView window = new WhiteBoardView(this.paintManager);
+			String title = ""
+					+ "Client-" + clientIp.getHostAddress() + ":" + clientRegistryPort;
+			WhiteBoardView window = new WhiteBoardView(this.paintManager, title);
 			// Get current paint history from server. This should be done after the view creates.
 			paintManager.pullRemoteHistory();
 			window.getFrame().setVisible(true);

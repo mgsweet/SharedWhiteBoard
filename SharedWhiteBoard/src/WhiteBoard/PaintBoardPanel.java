@@ -31,7 +31,7 @@ public class PaintBoardPanel extends JPanel{
 		this.setBackground(Color.WHITE);
 	}
 	
-	public synchronized void clearShapes() {
+	public void clearShapes() {
 		bufferShape = null;
 		paintManager.clearAll();
 	}
@@ -44,7 +44,7 @@ public class PaintBoardPanel extends JPanel{
 	 * The function repaint can invoke this paint function.
 	 */
 	@Override
-	public synchronized void paint(Graphics graphics) {
+	public void paint(Graphics graphics) {
 		super.paint(graphics);
 		Graphics2D g = (Graphics2D) graphics;
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
