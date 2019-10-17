@@ -20,26 +20,21 @@ import Shape.MyShape;
 public class PaintBoardPanel extends JPanel{
 	private int x = 200;
 	private int y = 200;
-	// Use to record all the shapes.
-	private Vector<MyShape> paintHistory;
+	
+	// 
+	private PaintManager paintManager;
 	// Use to store the temporary shape.
 	private MyShape bufferShape;
-	
-	public PaintBoardPanel() {
+	public PaintBoardPanel(PaintManager paintManager) {
 		super();
+		this.paintManager = paintManager;
 		bufferShape = null;
-		paintHistory = new Vector<MyShape>();
 		this.setBackground(Color.WHITE);
-	}
-	
-	public void addShape(MyShape shape) {
-		paintHistory.add(shape);
-//		System.out.println(paintHistory.size());
 	}
 	
 	public synchronized void clearShapes() {
 		bufferShape = null;
-		paintHistory.clear();
+		paintManager.clear();
 		removeAll();
 		revalidate();
 		repaint();
@@ -60,7 +55,7 @@ public class PaintBoardPanel extends JPanel{
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
         		RenderingHints.VALUE_ANTIALIAS_ON);
-        for (MyShape myShape: paintHistory) {
+        for (MyShape myShape: paintManager.getPaintHistory()) {
 			myShape.draw(g);
 		}
         

@@ -38,10 +38,17 @@ public class WhiteBoardView {
 	// Color
 	private Color currentColor;
 	private Color backgroundColor = null;
-
-	private static Color[] defaultColors = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
+	
+	// Paint history recorder
+	private PaintManager paintManager;
+ 
+	// Default color display in the left bottom.
+	private static Color[] DEFAULTCOLORS = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
 			Color.ORANGE, Color.YELLOW, Color.PINK, Color.DARK_GRAY, Color.LIGHT_GRAY, Color.CYAN, Color.MAGENTA,
 			new Color(250, 128, 114), new Color(210, 105, 30), new Color(160, 32, 240) };
+	
+	// Use to create tool button.
+	private static String[] TOOLNAME = {"pen", "line", "circle", "eraser", "rect", "oval", "roundrect"};
 
 	/**
 	 * Get frame window.
@@ -70,30 +77,49 @@ public class WhiteBoardView {
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
+	
+	/**
+	 * Get paint history manager
+	 */
+	public PaintManager getPaintManager() {
+		return paintManager;
+	}
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					WhiteBoardView window = new WhiteBoardView();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					WhiteBoardView window = new WhiteBoardView();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
-	 * Create the application.
+	 * Create the view without Paint Manager.
 	 */
 	public WhiteBoardView() {
 		currentColor = Color.BLACK;
 		backgroundColor = Color.WHITE;
 		colorChooser = new JColorChooser(currentColor);
+		this.paintManager = new PaintManager();
+		initialize();
+	}
+	
+	/**
+	 * Create the view with Paint Manager.
+	 */
+	public WhiteBoardView(PaintManager paintManager) {
+		currentColor = Color.BLACK;
+		backgroundColor = Color.WHITE;
+		colorChooser = new JColorChooser(currentColor);
+		this.paintManager = paintManager;
 		initialize();
 	}
 
@@ -116,7 +142,7 @@ public class WhiteBoardView {
 		frame.getContentPane().add(drawToolPanel, BorderLayout.WEST);
 
 		// Add Painting broad.
-		paintBoardPanel = new PaintBoardPanel();
+		paintBoardPanel = new PaintBoardPanel(paintManager);
 		paintBoardPanel.setBackground(Color.white);
 		paintBoardPanel.addMouseListener(drawListener);
 		paintBoardPanel.addMouseMotionListener(drawListener);
@@ -159,41 +185,15 @@ public class WhiteBoardView {
 		drawToolPanel.add(toolPanel, BorderLayout.NORTH);
 
 		// Add tool bar button
-		JButton btnPen = new JButton("pen");
-		btnPen.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		toolPanel.add(btnPen);
-		btnPen.addActionListener(drawListener);
+		JButton btnTools = null;
+		for (int i = 0; i < TOOLNAME.length; i++) {
+			btnTools = new JButton(TOOLNAME[i]);
+			btnTools.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			toolPanel.add(btnTools);
+			btnTools.addActionListener(drawListener);
+		}
 
-		JButton btnLine = new JButton("line");
-		btnLine.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnLine.addActionListener(drawListener);
-		toolPanel.add(btnLine);
-
-		JButton btnCircle = new JButton("circle");
-		btnCircle.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnCircle.addActionListener(drawListener);
-		toolPanel.add(btnCircle);
-
-		JButton btnEraser = new JButton("eraser");
-		btnEraser.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnEraser.addActionListener(drawListener);
-		toolPanel.add(btnEraser);
-
-		JButton btnRect = new JButton("rect");
-		btnRect.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnRect.addActionListener(drawListener);
-		toolPanel.add(btnRect);
-
-		JButton btnOval = new JButton("oval");
-		btnOval.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnOval.addActionListener(drawListener);
-		toolPanel.add(btnOval);
-
-		JButton btnRoundrect = new JButton("roundrect");
-		btnRoundrect.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnRoundrect.addActionListener(drawListener);
-		toolPanel.add(btnRoundrect);
-
+		// Create color panel
 		JPanel colorPanel = new JPanel();
 		colorPanel.setBorder(new TitledBorder(null, "Color Bar", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		drawToolPanel.add(colorPanel, BorderLayout.CENTER);
@@ -231,23 +231,23 @@ public class WhiteBoardView {
 		colorPanel.add(defaultColorPanel, BorderLayout.CENTER);
 		defaultColorPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		// Add 16 default color
-		JButton tempButton = null;
-		for (int i = 0; i < 16; i++) {
-			tempButton = new JButton();
-			tempButton.setBorderPainted(false);
-			tempButton.setBackground(defaultColors[i]);
-			tempButton.setOpaque(true);
-			tempButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			tempButton.setPreferredSize(new Dimension(40, 40));
-			tempButton.addActionListener(new ActionListener() {
+		// Add default colors
+		JButton btnDefaultColors = null;
+		for (int i = 0; i < DEFAULTCOLORS.length; i++) {
+			btnDefaultColors = new JButton();
+			btnDefaultColors.setBorderPainted(false);
+			btnDefaultColors.setBackground(DEFAULTCOLORS[i]);
+			btnDefaultColors.setOpaque(true);
+			btnDefaultColors.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			btnDefaultColors.setPreferredSize(new Dimension(40, 40));
+			btnDefaultColors.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					currentColor = ((JButton) e.getSource()).getBackground();
 					btnCurrentColor.setBackground(currentColor);
 					System.out.println("Operation: Change color.");
 				}
 			});
-			defaultColorPanel.add(tempButton);
+			defaultColorPanel.add(btnDefaultColors);
 		}
 
 		// Add menu bar at the last, need to wait for creation of paintBoardPanel.
@@ -257,6 +257,6 @@ public class WhiteBoardView {
 		menuBar.add(new EditMenu(this));
 
 		frame.setVisible(true);
-
+		
 	}
 }

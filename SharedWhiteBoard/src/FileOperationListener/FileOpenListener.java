@@ -49,7 +49,7 @@ public class FileOpenListener implements ActionListener {
 			File imageFile = chooser.getSelectedFile();
 			wbv.getPaintBoardPanel().clearShapes();
 			MyShape myShape = new MyImage(new MyPoint(0, 0), imageFile);
-			wbv.getPaintBoardPanel().addShape(myShape);
+			wbv.getPaintManager().paint(myShape);
 			wbv.getPaintBoardPanel().revalidate();
 			wbv.getPaintBoardPanel().repaint();
 		}
