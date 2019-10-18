@@ -1,15 +1,14 @@
-package WhiteBoard;
+package Menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-
-import FileOperationListener.FileOpenListener;
-import FileOperationListener.FileSaveListener;
+import Menus.FileOpenListener;
+import Menus.FileSaveListener;
+import WhiteBoard.WhiteBoardView;
 
 /**
  * File menu in the menu bar.
@@ -48,7 +47,6 @@ public class FileMenu extends JMenu {
 		// TODO
 		exitMenuItem.setEnabled(false);
 		this.add(exitMenuItem);
-		
 
 		JMenuItem closeMenuItem = new JMenuItem("Close");
 		closeMenuItem.addActionListener(new ActionListener() {

@@ -1,4 +1,4 @@
-package FileOperationListener;
+package Menus;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -41,15 +41,23 @@ public class FileOpenListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Image image=null;
 		System.out.println("Operation: Open File.");
 		chooser.setCurrentDirectory(new File("."));
 		int returnVal = chooser.showOpenDialog(wbv.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File imageFile = chooser.getSelectedFile();
-			wbv.getPaintBoardPanel().clearShapes();
-			MyShape myShape = new MyImage(new MyPoint(0, 0), imageFile);
-			wbv.getPaintManager().addShape(myShape);
+			BufferedImage image = null;
+			try {
+				image = ImageIO.read(imageFile);
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			}
+			
+			if (image != null) {
+				wbv.getPaintBoardPanel().clearShapes();
+				MyShape myShape = new MyImage(new MyPoint(0, 0), image);
+				wbv.getPaintManager().addShape(myShape);
+			}
 		}
 	}
 }

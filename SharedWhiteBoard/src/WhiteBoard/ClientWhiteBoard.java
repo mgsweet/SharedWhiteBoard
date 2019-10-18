@@ -6,8 +6,8 @@ import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import Remote.IRemotePaint;
-import Remote.RemotePaint;
+import PaintRMI.IRemotePaint;
+import PaintRMI.RemotePaint;
 
 public class ClientWhiteBoard {
 	private PaintManager paintManager;

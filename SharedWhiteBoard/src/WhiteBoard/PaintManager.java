@@ -4,7 +4,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Vector;
 
-import Remote.IRemotePaint;
+import PaintRMI.IRemotePaint;
 import Shape.MyShape;
 
 /**

@@ -1,4 +1,4 @@
-package FileOperationListener;
+package Menus;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -48,9 +48,10 @@ public class FileSaveListener implements ActionListener {
 
 		if (action == "saveAs") {
 			JFileChooser jf = new JFileChooser(".");
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG/JPEG/PNG files", "jpg", "jpeg",
+			FileNameExtensionFilter filter1 = new FileNameExtensionFilter("JPG/JPEG/PNG files", "jpg", "jpeg",
 					"png");
-			jf.setFileFilter(filter);
+			jf.addChoosableFileFilter(filter1);
+			
 			int value = jf.showSaveDialog(null);
 			if (value == JFileChooser.APPROVE_OPTION) {
 				File imagefile = jf.getSelectedFile(); // get the image file

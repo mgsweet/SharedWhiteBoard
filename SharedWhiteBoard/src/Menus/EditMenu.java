@@ -1,9 +1,9 @@
-package WhiteBoard;
+package Menus;
 
 import java.awt.event.KeyEvent;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import WhiteBoard.WhiteBoardView;
 
 /**
  * Edit menu in the menu bar.

@@ -19,6 +19,10 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import Menus.EditMenu;
+import Menus.FileMenu;
+
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -27,8 +31,8 @@ import java.awt.event.InputMethodEvent;
 
 /**
  * 
- * @author Aaron-Qiu
- *
+ * @author Aaron-Qiu E-mail: mgsweet@126.com
+ * @version Createdc: Oct 18, 2019 11:11:30 AM
  */
 
 public class WhiteBoardView {

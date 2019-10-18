@@ -19,14 +19,9 @@ public class MyImage implements MyShape {
 	private MyPoint stratP;
 	private Image image = null;
 
-	public MyImage(MyPoint startP, File imageFile) {
+	public MyImage(MyPoint startP, Image image) {
     	this.stratP = startP;
-    	try {
-			this.image = ImageIO.read(imageFile);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} 
+    	this.image = image;
     }
 
 	public void draw(Graphics2D g) {

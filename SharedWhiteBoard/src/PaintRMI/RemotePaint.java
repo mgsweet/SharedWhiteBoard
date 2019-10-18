@@ -1,4 +1,4 @@
-package Remote;
+package PaintRMI;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -9,9 +9,9 @@ import WhiteBoard.PaintBoardPanel;
 import WhiteBoard.PaintManager;
 
 /**
- * 
- * @author Aaron-Qiu
- *
+ * Implement of IRemotePaint.
+ * @author Aaron-Qiu E-mail: mgsweet@126.com
+ * @version Created: Oct 18, 2019 11:20:36 AM
  */
 
 public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
