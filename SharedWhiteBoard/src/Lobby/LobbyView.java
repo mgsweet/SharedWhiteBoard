@@ -10,43 +10,19 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
-
-import java.awt.FlowLayout;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.CardLayout;
 import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.Color;
 import javax.swing.ImageIcon;
-import javax.swing.UIManager;
 
 import Client.Client;
-import StateCode.StateCode;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.Socket;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 /**
  * 
@@ -121,7 +97,6 @@ public class LobbyView {
 		btnCreateRoom = new JButton();
 		btnCreateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Create Room");
 				RoomCreateDialog.showCreateRoomDialog(frame, frame, client);
 			}
 		});

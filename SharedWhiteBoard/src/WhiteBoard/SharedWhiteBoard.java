@@ -21,9 +21,9 @@ public abstract class SharedWhiteBoard {
 	protected WhiteBoardView ui;
 
 	// Room ID is unique in central server.
-	private String roomId;
+	private int roomId;
 	
-	public void setRoomID(String roomId) {
+	public void setRoomID(int roomId) {
 		this.roomId = roomId;
 	}
 	
@@ -57,7 +57,7 @@ public abstract class SharedWhiteBoard {
 			LocateRegistry.createRegistry(registryPort);
 			Registry serverRegistry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
 			IRemotePaint remotePaint = new RemotePaint(paintManager);
-			serverRegistry.bind("server", remotePaint);
+			serverRegistry.bind("paintRMI", remotePaint);
 			
 			printInitialStates();
 		} catch (Exception e) {

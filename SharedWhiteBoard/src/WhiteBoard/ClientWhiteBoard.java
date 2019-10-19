@@ -11,12 +11,13 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 		super(PaintManager.CLIENT_MODE);
 		initRMI();
 		connect2Server(serverIp, serverPort);
+		initView();
 	}
 	
 	private void connect2Server(String serverIp, int serverPort) {
 		try {
 			Registry registry = LocateRegistry.getRegistry(serverIp, serverPort);
-			IRemotePaint serverRemotePaint = (IRemotePaint) registry.lookup("server");
+			IRemotePaint serverRemotePaint = (IRemotePaint) registry.lookup("paintRMI");
 			paintManager.setServerRMI(serverRemotePaint);
 			serverRemotePaint.addClientRMI(ip.getHostAddress(), registryPort);
 		} catch (Exception e) {

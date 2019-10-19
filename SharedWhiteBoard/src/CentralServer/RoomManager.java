@@ -61,7 +61,7 @@ public class RoomManager {
 	
 	public synchronized boolean checkRoomPassword(int roomId, String password) {
 		if (rooms.containsKey(roomId)) {
-			return password == rooms.get(roomId).getPassword();
+			return password.equals(rooms.get(roomId).getPassword());
 		} else {
 			return false;
 		}

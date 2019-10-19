@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import Lobby.LobbyView;
 import SignIn.SignInView;
 import StateCode.StateCode;
+import WhiteBoard.ClientWhiteBoard;
 import WhiteBoard.ServerWhiteBoard;
 import WhiteBoard.SharedWhiteBoard;
 import WhiteBoard.WhiteBoardView;
@@ -113,7 +114,7 @@ public class Client {
 	}
 	
 	/**
-	 * 
+	 * Create a room and register in central server.
 	 * @param roomName
 	 * @param password
 	 */
@@ -127,17 +128,35 @@ public class Client {
 		reqJSON.put("hostIp", sharedWhiteBoard.getIpAddress());
 		reqJSON.put("hostPort", sharedWhiteBoard.getRegistryPort()); 
 		JSONObject resJSON = execute(reqJSON);
-		int state = (int) resJSON.get("state");
+		int state = resJSON.getInteger("state");
 		if (state == StateCode.SUCCESS) {
+			sharedWhiteBoard.setRoomID(resJSON.getInteger("roomId"));
 			switch2WhiteBoard();
-			sharedWhiteBoard.setRoomID((String) resJSON.get("roomID"));
 		} else {
 			System.out.println("Fail to create room.");
 		}
 	}
+	
+	public void joinRoom(int roomId, String password) {
+		JSONObject reqJSON = new JSONObject();
+		reqJSON.put("command", StateCode.GET_ROOM_INFO);
+		reqJSON.put("roomId", roomId);
+		reqJSON.put("password", password);
+		JSONObject resJSON = execute(reqJSON);
+		int state = resJSON.getInteger("state");
+		if (state == StateCode.SUCCESS) {
+			String serverAddress = resJSON.getString("ip");
+			int serverPort = resJSON.getInteger("port");
+			sharedWhiteBoard = new ClientWhiteBoard(serverAddress, serverPort);
+			switch2WhiteBoard();
+		} else {
+			// TODO
+			System.out.println("Password Wrong!");
+		}
+	}
 
 	/**
-	 * Use to pull remote roomlist from the central server.
+	 * Use to pull remote room list from the central server.
 	 */
 	public void pullRemoteRoomList() {
 		// sent request to central server to gain roomlists

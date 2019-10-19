@@ -69,10 +69,10 @@ public class PaintManager {
 		if (mode == SERVER_MODE) {
 			try {
 				Registry clientRegistry = LocateRegistry.getRegistry(ip, port);
-				IRemotePaint remotePaint = (IRemotePaint) clientRegistry.lookup("client");
+				IRemotePaint remotePaint = (IRemotePaint) clientRegistry.lookup("paintRMI");
 				clientRemotePaints.add(remotePaint);
 			} catch (Exception e) {
-				System.out.println("Can not get the client.");
+				System.out.println("Can not get the client registry.");
 				e.printStackTrace();
 			}
 		}

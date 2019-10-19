@@ -21,6 +21,12 @@ import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 
+/**
+ * Lobby
+ * @author Aaron-Qiu E-mail: mgsweet@126.com
+ * @version Created: Oct 19, 2019 4:55:43 PM
+ */
+
 public class RoomCreateDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
@@ -30,8 +36,7 @@ public class RoomCreateDialog extends JDialog {
 	private String password = "";
 	private JLabel lblError = null;
 	private Client client;
-	
-	
+
 	public static void showCreateRoomDialog(Frame owner, Component parentComponent, Client client) {
 		final RoomCreateDialog roomCreateDialog = new RoomCreateDialog(client);
 		roomCreateDialog.setLocationRelativeTo(parentComponent);
@@ -39,19 +44,19 @@ public class RoomCreateDialog extends JDialog {
 		roomCreateDialog.setModal(true);
 		roomCreateDialog.setVisible(true);
 	}
-	
+
 	private Boolean roomInfoCheck() {
 		String roomnamePatten = "^\\w{1,8}$";
-		String passwordPatten = "^\\w{,8}$";
+		String passwordPatten = "^\\w{0,8}$";
 		String err = "";
-		
+
 		if (!Pattern.matches(roomnamePatten, roomName)) {
 			err = "Room Name Format: \\w{1,8}";
 			lblError.setText(err);
 			lblError.setVisible(true);
 			return false;
 		}
-		if(!Pattern.matches(password, passwordPatten)) {
+		if (!Pattern.matches(passwordPatten, password)) {
 			err = "Password Format: \\w{,8}";
 			lblError.setText(err);
 			lblError.setVisible(true);
@@ -71,20 +76,20 @@ public class RoomCreateDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		
+
 		JLabel lblRoomName = new JLabel("Room Name:");
 		lblRoomName.setBounds(99, 79, 106, 27);
 		lblRoomName.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
-		
+
 		JLabel lblPassword = new JLabel("Password:");
 		lblPassword.setBounds(99, 133, 106, 27);
 		lblPassword.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
-		
+
 		roomNameTextField = new JTextField();
 		roomNameTextField.setBounds(211, 79, 150, 27);
 		roomNameTextField.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
 		roomNameTextField.setColumns(10);
-		
+
 		PasswordTextField = new JTextField();
 		PasswordTextField.setBounds(211, 133, 150, 27);
 		PasswordTextField.setFont(new Font("Lucida Grande", Font.PLAIN, 15));
@@ -94,14 +99,12 @@ public class RoomCreateDialog extends JDialog {
 		contentPanel.add(roomNameTextField);
 		contentPanel.add(lblPassword);
 		contentPanel.add(PasswordTextField);
-		
+
 		lblError = new JLabel("Error");
 		lblError.setForeground(Color.RED);
 		lblError.setVisible(false);
 		lblError.setBounds(99, 183, 262, 16);
-		
-		RoomCreateDialog that = this;
-		
+
 		contentPanel.add(lblError);
 		JPanel buttonPane = new JPanel();
 		buttonPane.setPreferredSize(new Dimension(0, 50));
@@ -115,6 +118,7 @@ public class RoomCreateDialog extends JDialog {
 					password = PasswordTextField.getText();
 					if (roomInfoCheck()) {
 						client.createRoom(roomName, password);
+						dispose();
 					}
 				}
 			});
@@ -126,7 +130,7 @@ public class RoomCreateDialog extends JDialog {
 			JButton cancelButton = new JButton("Cancel");
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					that.dispose();
+					dispose();
 				}
 			});
 			cancelButton.setActionCommand("Cancel");
