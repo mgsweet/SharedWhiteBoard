@@ -1,4 +1,4 @@
-package Client;
+package Lobby;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

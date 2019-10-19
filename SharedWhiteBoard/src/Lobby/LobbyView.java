@@ -1,4 +1,4 @@
-package Client;
+package Lobby;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -40,6 +40,7 @@ import javax.swing.UIManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import Client.Client;
 import StateCode.StateCode;
 
 import java.awt.event.MouseAdapter;
@@ -68,7 +69,7 @@ public class LobbyView {
 	private JPanel blankPanel = null;
 	private JScrollPane scrollPane = null;
 	private Vector<JButton> roomsBtnVec;
-	private Client controler = null;
+	private Client client = null;
 	
 	private String addImagePath = "images/add.png";
 	private String joinImagePath = "images/join.png";
@@ -77,10 +78,18 @@ public class LobbyView {
 	 * Create the application.
 	 */
 	public LobbyView(Client contorler) {
-		this.controler = contorler;
+		this.client = contorler;
 		roomsBtnVec = new Vector<JButton>();
 		initialize();
 		refreshRoomsList();
+	}
+	
+	/**
+	 * Get current frame.
+	 * @return
+	 */
+	public JFrame getFrame() {
+		return this.frame;
 	}
 	
 	/**
@@ -88,7 +97,7 @@ public class LobbyView {
 	 */
 	public void refreshRoomsList() {
 		// sent request to central server to gain roomlist.
-		controler.pullRemoteRoomList();
+		client.pullRemoteRoomList();
 		
 		// repaint the roomlist panel.
 		roomsBtnVec.clear();
@@ -96,7 +105,7 @@ public class LobbyView {
 		
 		int i = 0;
 		JPanel currentPanel = firstPanel;		
-		for (Map.Entry<Integer, String> entry: controler.roomsList.entrySet()) {
+		for (Map.Entry<Integer, String> entry: client.roomList.entrySet()) {
 			JButton tempBtn = new JButton();
 			String[] roomInfo = entry.getValue().split(" ");
 			String roomName = roomInfo[0];

@@ -26,7 +26,7 @@ public class RoomManager {
 		return nextID - 1;
 	}
 	
-	public synchronized Map<Integer, String> getRoomsList() {
+	public synchronized Map<Integer, String> getRoomList() {
 		Map<Integer, String> roomsList = new HashMap<Integer, String>();
 		roomsList.put(0, "RoomName0 HostName0");
 		roomsList.put(1, "RoomName1 HostName1");

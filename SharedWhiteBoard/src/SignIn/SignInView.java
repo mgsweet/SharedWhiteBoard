@@ -1,29 +1,13 @@
-/**
- * @author Aaron-Qiu, mgsweet@126.com, student_id:1101584
- */
-package Client;
+package SignIn;
 
 import java.util.regex.*;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import java.awt.Font;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.Position;
-import javax.swing.text.Segment;
 
-import CentralServer.CentralServer;
 import StateCode.StateCode;
-import TextFieldFilter.NumberTextField;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -33,83 +17,40 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 
-public class SignInView {
+import Client.Client;
 
-	protected JFrame frame;
-	private JTextField userIdTextField;
-	private JTextField addressTextField;
-	private JTextField portTextField;
-	private JLabel lblIdWarn = null;
-	private JLabel lblAddressWarn = null;
-	private JLabel lblPortWarn = null;
-	private Client controler = null;
+/**
+ * SignIn View
+ * @author Aaron-Qiu E-mail: mgsweet@126.com
+ * @version Created: Oct 19, 2019 11:22:08 AM
+ */
+
+public class SignInView {
+	private JFrame frame;
+	protected JTextField userIdTextField;
+	protected JTextField addressTextField;
+	protected JTextField portTextField;
+	protected JLabel lblIdWarn = null;
+	protected JLabel lblAddressWarn = null;
+	protected JLabel lblPortWarn = null;
 	
+	protected Client client = null;
+	
+	private SignInControler controler = null;
 	private JLabel tipsLabel;
-	
-	private String userId = "";
-	private String address = "";
-	private int port = -1;
 	
 	/**
 	 * Create the application.
 	 */
 	public SignInView(Client client) {
-		this.controler = client;
+		this.client = client;
 		initialize();
+		this.controler = new SignInControler(this);
 	}
 	
-//	public void setTextOfTips(String tips) {
-//		tipsLabel.setText(tips);
-//	}
 	
-	private Boolean validateFormat() {
-		Boolean checkId = false;
-		Boolean checkAddress = false;
-		Boolean checkPort = false;
-		String idPatten = "^\\w{1,8}$";
-		String portPatten = "^\\d+$";
-		String addressPatten = "^.{1,20}$";
-		// check userId
-		userId = userIdTextField.getText();
-		if (!Pattern.matches(idPatten, userId)) {
-			lblIdWarn.setVisible(true);
-			checkId = false;
-		} else {
-			lblIdWarn.setVisible(false);
-			checkId = true;
-		}
-		
-		// check address
-		address = addressTextField.getText();
-		if (!Pattern.matches(addressPatten, address)) {
-			lblAddressWarn.setVisible(true);
-			checkAddress = false;
-		} else {
-			lblAddressWarn.setVisible(false);
-			checkAddress = true;
-		}
-		
-		//check port
-		String portStr = portTextField.getText();
-		if (!Pattern.matches(idPatten, portStr)) {
-			lblPortWarn.setVisible(true);
-			checkPort = false;
-		} else {
-			try {
-				port = Integer.parseInt(portStr);
-				if (port <= 1024 || port >= 49151) {
-					lblPortWarn.setVisible(true);
-					checkPort = false;
-				} else {
-					lblPortWarn.setVisible(false);
-					checkPort = true;
-				}
-			} catch (Exception e) {
-				lblPortWarn.setVisible(true);
-				checkPort = false;
-			}
-		}
-		return checkId && checkPort && checkAddress;
+	public JFrame getFrame() {
+		return frame;
 	}
 
 	/**
@@ -139,19 +80,19 @@ public class SignInView {
 		// Join logic here.
 		btnJoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (validateFormat()) {
+				if (controler.validateFormat()) {
 					tipsLabel.setText("Loading...");
 					tipsLabel.setVisible(true);
 					// I discoever that the function above is asynchronous. Use the invokeLater to keep it work synchronous.
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								controler.userId = userId;
-								controler.serverIp = address;
-								controler.port = port;
-								int state = controler.register();
+								client.setUserId(controler.userId);
+								client.setServerIp(controler.address);
+								client.setPort(controler.port);
+								int state = client.register();
 								if (state == StateCode.SUCCESS) {
-									controler.switchToLobby();
+									client.switchToLobby();
 								} else if (state == StateCode.FAIL){
 									tipsLabel.setText("User name exist! Change one!");
 									tipsLabel.setVisible(true);
@@ -185,7 +126,7 @@ public class SignInView {
 		
 		addressTextField = new JTextField();
 		addressTextField.setBounds(185, 65, 130, 26);
-		addressTextField.setText(controler.getUserIp());
+		addressTextField.setText(client.getUserIp());
 		addressTextField.setToolTipText("Please input a ip address.");
 		addressTextField.setColumns(10);
 		

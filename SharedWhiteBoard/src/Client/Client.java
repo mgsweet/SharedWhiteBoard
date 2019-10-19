@@ -12,7 +12,8 @@ import java.util.concurrent.TimeoutException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import CentralServer.CentralServer;
+import Lobby.LobbyView;
+import SignIn.SignInView;
 import StateCode.StateCode;
 
 /**
@@ -22,15 +23,16 @@ import StateCode.StateCode;
  */
 
 public class Client {
-	protected SignInView signInView = null;
-	protected LobbyView lobbyView = null;
+	private SignInView signInView = null;
+	private LobbyView lobbyView = null;
 	// User information
 	private InetAddress userIp;
-	protected String userId = "";
+	private String userId = "";
 	// Central server information
-	protected String serverIp = "";
-	protected int port = -1;
-	protected Map<Integer, String> roomsList = null;
+	private String serverIp = "";
+	private int port = -1;
+	// RoomList
+	public Map<Integer, String> roomList = null;
 
 	public static void main(String[] args) {
 		Client client = new Client();
@@ -49,7 +51,7 @@ public class Client {
 	 * Run the programme.
 	 */
 	public void run() {
-		signInView.frame.setVisible(true);
+		signInView.getFrame().setVisible(true);
 		System.out.println("Client running");
 	}
 
@@ -61,23 +63,45 @@ public class Client {
 	public String getUserIp() {
 		return userIp.getHostAddress();
 	}
-
-	private void init() throws UnknownHostException {
-		userIp = InetAddress.getLocalHost();
-		signInView = new SignInView(this);
+	
+	/**
+	 * Set userId
+	 * @param userId
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	
+	/**
+	 * Set server IP
+	 * @param serverIp
+	 */
+	public void setServerIp(String serverIp) {
+		this.serverIp = serverIp;
+	}
+	
+	/**
+	 * Set port.
+	 * @param port
+	 */
+	public void setPort(int port) {
+		this.port = port;
 	}
 
-	protected void switchToLobby() {
+	/**
+	 * When user completes sign in, use this method to switch to Lobby.
+	 */
+	public void switchToLobby() {
 		System.out.println("User: " + userId + " enter Lobby.");
 		lobbyView = new LobbyView(this);
-		signInView.frame.setVisible(false);
-		lobbyView.frame.setVisible(true);
+		signInView.getFrame().setVisible(false);
+		lobbyView.getFrame().setVisible(true);
 	}
 
 	/**
 	 * Use to pull remote roomlist from the central server.
 	 */
-	protected void pullRemoteRoomList() {
+	public void pullRemoteRoomList() {
 		// sent request to central server to gain roomlists
 		try {
 			System.out.println("Request for rooms list...");
@@ -90,7 +114,7 @@ public class Client {
 			writer.flush();
 			String res = reader.readUTF();
 			JSONObject resJson = parseResString(res);
-			roomsList = (Map<Integer, String>) resJson.get("roomsList");
+			roomList = (Map<Integer, String>) resJson.get("roomList");
 			System.out.println("Get rooms list!");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,7 +125,7 @@ public class Client {
 	 * Use to register in the central server, so no one can use a same user name.
 	 * @return isSuccess whether the user can register in the central server or not.
 	 */
-	protected int register() {
+	public int register() {
 		int isSuccess = -1;
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.ADD_USER);
@@ -153,5 +177,10 @@ public class Client {
 			e.printStackTrace();
 		}
 		return resJSON;
+	}
+	
+	private void init() throws UnknownHostException {
+		userIp = InetAddress.getLocalHost();
+		signInView = new SignInView(this);
 	}
 }

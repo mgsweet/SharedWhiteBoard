@@ -30,7 +30,7 @@ public class RequestHandler extends Thread {
 			JSONObject reqJSON = parseReqString(reader.readUTF());
 			int command = Integer.parseInt(reqJSON.get("command").toString());
 			JSONObject resJson = new JSONObject();
-			// excute command
+			// Execute command
 			String password = "";
 			int roomId = -1;
 			switch (command) {
@@ -51,8 +51,8 @@ public class RequestHandler extends Thread {
 				resJson.put("operationState", String.valueOf(operationState));
 				break;
 			case StateCode.GET_ROOM_LIST:
-				Map<Integer, String> roomsList = controler.getRoomManager().getRoomsList();
-				resJson.put("roomsList", roomsList);
+				Map<Integer, String> roomList = controler.getRoomManager().getRoomList();
+				resJson.put("roomList", roomList);
 				System.out.println("A client request for roomlist info.");
 				break;
 			case StateCode.GET_ROOM_INFO:
