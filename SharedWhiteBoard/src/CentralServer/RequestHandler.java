@@ -1,18 +1,20 @@
-/**
- * @author Aaron-Qiu, mgsweet@126.com, student_id:1101584
- */
 package CentralServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Map;
-import java.util.Vector;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import StateCode.StateCode;
+
+/**
+ * Thread per request structure.
+ * @author Aaron-Qiu E-mail: mgsweet@126.com
+ * @version Created: Oct 19, 2019 11:59:52 AM
+ */
 
 public class RequestHandler extends Thread {
 	private Socket clientSocket;

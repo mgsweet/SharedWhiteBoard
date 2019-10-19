@@ -60,28 +60,30 @@ import java.awt.event.FocusEvent;
 public class LobbyView {
 
 	protected JFrame frame;
-	private JTextField roomNameTextField;
-	private JTextField hostNameTextField;
+	protected JTextField roomNameTextField;
+	protected JTextField hostNameTextField;
 	
-	private JPanel roomsListPanel = null;
-	private JButton btnCreateRoom = null;
-	private JPanel firstPanel = null;
-	private JPanel blankPanel = null;
-	private JScrollPane scrollPane = null;
-	private Vector<JButton> roomsBtnVec;
-	private Client client = null;
+	protected JPanel roomsListPanel;
+	protected JButton btnCreateRoom;
+	protected JPanel firstPanel;
+	protected JPanel blankPanel;
+	protected JScrollPane scrollPane;
+	protected Vector<JButton> roomsBtnVec;
+	protected Client client;
+	protected LobbyControler controler;
 	
-	private String addImagePath = "images/add.png";
-	private String joinImagePath = "images/join.png";
+	protected String addImagePath = "images/add.png";
+	protected String joinImagePath = "images/join.png";
 
 	/**
 	 * Create the application.
 	 */
-	public LobbyView(Client contorler) {
-		this.client = contorler;
+	public LobbyView(Client client) {
+		this.client = client;
 		roomsBtnVec = new Vector<JButton>();
 		initialize();
-		refreshRoomsList();
+		controler = new LobbyControler(client, this);
+		controler.refreshRoomsList();
 	}
 	
 	/**
@@ -90,90 +92,6 @@ public class LobbyView {
 	 */
 	public JFrame getFrame() {
 		return this.frame;
-	}
-	
-	/**
-	 * Get rooms list from central server.
-	 */
-	public void refreshRoomsList() {
-		// sent request to central server to gain roomlist.
-		client.pullRemoteRoomList();
-		
-		// repaint the roomlist panel.
-		roomsBtnVec.clear();
-		reFreshRoomsListPanel();
-		
-		int i = 0;
-		JPanel currentPanel = firstPanel;		
-		for (Map.Entry<Integer, String> entry: client.roomList.entrySet()) {
-			JButton tempBtn = new JButton();
-			String[] roomInfo = entry.getValue().split(" ");
-			String roomName = roomInfo[0];
-			String hostName = roomInfo[1];
-			tempBtn.setText(roomName + " - " + hostName);
-			ImageIcon joinIcon = new ImageIcon(joinImagePath);
-			joinIcon.setImage(joinIcon.getImage().getScaledInstance(50, 50,
-					Image.SCALE_DEFAULT));
-			tempBtn.setIcon(joinIcon);
-			tempBtn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showInputDialog(frame, "Please Enter Password:", roomName, JOptionPane.OK_CANCEL_OPTION);
-					//TODO
-				}
-			});
-			roomsBtnVec.add(tempBtn);
-			
-			if (i % 2 != 0) {
-				roomsListPanel.setPreferredSize(new Dimension(0, (i/2 + 2) * 170));
-				JPanel temp = new JPanel();
-				temp.setBounds(5, (i/2 + 1) * 170, 570, 160);
-				temp.setLayout(new GridLayout(1, 2, 5, 0));
-				currentPanel = temp;
-				roomsListPanel.add(temp);
-			} 
-			
-			currentPanel.add(tempBtn);
-			i++;
-		}
-		if (i % 2 == 0) {
-		    currentPanel.add(blankPanel);
-		}
-	}
-	
-	private void reFreshRoomsListPanel() {
-		roomsListPanel.removeAll();
-		roomsListPanel.setPreferredSize(new Dimension(0, 170));
-		firstPanel.removeAll();
-		roomsListPanel.revalidate();
-		roomsListPanel.repaint();
-		roomsListPanel.add(firstPanel);
-		firstPanel.add(btnCreateRoom);
-	}
-	
-	private void filtRoomsList() {
-		reFreshRoomsListPanel();
-		
-		JPanel currentPanel = firstPanel;
-		int i = 0;
-		for (JButton btn : roomsBtnVec) {
-			if (i % 2 != 0) {
-				roomsListPanel.setPreferredSize(new Dimension(0, (i/2 + 2) * 170));
-				JPanel temp = new JPanel();
-				temp.setBounds(5, (i/2 + 1) * 170, 570, 160);
-				temp.setLayout(new GridLayout(1, 2, 5, 0));
-				currentPanel = temp;
-				roomsListPanel.add(temp);
-			} 
-			String[] roomInfo = btn.getText().split(" - ");
-			if ((roomNameTextField.getText().equals(roomInfo[0]) || roomNameTextField.getText().equals("")) 
-					&& (hostNameTextField.getText().equals(roomInfo[1]) || hostNameTextField.getText().equals(""))) {
-				currentPanel.add(btn);
-				i++;
-			}
-		}
-		if (i % 2 == 0) {
-		    currentPanel.add(blankPanel);
-		}
 	}
 	
 	/**
@@ -226,7 +144,7 @@ public class LobbyView {
 		JButton btnRefresh = new JButton("REFRESH");
 		btnRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				refreshRoomsList();
+				controler.refreshRoomsList();
 			}
 		});
 		controlBarPanel.add(btnRefresh, BorderLayout.EAST);
@@ -239,7 +157,7 @@ public class LobbyView {
 		JButton btnFilt = new JButton("FILT");
 		btnFilt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				filtRoomsList();
+				controler.filtRoomsList();
 			}
 		});
 		

@@ -1,7 +1,5 @@
 package SignIn;
 
-import java.util.regex.*;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
