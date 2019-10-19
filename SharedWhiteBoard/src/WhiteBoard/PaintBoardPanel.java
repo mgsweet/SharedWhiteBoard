@@ -47,6 +47,7 @@ public class PaintBoardPanel extends JPanel {
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
+		
 		// When you need to using the Windowbuilder to design the whiteBoardView,
 		// annotate all the code below.
 		Graphics2D g = (Graphics2D) graphics;
@@ -55,7 +56,6 @@ public class PaintBoardPanel extends JPanel {
 		for (MyShape myShape : paintManager.getPaintHistory()) {
 			myShape.draw(g);
 		}
-
 		// When mouse haven't been released
 		if (bufferShape != null) {
 			bufferShape.draw(g);

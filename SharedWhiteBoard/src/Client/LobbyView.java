@@ -1,6 +1,3 @@
-/**
- * @author Aaron-Qiu, mgsweet@126.com, student_id:1101584
- */
 package Client;
 
 import java.awt.Dimension;
@@ -53,6 +50,12 @@ import java.net.Socket;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+/**
+ * 
+ * @author Aaron-Qiu E-mail: mgsweet@126.com
+ * @version Created: Oct 18, 2019 2:53:21 PM
+ */
+
 public class LobbyView {
 
 	protected JFrame frame;
@@ -80,72 +83,14 @@ public class LobbyView {
 		refreshRoomsList();
 	}
 	
-	private void reFreshRoomsListPanel() {
-		roomsListPanel.removeAll();
-		roomsListPanel.setPreferredSize(new Dimension(0, 170));
-		firstPanel.removeAll();
-		roomsListPanel.revalidate();
-		roomsListPanel.repaint();
-		roomsListPanel.add(firstPanel);
-		firstPanel.add(btnCreateRoom);
-	}
-	
-	private void filtRoomsList() {
-		reFreshRoomsListPanel();
+	/**
+	 * Get rooms list from central server.
+	 */
+	public void refreshRoomsList() {
+		// sent request to central server to gain roomlist.
+		controler.pullRemoteRoomList();
 		
-		JPanel currentPanel = firstPanel;
-		int i = 0;
-		for (JButton btn : roomsBtnVec) {
-			if (i % 2 != 0) {
-				roomsListPanel.setPreferredSize(new Dimension(0, (i/2 + 2) * 170));
-				JPanel temp = new JPanel();
-				temp.setBounds(5, (i/2 + 1) * 170, 570, 160);
-				temp.setLayout(new GridLayout(1, 2, 5, 0));
-				currentPanel = temp;
-				roomsListPanel.add(temp);
-			} 
-			String[] roomInfo = btn.getText().split(" - ");
-			if ((roomNameTextField.getText().equals(roomInfo[0]) || roomNameTextField.getText().equals("")) 
-					&& (hostNameTextField.getText().equals(roomInfo[1]) || hostNameTextField.getText().equals(""))) {
-				currentPanel.add(btn);
-				i++;
-			}
-		}
-		if (i % 2 == 0) {
-		    currentPanel.add(blankPanel);
-		}
-	}
-	
-	private JSONObject parseResString(String res) {
-		JSONObject resJSON = null;
-		try {
-			JSONParser parser = new JSONParser();
-			resJSON = (JSONObject) parser.parse(res);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return resJSON;
-	}
-	
-	protected void refreshRoomsList() {
-		// sent request to central server to gain roomlists
-		try {
-			System.out.println("Request for rooms list...");
-			Socket client = new Socket(controler.address, controler.port);
-			DataInputStream reader = new DataInputStream(client.getInputStream());
-			DataOutputStream writer = new DataOutputStream(client.getOutputStream());
-			JSONObject reqJson = new JSONObject();
-			reqJson.put("command", StateCode.GET_ROOMS_LIST);
-			writer.writeUTF(reqJson.toJSONString());
-			writer.flush();
-			String res = reader.readUTF();
-			JSONObject resJson = parseResString(res);
-			controler.roomsList = (Map<Integer, String>) resJson.get("roomsList");
-			System.out.println("Get rooms list!");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-		// repaint the roomslist panel
+		// repaint the roomlist panel.
 		roomsBtnVec.clear();
 		reFreshRoomsListPanel();
 		
@@ -185,7 +130,43 @@ public class LobbyView {
 		    currentPanel.add(blankPanel);
 		}
 	}
-
+	
+	private void reFreshRoomsListPanel() {
+		roomsListPanel.removeAll();
+		roomsListPanel.setPreferredSize(new Dimension(0, 170));
+		firstPanel.removeAll();
+		roomsListPanel.revalidate();
+		roomsListPanel.repaint();
+		roomsListPanel.add(firstPanel);
+		firstPanel.add(btnCreateRoom);
+	}
+	
+	private void filtRoomsList() {
+		reFreshRoomsListPanel();
+		
+		JPanel currentPanel = firstPanel;
+		int i = 0;
+		for (JButton btn : roomsBtnVec) {
+			if (i % 2 != 0) {
+				roomsListPanel.setPreferredSize(new Dimension(0, (i/2 + 2) * 170));
+				JPanel temp = new JPanel();
+				temp.setBounds(5, (i/2 + 1) * 170, 570, 160);
+				temp.setLayout(new GridLayout(1, 2, 5, 0));
+				currentPanel = temp;
+				roomsListPanel.add(temp);
+			} 
+			String[] roomInfo = btn.getText().split(" - ");
+			if ((roomNameTextField.getText().equals(roomInfo[0]) || roomNameTextField.getText().equals("")) 
+					&& (hostNameTextField.getText().equals(roomInfo[1]) || hostNameTextField.getText().equals(""))) {
+				currentPanel.add(btn);
+				i++;
+			}
+		}
+		if (i % 2 == 0) {
+		    currentPanel.add(blankPanel);
+		}
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */

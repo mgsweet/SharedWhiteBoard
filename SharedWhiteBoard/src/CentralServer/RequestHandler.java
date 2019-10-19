@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Map;
+import java.util.Vector;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,20 +16,20 @@ import StateCode.StateCode;
 
 public class RequestHandler extends Thread {
 	private Socket clientSocket;
-	private RoomManager rm;
-	
-	public RequestHandler(Socket clientSocket, RoomManager rm) {
+	CentralServer controler;
+
+	public RequestHandler(Socket clientSocket, CentralServer controler) {
 		this.clientSocket = clientSocket;
-		this.rm = rm;
+		this.controler = controler;
 	}
-	
+
 	public void run() {
 		try {
 			DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
 			DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
 			JSONObject reqJSON = parseReqString(reader.readUTF());
 			int command = Integer.parseInt(reqJSON.get("command").toString());
-			JSONObject requestJson = new JSONObject();
+			JSONObject resJson = new JSONObject();
 			// excute command
 			String password = "";
 			int roomId = -1;
@@ -41,28 +42,40 @@ public class RequestHandler extends Thread {
 				String roomName = reqJSON.get("roomName").toString();
 				password = reqJSON.get("password").toString();
 				// return roomID
-				int reqID = rm.addRoom(ipAddress, port, hostName, roomName, password);
-				requestJson.put("roomID", String.valueOf(reqID));
+				int reqID = controler.getRoomManager().addRoom(ipAddress, port, hostName, roomName, password);
+				resJson.put("roomID", String.valueOf(reqID));
 				break;
 			case StateCode.REMOVE_ROOM:
 				roomId = Integer.parseInt(reqJSON.get("roomID").toString());
-				int opeartionState = rm.removeRoom(roomId);
-				requestJson.put("opeartionState", String.valueOf(opeartionState));
+				int operationState = controler.getRoomManager().removeRoom(roomId);
+				resJson.put("operationState", String.valueOf(operationState));
 				break;
-			case StateCode.GET_ROOMS_LIST: 
-				Map<Integer, String> roomsList = rm.getRoomsList();
-				requestJson.put("roomsList", roomsList);
+			case StateCode.GET_ROOM_LIST:
+				Map<Integer, String> roomsList = controler.getRoomManager().getRoomsList();
+				resJson.put("roomsList", roomsList);
 				System.out.println("A client request for roomlist info.");
 				break;
 			case StateCode.GET_ROOM_INFO:
 				roomId = Integer.parseInt(reqJSON.get("roomID").toString());
 				password = reqJSON.get("password").toString();
-				if (rm.checkRoomPassword(roomId, password)) {
-					Room room = rm.getRoomInfo(roomId);
-					requestJson.put("opeartionState", String.valueOf(StateCode.SUCCESS));
-					requestJson.put("roomInfo", room);
+				if (controler.getRoomManager().checkRoomPassword(roomId, password)) {
+					Room room = controler.getRoomManager().getRoomInfo(roomId);
+					resJson.put("operationState", String.valueOf(StateCode.SUCCESS));
+					resJson.put("roomInfo", room);
 				} else {
-					requestJson.put("opeartionState", String.valueOf(StateCode.FAIL));
+					resJson.put("operationState", String.valueOf(StateCode.FAIL));
+				}
+				break;
+			case StateCode.ADD_USER:
+				String userId = reqJSON.get("userId").toString();
+				if (controler.getUserlist().containsKey(userId)) {
+					controler.printOnBoth("A user try to join but " + userId + " exist!");
+					resJson.put("operationState", String.valueOf(StateCode.FAIL));
+				} else {
+					controler.getUserlist().put(userId, userId);
+					controler.printOnBoth(
+							"User-" + userId + " join. " + "Current user number: " + controler.getUserlist().size());
+					resJson.put("operationState", String.valueOf(StateCode.SUCCESS));
 				}
 				break;
 			default:
@@ -70,13 +83,13 @@ public class RequestHandler extends Thread {
 				break;
 			}
 			// Send back to client
-			writer.writeUTF(requestJson.toJSONString());
+			writer.writeUTF(resJson.toJSONString());
 			writer.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}	
-	
+	}
+
 	private JSONObject parseReqString(String res) {
 		JSONObject reqJSON = null;
 		try {
@@ -87,12 +100,12 @@ public class RequestHandler extends Thread {
 		}
 		return reqJSON;
 	}
-	
+
 	private JSONObject createResJSON(int state, String meaning) {
 		JSONObject requestJson = new JSONObject();
 		requestJson.put("state", String.valueOf(state));
 		requestJson.put("meaning", meaning);
 		return requestJson;
 	}
-	
+
 }

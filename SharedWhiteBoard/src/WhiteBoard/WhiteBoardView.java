@@ -256,10 +256,10 @@ public class WhiteBoardView {
 		thicknessTextPanel.setLayout(new BorderLayout(0, 0));
 
 		thicknessTextField = new JTextField();
-		thicknessTextField.setDocument(new NumberTextField());
+		thicknessTextField.setDocument(new TextFieldFilter.NumberTextField(2, true));
 		thicknessTextField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				thickness = Integer.parseInt(thicknessTextField.getText());  
+				thickness = Integer.parseInt(thicknessTextField.getText());
 				thicknessTextField.setFocusable(false);
 				thicknessTextField.setFocusable(true);
 			}
