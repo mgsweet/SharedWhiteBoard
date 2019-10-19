@@ -20,8 +20,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import Client.Client;
 import Menus.EditMenu;
 import Menus.FileMenu;
+import util.WindowCloseListener;
 
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
@@ -36,7 +38,6 @@ import java.awt.event.InputMethodEvent;
  */
 
 public class WhiteBoardView {
-
 	private JFrame frame;
 	private JColorChooser colorChooser;
 	private DrawListener drawListener;
@@ -49,9 +50,10 @@ public class WhiteBoardView {
 	private int thickness;
 	// Title of the window
 	private String title;
-
 	// Paint history recorder
 	private PaintManager paintManager;
+	// Client
+	private Client client;
 
 	// Default color display in the left bottom.
 	private static Color[] DEFAULTCOLORS = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
@@ -107,22 +109,11 @@ public class WhiteBoardView {
 	}
 
 	/**
-	 * Create the view without Paint Manager.
-	 */
-//	public WhiteBoardView() {
-//		this.title = "Offline WhiteBoard";
-//		currentColor = Color.BLACK;
-//		backgroundColor = Color.WHITE;
-//		colorChooser = new JColorChooser(currentColor);
-//		this.paintManager = new PaintManager(PaintManager.OFFLINE_MODE);
-//		initialize();
-//	}
-
-	/**
 	 * Create the view with Paint Manager.
 	 */
-	public WhiteBoardView(PaintManager paintManager, String title) {
+	public WhiteBoardView(Client client, PaintManager paintManager, String title) {
 		this.title = title;
+		this.client = client;
 		currentColor = Color.BLACK;
 		thickness = 2;
 		backgroundColor = Color.WHITE;
@@ -137,6 +128,8 @@ public class WhiteBoardView {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// When close the window, it should remove its information in the system.
+		frame.addWindowListener(new WindowCloseListener(client));
 		frame.setSize(1000, 700);
 		frame.setTitle(title);
 		frame.setResizable(true);

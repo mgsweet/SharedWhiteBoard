@@ -23,6 +23,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
 
 import Client.Client;
+import util.WindowCloseListener;
 
 /**
  * 
@@ -76,6 +77,7 @@ public class LobbyView {
 		frame.setTitle("SharedWhiteBoard - Lobby");
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowCloseListener(client));
 		frame.setMinimumSize(new Dimension(600, 500));
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		

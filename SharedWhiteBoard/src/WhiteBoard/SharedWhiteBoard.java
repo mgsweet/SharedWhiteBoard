@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import Client.Client;
 import RMI.IRemotePaint;
 import RMI.RemotePaint;
 
@@ -19,6 +20,7 @@ public abstract class SharedWhiteBoard {
 	protected int registryPort;
 	protected InetAddress ip;
 	protected WhiteBoardView ui;
+	protected Client client;
 
 	// Room ID is unique in central server.
 	private int roomId;
@@ -27,8 +29,9 @@ public abstract class SharedWhiteBoard {
 		this.roomId = roomId;
 	}
 	
-	public SharedWhiteBoard(int mode) {
+	public SharedWhiteBoard(Client client, int mode) {
 		paintManager = new PaintManager(mode);
+		this.client = client;
 	}
 
 	public String getIpAddress() {

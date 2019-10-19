@@ -36,6 +36,8 @@ public class RequestHandler extends Thread {
 			// Execute command
 			String password = "";
 			int roomId = -1;
+			String userId = "";
+
 			switch (command) {
 			case StateCode.ADD_ROOM:
 				// get info from request
@@ -48,7 +50,7 @@ public class RequestHandler extends Thread {
 				int resID = controler.getRoomManager().addRoom(ipAddress, port, hostName, roomName, password);
 				controler.printOnBoth(
 						hostName + " create a room! Current room num: " + controler.getRoomManager().getRoomNum());
-				controler.printOnBoth("- Host ip: " + ipAddress + "Host port: " + port);
+				controler.printOnBoth("- Host: " + ipAddress + ": " + port);
 				resJson.put("state", StateCode.SUCCESS);
 				resJson.put("roomId", resID);
 				break;
@@ -76,7 +78,7 @@ public class RequestHandler extends Thread {
 				}
 				break;
 			case StateCode.ADD_USER:
-				String userId = reqJSON.get("userId").toString();
+				userId = reqJSON.get("userId").toString();
 				if (controler.getUserlist().containsKey(userId)) {
 					controler.printOnBoth("A user try to join but " + userId + " exist!");
 					resJson.put("state", String.valueOf(StateCode.FAIL));
@@ -85,6 +87,21 @@ public class RequestHandler extends Thread {
 					controler.printOnBoth(
 							"User-" + userId + " join. " + "Current user number: " + controler.getUserlist().size());
 					resJson.put("state", String.valueOf(StateCode.SUCCESS));
+				}
+				break;
+			case StateCode.REMOVE_USER:
+				userId = reqJSON.get("userId").toString();
+				if (controler.getUserlist().containsKey(userId)) {
+					controler.getUserlist().remove(userId);
+					controler.printOnBoth(
+							"Delete " + userId + ". " + "Current user number: " + controler.getUserlist().size());
+					controler.getRoomManager().removeRoom(userId);
+					controler.printOnBoth("Delete " + userId + "'s room. " + "Current user number: "
+							+ controler.getRoomManager().getRoomNum());
+					resJson.put("state", String.valueOf(StateCode.SUCCESS));
+				} else {
+					controler.printOnBoth(userId + " not exist! Can't be delete.");
+					resJson.put("state", String.valueOf(StateCode.FAIL));
 				}
 				break;
 			default:

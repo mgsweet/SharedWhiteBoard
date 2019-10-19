@@ -3,12 +3,13 @@ package WhiteBoard;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import Client.Client;
 import RMI.IRemotePaint;
 
 public class ClientWhiteBoard extends SharedWhiteBoard {
 	
-	public ClientWhiteBoard(String serverIp, int serverPort) {
-		super(PaintManager.CLIENT_MODE);
+	public ClientWhiteBoard(Client client, String serverIp, int serverPort) {
+		super(client, PaintManager.CLIENT_MODE);
 		initRMI();
 		connect2Server(serverIp, serverPort);
 		initView();
@@ -28,7 +29,7 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 	
 	public void initView() {
 		String title = "Client-" + ip.getHostAddress() + ":" + registryPort;
-		ui = new WhiteBoardView(this.paintManager, title);
+		ui = new WhiteBoardView(client, this.paintManager, title);
 		paintManager.pullRemoteHistory();
 	}
 }

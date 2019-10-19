@@ -106,27 +106,28 @@ public class Client {
 		}
 		lobbyView.getFrame().setVisible(true);
 	}
-	
+
 	public void switch2WhiteBoard() {
 		lobbyView.getFrame().setVisible(false);
 		signInView.getFrame().setVisible(false);
 		sharedWhiteBoard.getView().getFrame().setVisible(true);
 	}
-	
+
 	/**
 	 * Create a room and register in central server.
+	 * 
 	 * @param roomName
 	 * @param password
 	 */
 	public void createRoom(String roomName, String password) {
-		sharedWhiteBoard = new ServerWhiteBoard();
+		sharedWhiteBoard = new ServerWhiteBoard(this);
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.ADD_ROOM);
 		reqJSON.put("roomName", roomName);
 		reqJSON.put("password", password);
 		reqJSON.put("hostName", userId);
 		reqJSON.put("hostIp", sharedWhiteBoard.getIpAddress());
-		reqJSON.put("hostPort", sharedWhiteBoard.getRegistryPort()); 
+		reqJSON.put("hostPort", sharedWhiteBoard.getRegistryPort());
 		JSONObject resJSON = execute(reqJSON);
 		int state = resJSON.getInteger("state");
 		if (state == StateCode.SUCCESS) {
@@ -136,7 +137,7 @@ public class Client {
 			System.out.println("Fail to create room.");
 		}
 	}
-	
+
 	public void joinRoom(int roomId, String password) {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.GET_ROOM_INFO);
@@ -147,7 +148,7 @@ public class Client {
 		if (state == StateCode.SUCCESS) {
 			String serverAddress = resJSON.getString("ip");
 			int serverPort = resJSON.getInteger("port");
-			sharedWhiteBoard = new ClientWhiteBoard(serverAddress, serverPort);
+			sharedWhiteBoard = new ClientWhiteBoard(this, serverAddress, serverPort);
 			switch2WhiteBoard();
 		} else {
 			// TODO
@@ -174,7 +175,6 @@ public class Client {
 	 * @return isSuccess whether the user can register in the central server or not.
 	 */
 	public int register() {
-		int isSuccess = -1;
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.ADD_USER);
 		reqJSON.put("userId", userId);
@@ -183,13 +183,33 @@ public class Client {
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
 		} else {
-			if (isSuccess == StateCode.SUCCESS) {
+			if (state == StateCode.SUCCESS) {
 				System.out.println("Successfully register in the central server!");
 			} else {
 				System.out.println("User name exist!");
 			}
 		}
 		return state;
+	}
+	
+	/**
+	 * Delete all the information about the user in the third party.
+	 */
+	public void removeUser() {
+		JSONObject reqJSON = new JSONObject();
+		reqJSON.put("command", StateCode.REMOVE_USER);
+		reqJSON.put("userId", userId);
+		JSONObject resJSON = execute(reqJSON);
+		int state = resJSON.getIntValue("state");
+		if (state == StateCode.CONNECTION_FAIL) {
+			System.out.println("Connection Fail: " + state);
+		} else {
+			if (state == StateCode.SUCCESS) {
+				System.out.println("Successfully exit from the central server!");
+			} else {
+				System.out.println("Exit invalidly!");
+			}
+		}
 	}
 
 	/**
@@ -199,7 +219,7 @@ public class Client {
 	 * @param reqJSON
 	 * @return resJSON
 	 */
-	protected JSONObject execute(JSONObject reqJSON) {
+	public JSONObject execute(JSONObject reqJSON) {
 		JSONObject resJSON = new JSONObject();
 		try {
 			System.out.println("Trying to connect to server...");
