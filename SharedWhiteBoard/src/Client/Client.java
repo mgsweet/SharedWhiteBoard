@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import Lobby.LobbyView;
 import SignIn.SignInView;
@@ -160,7 +160,7 @@ public class Client {
 		reqJSON.put("command", StateCode.ADD_USER);
 		reqJSON.put("userId", userId);
 		JSONObject resJSON = execute(reqJSON);
-		int state = (int) resJSON.get("state");
+		int state = resJSON.getIntValue("state");
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
 		} else {

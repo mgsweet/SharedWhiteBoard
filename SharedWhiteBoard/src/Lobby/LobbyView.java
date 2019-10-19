@@ -37,9 +37,6 @@ import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import Client.Client;
 import StateCode.StateCode;
 

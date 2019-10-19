@@ -5,8 +5,8 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import StateCode.StateCode;
 
@@ -29,7 +29,7 @@ public class RequestHandler extends Thread {
 		try {
 			DataInputStream reader = new DataInputStream(clientSocket.getInputStream());
 			DataOutputStream writer = new DataOutputStream(clientSocket.getOutputStream());
-			JSONObject reqJSON = parseReqString(reader.readUTF());
+			JSONObject reqJSON = JSON.parseObject(reader.readUTF());
 			int command = Integer.parseInt(reqJSON.get("command").toString());
 			JSONObject resJson = new JSONObject();
 			// Execute command
@@ -92,16 +92,5 @@ public class RequestHandler extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private JSONObject parseReqString(String res) {
-		JSONObject reqJSON = null;
-		try {
-			JSONParser parser = new JSONParser();
-			reqJSON = (JSONObject) parser.parse(res);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return reqJSON;
 	}
 }

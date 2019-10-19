@@ -9,8 +9,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import StateCode.StateCode;
 
@@ -27,17 +27,6 @@ public class ExecuteThread extends Thread {
 	
 	private JSONObject reqJSON;
 	private JSONObject resJSON;
-	
-	private JSONObject parseResString(String res) {
-		JSONObject resJSON = null;
-		try {
-			JSONParser parser = new JSONParser();
-			resJSON = (JSONObject) parser.parse(res);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return resJSON;
-	}
 	
 	public int getConnectState() {
 		return connectState;
@@ -67,7 +56,7 @@ public class ExecuteThread extends Thread {
 			writer.writeUTF(reqJSON.toJSONString());
 			writer.flush();
 			String res = reader.readUTF();
-			resJSON = parseResString(res);
+			resJSON = JSON.parseObject(res);
 			reader.close();
 			writer.close();	
 			connectState = StateCode.CONNECTION_SUCCESS;
