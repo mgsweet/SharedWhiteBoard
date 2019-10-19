@@ -38,19 +38,21 @@ public class RequestHandler extends Thread {
 			switch (command) {
 			case StateCode.ADD_ROOM:
 				// get info from request
-				String ipAddress = reqJSON.get("ipAddress").toString();
-				int port = Integer.parseInt(reqJSON.get("port").toString());
-				String hostName = reqJSON.get("hostName").toString();
 				String roomName = reqJSON.get("roomName").toString();
 				password = reqJSON.get("password").toString();
+				String hostName = reqJSON.get("hostName").toString();
+				String ipAddress = reqJSON.get("hostIp").toString();
+				int port = (int) reqJSON.get("hostPort");
 				// return roomID
-				int reqID = controler.getRoomManager().addRoom(ipAddress, port, hostName, roomName, password);
-				resJson.put("roomID", String.valueOf(reqID));
+				int resID = controler.getRoomManager().addRoom(ipAddress, port, hostName, roomName, password);
+				controler.printOnBoth(hostName + " create a room! Current room num: " + controler.getRoomManager().getRoomNum());
+				resJson.put("state", StateCode.SUCCESS);
+				resJson.put("roomID", String.valueOf(resID));
 				break;
 			case StateCode.REMOVE_ROOM:
 				roomId = Integer.parseInt(reqJSON.get("roomID").toString());
-				int operationState = controler.getRoomManager().removeRoom(roomId);
-				resJson.put("operationState", String.valueOf(operationState));
+				int state = controler.getRoomManager().removeRoom(roomId);
+				resJson.put("state", String.valueOf(state));
 				break;
 			case StateCode.GET_ROOM_LIST:
 				Map<Integer, String> roomList = controler.getRoomManager().getRoomList();
@@ -62,22 +64,22 @@ public class RequestHandler extends Thread {
 				password = reqJSON.get("password").toString();
 				if (controler.getRoomManager().checkRoomPassword(roomId, password)) {
 					Room room = controler.getRoomManager().getRoomInfo(roomId);
-					resJson.put("operationState", String.valueOf(StateCode.SUCCESS));
+					resJson.put("state", String.valueOf(StateCode.SUCCESS));
 					resJson.put("roomInfo", room);
 				} else {
-					resJson.put("operationState", String.valueOf(StateCode.FAIL));
+					resJson.put("state", String.valueOf(StateCode.FAIL));
 				}
 				break;
 			case StateCode.ADD_USER:
 				String userId = reqJSON.get("userId").toString();
 				if (controler.getUserlist().containsKey(userId)) {
 					controler.printOnBoth("A user try to join but " + userId + " exist!");
-					resJson.put("operationState", String.valueOf(StateCode.FAIL));
+					resJson.put("state", String.valueOf(StateCode.FAIL));
 				} else {
 					controler.getUserlist().put(userId, userId);
 					controler.printOnBoth(
 							"User-" + userId + " join. " + "Current user number: " + controler.getUserlist().size());
-					resJson.put("operationState", String.valueOf(StateCode.SUCCESS));
+					resJson.put("state", String.valueOf(StateCode.SUCCESS));
 				}
 				break;
 			default:
@@ -102,12 +104,4 @@ public class RequestHandler extends Thread {
 		}
 		return reqJSON;
 	}
-
-	private JSONObject createResJSON(int state, String meaning) {
-		JSONObject requestJson = new JSONObject();
-		requestJson.put("state", String.valueOf(state));
-		requestJson.put("meaning", meaning);
-		return requestJson;
-	}
-
 }

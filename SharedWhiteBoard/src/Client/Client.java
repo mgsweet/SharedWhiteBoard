@@ -1,10 +1,6 @@
 package Client;
 
-import java.awt.EventQueue;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -15,6 +11,9 @@ import org.json.simple.parser.JSONParser;
 import Lobby.LobbyView;
 import SignIn.SignInView;
 import StateCode.StateCode;
+import WhiteBoard.ServerWhiteBoard;
+import WhiteBoard.SharedWhiteBoard;
+import WhiteBoard.WhiteBoardView;
 
 /**
  * 
@@ -23,6 +22,7 @@ import StateCode.StateCode;
  */
 
 public class Client {
+	// Views
 	private SignInView signInView = null;
 	private LobbyView lobbyView = null;
 	// User information
@@ -33,6 +33,8 @@ public class Client {
 	private int port = -1;
 	// RoomList
 	public Map<Integer, String> roomList = null;
+	// SharedWhiteBoard
+	SharedWhiteBoard sharedWhiteBoard = null;
 
 	public static void main(String[] args) {
 		Client client = new Client();
@@ -63,25 +65,28 @@ public class Client {
 	public String getUserIp() {
 		return userIp.getHostAddress();
 	}
-	
+
 	/**
 	 * Set userId
+	 * 
 	 * @param userId
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	
+
 	/**
 	 * Set server IP
+	 * 
 	 * @param serverIp
 	 */
 	public void setServerIp(String serverIp) {
 		this.serverIp = serverIp;
 	}
-	
+
 	/**
 	 * Set port.
+	 * 
 	 * @param port
 	 */
 	public void setPort(int port) {
@@ -91,11 +96,44 @@ public class Client {
 	/**
 	 * When user completes sign in, use this method to switch to Lobby.
 	 */
-	public void switchToLobby() {
+	public void switch2Lobby() {
 		System.out.println("User: " + userId + " enter Lobby.");
 		lobbyView = new LobbyView(this);
 		signInView.getFrame().setVisible(false);
+		if (sharedWhiteBoard != null) {
+			sharedWhiteBoard.getView().getFrame().setVisible(false);
+		}
 		lobbyView.getFrame().setVisible(true);
+	}
+	
+	public void switch2WhiteBoard() {
+		lobbyView.getFrame().setVisible(false);
+		signInView.getFrame().setVisible(false);
+		sharedWhiteBoard.getView().getFrame().setVisible(true);
+	}
+	
+	/**
+	 * 
+	 * @param roomName
+	 * @param password
+	 */
+	public void createRoom(String roomName, String password) {
+		sharedWhiteBoard = new ServerWhiteBoard();
+		JSONObject reqJSON = new JSONObject();
+		reqJSON.put("command", StateCode.ADD_ROOM);
+		reqJSON.put("roomName", roomName);
+		reqJSON.put("password", password);
+		reqJSON.put("hostName", userId);
+		reqJSON.put("hostIp", sharedWhiteBoard.getIpAddress());
+		reqJSON.put("hostPort", sharedWhiteBoard.getRegistryPort()); 
+		JSONObject resJSON = execute(reqJSON);
+		int state = (int) resJSON.get("state");
+		if (state == StateCode.SUCCESS) {
+			switch2WhiteBoard();
+			sharedWhiteBoard.setRoomID((String) resJSON.get("roomID"));
+		} else {
+			System.out.println("Fail to create room.");
+		}
 	}
 
 	/**
@@ -103,26 +141,17 @@ public class Client {
 	 */
 	public void pullRemoteRoomList() {
 		// sent request to central server to gain roomlists
-		try {
-			System.out.println("Request for rooms list...");
-			Socket client = new Socket(serverIp, port);
-			DataInputStream reader = new DataInputStream(client.getInputStream());
-			DataOutputStream writer = new DataOutputStream(client.getOutputStream());
-			JSONObject reqJSON = new JSONObject();
-			reqJSON.put("command", StateCode.GET_ROOM_LIST);
-			writer.writeUTF(reqJSON.toJSONString());
-			writer.flush();
-			String res = reader.readUTF();
-			JSONObject resJson = parseResString(res);
-			roomList = (Map<Integer, String>) resJson.get("roomList");
-			System.out.println("Get rooms list!");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		JSONObject reqJSON = new JSONObject();
+		reqJSON.put("command", StateCode.GET_ROOM_LIST);
+		System.out.println("Request for rooms list...");
+		JSONObject resJson = execute(reqJSON);
+		roomList = (Map<Integer, String>) resJson.get("roomList");
+		System.out.println("Get rooms list!");
 	}
 
 	/**
 	 * Use to register in the central server, so no one can use a same user name.
+	 * 
 	 * @return isSuccess whether the user can register in the central server or not.
 	 */
 	public int register() {
@@ -131,54 +160,47 @@ public class Client {
 		reqJSON.put("command", StateCode.ADD_USER);
 		reqJSON.put("userId", userId);
 		JSONObject resJSON = execute(reqJSON);
-		int connectState = (int) resJSON.get("connectState");
-		if (connectState == StateCode.CONNECTION_SUCCESS) {
-			isSuccess = Integer.parseInt(resJSON.get("operationState").toString());
+		int state = (int) resJSON.get("state");
+		if (state == StateCode.CONNECTION_FAIL) {
+			System.out.println("Connection Fail: " + state);
+		} else {
 			if (isSuccess == StateCode.SUCCESS) {
 				System.out.println("Successfully register in the central server!");
 			} else {
 				System.out.println("User name exist!");
 			}
-			return isSuccess;
-		} else {
-			System.out.println("Connection Fail: " + connectState);
-			return connectState;
 		}
+		return state;
 	}
-	
+
+	/**
+	 * Send request to central server, which can detect whether the server address
+	 * is workable or not.
+	 * 
+	 * @param reqJSON
+	 * @return resJSON
+	 */
 	protected JSONObject execute(JSONObject reqJSON) {
-		int state = StateCode.CONNECTION_FAIL;
 		JSONObject resJSON = new JSONObject();
 		try {
 			System.out.println("Trying to connect to server...");
 			ExecuteThread eThread = new ExecuteThread(serverIp, port, reqJSON);
 			eThread.start();
-			eThread.join(2000);
+			eThread.join(1500);
 			if (eThread.isAlive()) {
 				eThread.interrupt();
 				throw new TimeoutException();
 			}
-			reqJSON = eThread.getResJSON();
+			resJSON = eThread.getResJSON();
 			System.out.println("Connect Success!");
 		} catch (TimeoutException e) {
-			reqJSON.put("connectState", StateCode.TIMEOUT);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return reqJSON;
-	}
-
-	private JSONObject parseResString(String res) {
-		JSONObject resJSON = null;
-		try {
-			JSONParser parser = new JSONParser();
-			resJSON = (JSONObject) parser.parse(res);
+			resJSON.put("state", StateCode.TIMEOUT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return resJSON;
 	}
-	
+
 	private void init() throws UnknownHostException {
 		userIp = InetAddress.getLocalHost();
 		signInView = new SignInView(this);

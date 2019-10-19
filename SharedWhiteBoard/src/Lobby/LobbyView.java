@@ -125,7 +125,7 @@ public class LobbyView {
 		btnCreateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Create Room");
-				RoomCreateDialog.showCreateRoomDialog(frame, frame);
+				RoomCreateDialog.showCreateRoomDialog(frame, frame, client);
 			}
 		});
 		ImageIcon addIcon = new ImageIcon(addImagePath);

@@ -90,7 +90,7 @@ public class SignInView {
 								client.setPort(controler.port);
 								int state = client.register();
 								if (state == StateCode.SUCCESS) {
-									client.switchToLobby();
+									client.switch2Lobby();
 								} else if (state == StateCode.FAIL){
 									tipsLabel.setText("User name exist! Change one!");
 									tipsLabel.setVisible(true);

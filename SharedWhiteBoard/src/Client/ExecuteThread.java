@@ -44,7 +44,8 @@ public class ExecuteThread extends Thread {
 	}
 	
 	public JSONObject getResJSON() {
-		resJSON.put("connectState", connectState);
+		if (connectState != StateCode.CONNECTION_SUCCESS)
+			resJSON.put("state", connectState);
 		return resJSON;
 	}
 	
@@ -54,7 +55,6 @@ public class ExecuteThread extends Thread {
 		this.connectState = StateCode.CONNECTION_FAIL;
 		this.reqJSON = reqJSON;
 		this.resJSON = new JSONObject();
-		this.resJSON.put("connectState", connectState);
 		socket = null;
 	}
 	
