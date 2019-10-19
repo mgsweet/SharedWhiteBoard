@@ -1,4 +1,4 @@
-package PaintRMI;
+package RMI;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

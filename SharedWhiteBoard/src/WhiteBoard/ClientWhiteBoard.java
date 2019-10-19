@@ -3,7 +3,7 @@ package WhiteBoard;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import PaintRMI.IRemotePaint;
+import RMI.IRemotePaint;
 
 public class ClientWhiteBoard extends SharedWhiteBoard {
 	

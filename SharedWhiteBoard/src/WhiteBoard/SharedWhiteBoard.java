@@ -6,8 +6,8 @@ import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import PaintRMI.IRemotePaint;
-import PaintRMI.RemotePaint;
+import RMI.IRemotePaint;
+import RMI.RemotePaint;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
