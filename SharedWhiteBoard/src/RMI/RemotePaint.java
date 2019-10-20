@@ -18,8 +18,6 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	private static final long serialVersionUID = 1L;
 	// All the painting action should be do by the paintManager.
 	PaintManager paintManager;
-	// Use to store the current paintint area
-	private PaintBoardPanel paintArea;
 
 	public RemotePaint(PaintManager paintManager) throws RemoteException {
 		this.paintManager = paintManager;
@@ -42,7 +40,7 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	}
 	
 	@Override
-	public void addClientRMI(String ip, int port) throws RemoteException {
+	public void addClient(String ip, int port) throws RemoteException {
 		System.out.println("A new client join: " + ip + ' ' + port);
 		paintManager.addClientRMI(ip, port);
 	}

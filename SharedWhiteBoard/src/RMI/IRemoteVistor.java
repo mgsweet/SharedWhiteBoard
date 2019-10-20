@@ -9,6 +9,5 @@ import java.rmi.RemoteException;
  * @version Created: Oct 19, 2019 8:40:17 PM
  */
 
-public interface IRemoteRefresh extends Remote{
-	public void refreshLobby() throws RemoteException;
+public interface IRemoteVistor extends Remote {
 }

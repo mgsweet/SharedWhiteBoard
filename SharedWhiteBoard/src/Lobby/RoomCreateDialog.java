@@ -8,7 +8,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import Client.Client;
+import App.App;
 
 import java.awt.GridLayout;
 import javax.swing.JLabel;
@@ -35,10 +35,10 @@ public class RoomCreateDialog extends JDialog {
 	private String roomName = "";
 	private String password = "";
 	private JLabel lblError = null;
-	private Client client;
+	private App app;
 
-	public static void showCreateRoomDialog(Frame owner, Component parentComponent, Client client) {
-		final RoomCreateDialog roomCreateDialog = new RoomCreateDialog(client);
+	public static void showCreateRoomDialog(Frame owner, Component parentComponent, App app) {
+		final RoomCreateDialog roomCreateDialog = new RoomCreateDialog(app);
 		roomCreateDialog.setLocationRelativeTo(parentComponent);
 		roomCreateDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		roomCreateDialog.setModal(true);
@@ -68,8 +68,8 @@ public class RoomCreateDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public RoomCreateDialog(Client client) {
-		this.client = client;
+	public RoomCreateDialog(App app) {
+		this.app = app;
 		setTitle("Create Room Dialog");
 		setResizable(false);
 		setBounds(100, 100, 450, 300);
@@ -117,7 +117,7 @@ public class RoomCreateDialog extends JDialog {
 					roomName = roomNameTextField.getText();
 					password = PasswordTextField.getText();
 					if (roomInfoCheck()) {
-						client.createRoom(roomName, password);
+						app.createRoom(roomName, password);
 						dispose();
 					}
 				}

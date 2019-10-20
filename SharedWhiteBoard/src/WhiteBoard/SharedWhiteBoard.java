@@ -1,12 +1,8 @@
 package WhiteBoard;
 
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
-import Client.Client;
+import App.App;
+import ClientUser.UserManager;
+import RMI.IRemoteDoor;
 import RMI.IRemotePaint;
 import RMI.RemotePaint;
 
@@ -17,10 +13,10 @@ import RMI.RemotePaint;
 
 public abstract class SharedWhiteBoard {
 	protected PaintManager paintManager;
-	protected int registryPort;
-	protected InetAddress ip;
+	protected UserManager userManager;
 	protected WhiteBoardView ui;
-	protected Client client;
+	protected App app;
+	private IRemotePaint remotePaint;
 
 	// Room ID is unique in central server.
 	private int roomId;
@@ -29,47 +25,21 @@ public abstract class SharedWhiteBoard {
 		this.roomId = roomId;
 	}
 	
-	public SharedWhiteBoard(Client client, int mode) {
+	public SharedWhiteBoard(App app, int mode) {
 		paintManager = new PaintManager(mode);
-		this.client = client;
-	}
-
-	public String getIpAddress() {
-		return ip.getHostAddress();
+		this.app = app;
 	}
 	
 	public WhiteBoardView getView() {
 		return ui;
 	}
 
-	public int getRegistryPort() {
-		return registryPort;
-	}
-
-	public void initRMI() {
+	public void initPaintRMI() {
 		try {
-			// Get IP address of Localhost.
-			ip = InetAddress.getLocalHost();
-
-			// Get a random port (Available one).
-			ServerSocket registrySocket = new ServerSocket(0);
-			registryPort = registrySocket.getLocalPort();
-			registrySocket.close();
-
-			// Start RMI registry
-			LocateRegistry.createRegistry(registryPort);
-			Registry serverRegistry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
-			IRemotePaint remotePaint = new RemotePaint(paintManager);
-			serverRegistry.bind("paintRMI", remotePaint);
-			
-			printInitialStates();
+			remotePaint = new RemotePaint(paintManager);
+			app.getRegistry().bind("paintRMI", remotePaint);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void printInitialStates() throws UnknownHostException {
-		System.out.println("Registry IP address : " + ip.getHostAddress());
-		System.out.println("Registry Port = " + registryPort);
 	}
 }

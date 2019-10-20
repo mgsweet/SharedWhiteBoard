@@ -3,15 +3,17 @@ package WhiteBoard;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import Client.Client;
+import App.App;
+import ClientUser.UserManager;
 import RMI.IRemotePaint;
 
 public class ClientWhiteBoard extends SharedWhiteBoard {
 	
-	public ClientWhiteBoard(Client client, String serverIp, int serverPort) {
-		super(client, PaintManager.CLIENT_MODE);
-		initRMI();
-		connect2Server(serverIp, serverPort);
+	public ClientWhiteBoard(App app, String hostId, String hostIp, int registerPort) {
+		super(app, PaintManager.CLIENT_MODE);
+		userManager = new UserManager(false, hostId, hostIp, registerPort, -1);
+		initPaintRMI();
+		connect2Server(hostIp, registerPort);
 		initView();
 	}
 	
@@ -20,7 +22,7 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 			Registry registry = LocateRegistry.getRegistry(serverIp, serverPort);
 			IRemotePaint serverRemotePaint = (IRemotePaint) registry.lookup("paintRMI");
 			paintManager.setServerRMI(serverRemotePaint);
-			serverRemotePaint.addClientRMI(ip.getHostAddress(), registryPort);
+			serverRemotePaint.addClient(app.getIp(), app.getRegistryPort());
 		} catch (Exception e) {
 			System.out.println("Can not connect to server.");
 			e.printStackTrace();
@@ -28,8 +30,8 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 	}
 	
 	public void initView() {
-		String title = "Client-" + ip.getHostAddress() + ":" + registryPort;
-		ui = new WhiteBoardView(client, this.paintManager, title);
+		String title = "Client-" + app.getIp() + ":" + app.getRegistryPort();
+		ui = new WhiteBoardView(app, this.paintManager, userManager, title);
 		paintManager.pullRemoteHistory();
 	}
 }

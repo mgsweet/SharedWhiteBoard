@@ -1,7 +1,10 @@
-package Client;
+package App;
 
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -9,6 +12,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import Lobby.LobbyView;
+import RMI.IRemotePaint;
+import RMI.RemotePaint;
 import SignIn.SignInView;
 import StateCode.StateCode;
 import WhiteBoard.ClientWhiteBoard;
@@ -22,12 +27,12 @@ import WhiteBoard.WhiteBoardView;
  * @version Created: Oct 18, 2019 2:53:21 PM
  */
 
-public class Client {
+public class App {
 	// Views
 	private SignInView signInView = null;
 	private LobbyView lobbyView = null;
 	// User information
-	private InetAddress userIp;
+	private InetAddress ip;
 	private String userId = "";
 	// Central server information
 	private String serverIp = "";
@@ -35,14 +40,17 @@ public class Client {
 	// RoomList
 	public Map<Integer, String> roomList = null;
 	// SharedWhiteBoard
-	SharedWhiteBoard sharedWhiteBoard = null;
+	private SharedWhiteBoard sharedWhiteBoard = null;
+	// RMI
+	private int registryPort;
+	private Registry registry;
 
 	public static void main(String[] args) {
-		Client client = new Client();
-		client.run();
+		App app = new App();
+		app.run();
 	}
 
-	public Client() {
+	public App() {
 		try {
 			init();
 		} catch (Exception e) {
@@ -55,7 +63,20 @@ public class Client {
 	 */
 	public void run() {
 		signInView.getFrame().setVisible(true);
-		System.out.println("Client running");
+		System.out.println("App running");
+	}
+
+	/**
+	 * Get local registry
+	 * 
+	 * @return
+	 */
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	public int getRegistryPort() {
+		return registryPort;
 	}
 
 	/**
@@ -63,8 +84,8 @@ public class Client {
 	 * 
 	 * @return
 	 */
-	public String getUserIp() {
-		return userIp.getHostAddress();
+	public String getIp() {
+		return ip.getHostAddress();
 	}
 
 	/**
@@ -74,6 +95,14 @@ public class Client {
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	/**
+	 * Get userId
+	 * @return
+	 */
+	public String getUserId() {
+		return userId;
 	}
 
 	/**
@@ -126,8 +155,8 @@ public class Client {
 		reqJSON.put("roomName", roomName);
 		reqJSON.put("password", password);
 		reqJSON.put("hostName", userId);
-		reqJSON.put("hostIp", sharedWhiteBoard.getIpAddress());
-		reqJSON.put("hostPort", sharedWhiteBoard.getRegistryPort());
+		reqJSON.put("hostIp", ip);
+		reqJSON.put("hostPort", registryPort);
 		JSONObject resJSON = execute(reqJSON);
 		int state = resJSON.getInteger("state");
 		if (state == StateCode.SUCCESS) {
@@ -138,7 +167,7 @@ public class Client {
 		}
 	}
 
-	public void joinRoom(int roomId, String password) {
+	public int joinRoom(int roomId, String password) {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.GET_ROOM_INFO);
 		reqJSON.put("roomId", roomId);
@@ -146,14 +175,15 @@ public class Client {
 		JSONObject resJSON = execute(reqJSON);
 		int state = resJSON.getInteger("state");
 		if (state == StateCode.SUCCESS) {
-			String serverAddress = resJSON.getString("ip");
-			int serverPort = resJSON.getInteger("port");
-			sharedWhiteBoard = new ClientWhiteBoard(this, serverAddress, serverPort);
+			String hostIp = resJSON.getString("ip");
+			int hostRegisterPort = resJSON.getInteger("port");
+			String hostId = resJSON.getString("hostId");
+			sharedWhiteBoard = new ClientWhiteBoard(this, hostId, hostIp, hostRegisterPort);
 			switch2WhiteBoard();
 		} else {
-			// TODO
 			System.out.println("Password Wrong!");
 		}
+		return state;
 	}
 
 	/**
@@ -191,7 +221,7 @@ public class Client {
 		}
 		return state;
 	}
-	
+
 	/**
 	 * Delete all the information about the user in the third party.
 	 */
@@ -241,7 +271,32 @@ public class Client {
 	}
 
 	private void init() throws UnknownHostException {
-		userIp = InetAddress.getLocalHost();
+		initRMI();
 		signInView = new SignInView(this);
+	}
+
+	private void initRMI() {
+		try {
+			// Get IP address of Localhost.
+			ip = InetAddress.getLocalHost();
+
+			// Get a random port (Available one).
+			ServerSocket registrySocket = new ServerSocket(0);
+			registryPort = registrySocket.getLocalPort();
+			registrySocket.close();
+
+			// Start RMI registry
+			LocateRegistry.createRegistry(registryPort);
+			registry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
+
+			printInitialStates();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printInitialStates() throws UnknownHostException {
+		System.out.println("IP address : " + ip.getHostAddress());
+		System.out.println("Registry Port = " + registryPort);
 	}
 }

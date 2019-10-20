@@ -15,6 +15,6 @@ public interface IRemotePaint extends Remote {
 	public void addShape(MyShape shape) throws RemoteException;
 	public void setHistory(Vector<MyShape> paintHistory) throws RemoteException;
 	public void clearHistory() throws RemoteException;
-	public void addClientRMI(String ip, int port) throws RemoteException;
+	public void addClient(String ip, int port) throws RemoteException;
 	public Vector<MyShape> getHistory() throws RemoteException;
 }

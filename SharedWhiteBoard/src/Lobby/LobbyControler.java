@@ -13,7 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import Client.Client;
+import App.App;
+import StateCode.StateCode;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -21,11 +22,11 @@ import Client.Client;
  */
 
 public class LobbyControler {
-	private Client client;
+	private App app;
 	private LobbyView ui;
 
-	public LobbyControler(Client client, LobbyView ui) {
-		this.client = client;
+	public LobbyControler(App app, LobbyView ui) {
+		this.app = app;
 		this.ui = ui;
 	}
 
@@ -34,7 +35,7 @@ public class LobbyControler {
 	 */
 	public void refreshRoomsList() {
 		// sent request to central server to gain roomlist.
-		client.pullRemoteRoomList();
+		app.pullRemoteRoomList();
 
 		// repaint the roomlist panel.
 		ui.roomsBtnVec.clear();
@@ -42,7 +43,7 @@ public class LobbyControler {
 
 		int i = 0;
 		JPanel currentPanel = ui.firstPanel;
-		for (Map.Entry<Integer, String> entry : client.roomList.entrySet()) {
+		for (Map.Entry<Integer, String> entry : app.roomList.entrySet()) {
 			JButton tempBtn = new JButton();
 			String[] roomInfo = entry.getValue().split(" ");
 			String roomName = roomInfo[0];
@@ -58,7 +59,14 @@ public class LobbyControler {
 					if (password != null) {
 						// So wired! Should learn more about entrySet().
 						int roomId = Integer.parseInt(entry.getKey() + "");
-						client.joinRoom(roomId, password);
+						int state = app.joinRoom(roomId, password);
+						if (state == StateCode.FAIL) {
+							JOptionPane.showConfirmDialog(ui.frame, "Password Wrong!", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						} else if (state != StateCode.SUCCESS) {
+							JOptionPane.showConfirmDialog(ui.frame, "Can not connect to central server!", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
 			});

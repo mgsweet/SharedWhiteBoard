@@ -11,6 +11,9 @@ import java.awt.Image;
 
 import javax.swing.JButton;
 import javax.swing.ScrollPaneConstants;
+
+import App.App;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -22,7 +25,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
 
-import Client.Client;
 import util.WindowCloseListener;
 
 /**
@@ -43,7 +45,7 @@ public class LobbyView {
 	protected JPanel blankPanel;
 	protected JScrollPane scrollPane;
 	protected Vector<JButton> roomsBtnVec;
-	protected Client client;
+	protected App app;
 	protected LobbyControler controler;
 	
 	protected String addImagePath = "images/add.png";
@@ -52,11 +54,11 @@ public class LobbyView {
 	/**
 	 * Create the application.
 	 */
-	public LobbyView(Client client) {
-		this.client = client;
+	public LobbyView(App app) {
+		this.app = app;
 		roomsBtnVec = new Vector<JButton>();
 		initialize();
-		controler = new LobbyControler(client, this);
+		controler = new LobbyControler(app, this);
 		controler.refreshRoomsList();
 	}
 	
@@ -77,7 +79,7 @@ public class LobbyView {
 		frame.setTitle("SharedWhiteBoard - Lobby");
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.addWindowListener(new WindowCloseListener(client));
+		frame.addWindowListener(new WindowCloseListener(app));
 		frame.setMinimumSize(new Dimension(600, 500));
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -99,7 +101,7 @@ public class LobbyView {
 		btnCreateRoom = new JButton();
 		btnCreateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RoomCreateDialog.showCreateRoomDialog(frame, frame, client);
+				RoomCreateDialog.showCreateRoomDialog(frame, frame, app);
 			}
 		});
 		ImageIcon addIcon = new ImageIcon(addImagePath);

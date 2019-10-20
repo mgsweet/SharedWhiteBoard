@@ -3,7 +3,7 @@ package util;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import Client.Client;
+import App.App;
 
 /**
  * Use when close in lobby.
@@ -13,15 +13,15 @@ import Client.Client;
 
 public class WindowCloseListener extends WindowAdapter {
 	
-	private Client client;
+	private App app;
 	
-	public WindowCloseListener(Client client) {
-		this.client = client;
+	public WindowCloseListener(App app) {
+		this.app = app;
 	}
 	
 	@Override
 	public void windowClosing(WindowEvent e) {
 		super.windowClosing(e);
-		client.removeUser();
+		app.removeUser();
 	}
 }

@@ -20,7 +20,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import Client.Client;
+import App.App;
+import ClientUser.UserManager;
 import Menus.EditMenu;
 import Menus.FileMenu;
 import util.WindowCloseListener;
@@ -52,8 +53,10 @@ public class WhiteBoardView {
 	private String title;
 	// Paint history recorder
 	private PaintManager paintManager;
+	// User Manager
+	private UserManager userManager;
 	// Client
-	private Client client;
+	private App app;
 
 	// Default color display in the left bottom.
 	private static Color[] DEFAULTCOLORS = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
@@ -63,6 +66,21 @@ public class WhiteBoardView {
 	// Use to create tool button.
 	private static String[] TOOLNAME = { "pen", "line", "circle", "eraser", "rect", "oval", "roundrect", "text" };
 	private JTextField thicknessTextField;
+	
+	/**
+	 * Create the view with Paint Manager.
+	 */
+	public WhiteBoardView(App app, PaintManager paintManager, UserManager userManager, String title) {
+		this.title = title;
+		this.app = app;
+		currentColor = Color.BLACK;
+		thickness = 2;
+		backgroundColor = Color.WHITE;
+		colorChooser = new JColorChooser(currentColor);
+		this.paintManager = paintManager;
+		this.userManager = userManager;
+		initialize();
+	}
 
 	/**
 	 * Get frame window.
@@ -109,27 +127,13 @@ public class WhiteBoardView {
 	}
 
 	/**
-	 * Create the view with Paint Manager.
-	 */
-	public WhiteBoardView(Client client, PaintManager paintManager, String title) {
-		this.title = title;
-		this.client = client;
-		currentColor = Color.BLACK;
-		thickness = 2;
-		backgroundColor = Color.WHITE;
-		colorChooser = new JColorChooser(currentColor);
-		this.paintManager = paintManager;
-		initialize();
-	}
-
-	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// When close the window, it should remove its information in the system.
-		frame.addWindowListener(new WindowCloseListener(client));
+		frame.addWindowListener(new WindowCloseListener(app));
 		frame.setSize(1000, 700);
 		frame.setTitle(title);
 		frame.setResizable(true);
@@ -168,7 +172,7 @@ public class WhiteBoardView {
 		JLabel lblUserList = new JLabel("User List:");
 		userControlPanel.add(lblUserList, BorderLayout.NORTH);
 
-		ClientListScrollPanel clientListScrollPanel = new ClientListScrollPanel();
+		ClientListScrollPanel clientListScrollPanel = new ClientListScrollPanel(userManager);
 		userControlPanel.add(clientListScrollPanel, BorderLayout.CENTER);
 
 		JPanel chatRoomControlPanel = new JPanel();

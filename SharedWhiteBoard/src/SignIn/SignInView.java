@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 
-import Client.Client;
+import App.App;
 
 /**
  * SignIn View
@@ -32,7 +32,7 @@ public class SignInView {
 	protected JLabel lblAddressWarn = null;
 	protected JLabel lblPortWarn = null;
 	
-	protected Client client = null;
+	protected App app = null;
 	
 	private SignInControler controler = null;
 	private JLabel tipsLabel;
@@ -40,8 +40,8 @@ public class SignInView {
 	/**
 	 * Create the application.
 	 */
-	public SignInView(Client client) {
-		this.client = client;
+	public SignInView(App app) {
+		this.app = app;
 		initialize();
 		this.controler = new SignInControler(this);
 	}
@@ -85,12 +85,12 @@ public class SignInView {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								client.setUserId(controler.userId);
-								client.setServerIp(controler.address);
-								client.setPort(controler.port);
-								int state = client.register();
+								app.setUserId(controler.userId);
+								app.setServerIp(controler.address);
+								app.setPort(controler.port);
+								int state = app.register();
 								if (state == StateCode.SUCCESS) {
-									client.switch2Lobby();
+									app.switch2Lobby();
 								} else if (state == StateCode.FAIL){
 									tipsLabel.setText("User name exist! Change one!");
 									tipsLabel.setVisible(true);
@@ -124,7 +124,7 @@ public class SignInView {
 		
 		addressTextField = new JTextField();
 		addressTextField.setBounds(185, 65, 130, 26);
-		addressTextField.setText(client.getUserIp());
+		addressTextField.setText(app.getIp());
 		addressTextField.setToolTipText("Please input a ip address.");
 		addressTextField.setColumns(10);
 		
