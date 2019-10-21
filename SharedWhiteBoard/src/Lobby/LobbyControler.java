@@ -84,7 +84,6 @@ public class LobbyControler {
 							tempHostRegistorPort = resJSON.getInteger("port");
 							isWaiting = true;
 							ui.dialog = ui.waitPane.createDialog(ui.frame, "Waiting");
-							ui.dialog.setVisible(true);
 							try {
 								Registry registry = LocateRegistry.getRegistry(tempHostIp, tempHostRegistorPort);
 								tempRemoteDoor = (IRemoteDoor) registry.lookup("door");
@@ -93,6 +92,7 @@ public class LobbyControler {
 								exception.printStackTrace();
 								// TODO
 							}
+							ui.dialog.setVisible(true);
 						} else if (state == StateCode.FAIL) {
 							JOptionPane.showMessageDialog(ui.frame, "Password Wrong!", "Warning",
 									JOptionPane.WARNING_MESSAGE);
@@ -126,12 +126,12 @@ public class LobbyControler {
 		isWaiting = false;
 		try {
 			tempRemoteDoor.cancelKnock(app.getUserId());
+			tempHostIp = null;
+			tempHostRegistorPort = -1;
+			tempRemoteDoor = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		tempHostIp = null;
-		tempHostRegistorPort = -1;
-		tempRemoteDoor = null;
 	}
 
 	protected void reFreshRoomsListPanel() {

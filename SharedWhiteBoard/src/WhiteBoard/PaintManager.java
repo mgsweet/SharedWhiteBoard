@@ -35,6 +35,7 @@ public class PaintManager {
 	 */
 	public PaintManager(int mode, UserManager userManager) {
 		this.mode = mode;
+		this.userManager = userManager;
 		paintHistory = new Vector<MyShape>();
 	}
 	

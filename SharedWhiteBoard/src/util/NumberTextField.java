@@ -1,4 +1,4 @@
-package TextFieldFilter;
+package util;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.PlainDocument;

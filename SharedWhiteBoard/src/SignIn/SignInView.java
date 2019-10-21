@@ -6,6 +6,7 @@ import java.awt.Font;
 import javax.swing.JPanel;
 
 import StateCode.StateCode;
+import util.NumberTextField;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -118,7 +119,7 @@ public class SignInView {
 		
 		userIdTextField = new JTextField();
 		userIdTextField.setBounds(185, 33, 130, 26);
-		userIdTextField.setDocument(new TextFieldFilter.NumberTextField(8, false));
+		userIdTextField.setDocument(new NumberTextField(8, false));
 		userIdTextField.setToolTipText("Please input a name.");
 		userIdTextField.setColumns(8);
 		

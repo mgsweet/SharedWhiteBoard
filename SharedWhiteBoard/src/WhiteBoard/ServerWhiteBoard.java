@@ -3,9 +3,7 @@ package WhiteBoard;
 import App.App;
 import ClientUser.UserManager;
 import RMI.IRemoteDoor;
-import RMI.IRemotePaint;
 import RMI.RemoteDoor;
-import RMI.RemotePaint;
 
 public class ServerWhiteBoard extends SharedWhiteBoard {
 	
@@ -13,8 +11,8 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 	
 	public ServerWhiteBoard(App app) {
 		super(app);
-		initDoorRMI();
 		initManager();
+		initDoorRMI();
 		initPaintRMI();
 		initView();
 	}

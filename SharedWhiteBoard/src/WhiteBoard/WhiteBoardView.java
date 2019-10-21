@@ -17,20 +17,16 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import App.App;
 import ClientUser.UserManager;
 import Menus.EditMenu;
 import Menus.FileMenu;
+import util.NumberTextField;
 import util.WindowCloseListener;
 
-import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
 
 /**
  * 
@@ -253,7 +249,7 @@ public class WhiteBoardView {
 		thicknessTextPanel.setLayout(new BorderLayout(0, 0));
 
 		thicknessTextField = new JTextField();
-		thicknessTextField.setDocument(new TextFieldFilter.NumberTextField(2, true));
+		thicknessTextField.setDocument(new NumberTextField(2, true));
 		thicknessTextField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				thickness = Integer.parseInt(thicknessTextField.getText());

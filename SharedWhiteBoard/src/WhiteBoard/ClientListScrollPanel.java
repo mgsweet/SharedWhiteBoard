@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.*;
@@ -13,205 +14,124 @@ import javax.swing.event.ListSelectionListener;
 
 import ClientUser.User;
 import ClientUser.UserManager;
+import RMI.IRemotePaint;
+import RMI.IRemoteUM;
 
 public class ClientListScrollPanel extends JPanel {
 	private JScrollPane scrollpane;
-	private JList<String> clientList;
-	private DefaultListModel<String> model;
-	
-	private Vector<User> clients;
-	private Vector<String> visitors;
-	
+	private JList<String> userList;
+
 	private JButton btnAgree;
-	private JButton btnkickOut;
-	private List<String> selectClients;
+	private JButton btnKickOut;
+	private JButton btnDisagree;
+
+	private JPanel visitorControlPanel;
+	private JPanel guestControlPanel;
+
+	private String selectUserId;
+
+	private UserManager userManager;
 
 	public ClientListScrollPanel(UserManager userManager) {
-		// Get client-list
-		clients = new Vector<User>();
+		this.userManager = userManager;
+		initView();
+		userManager.setCLSP(this);
+		updateUserList();
+	}
 
+	/**
+	 * Update user list UI.
+	 */
+	public void updateUserList() {
+		Vector<String> listData = new Vector<String>();
+		// 1. add host.
+		listData.add(userManager.getHost().getUserId());
+		// 2. add guest.
+		Map<String, User> guests = userManager.getGuests();
+		for (User x : guests.values()) {
+			listData.add(x.getUserId());
+		}
+
+		if (userManager.isHost()) {
+			Map<String, User> visitors = userManager.getVisitors();
+			for (User x : visitors.values()) {
+				listData.add(x.getUserId());
+			}
+		}
+		userList.setListData(listData);
+	}
+
+	private void initView() {
 		// initialize
 		setLayout(new BorderLayout());
 		JPanel userListPanel = new JPanel();
 		scrollpane = new JScrollPane();
 		scrollpane.setPreferredSize(new Dimension(200, 200));
-		model = new DefaultListModel<String>();
-		for (int index = clients.size() - 1; index >= 0; index--) {
-			model.addElement(clients.get(index).getUserId());
-		}
 
-		clientList = new JList(model);
-		clientList.setForeground(Color.black);
-		// set multiple_selection mode. Press 'Ctrl' and select options
-		clientList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		// select client(s)
-		clientList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (!clientList.getValueIsAdjusting()) {
-					selectClients = clientList.getSelectedValuesList();
-					setbtn2("Kick Out");
-
-				}
-			}
-		});
-
-		scrollpane.add(clientList);
-		scrollpane.setViewportView(clientList);
-		userListPanel.add(scrollpane);
-		add(userListPanel, BorderLayout.CENTER);
-
-		JPanel contralPanel = new JPanel(new GridLayout(2, 1));
+		// visitor
+		visitorControlPanel = new JPanel(new GridLayout(1, 2));
 		btnAgree = new JButton("Agree");
-		btnAgree.setForeground(Color.gray);
-
 		btnAgree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				if (selectClients.size() != 0) {
-//
-//					for (Iterator<String> it = selectClients.iterator(); it.hasNext();) {
-//						String client;
-//						String row = it.next();
-//						String[] spl = row.split("!");
-//						if (spl.length > 1) {
-//							client = spl[1];
-//						} else {
-//							client = spl[0];
-//						}
-//
-//						if (visitors.size() != 0 && visitors.indexOf(client) != -1) {
-//							if (agreeJoining(client)) {
-//								clients.add(client);
-//								visitors.remove(client);
-//								model.removeElement(row);
-//								model.addElement(client);
-//								it.remove();
-//							}
-//						}
-//					}
-//
-//					JOptionPane.showMessageDialog(scrollpane, "Successful!");
-//
-//				} else {
-//
-//					JOptionPane.showMessageDialog(scrollpane, "Please select at least one client");
-//
-//				}
-//				if (visitors.size() == 0) {
-//					btn1.setForeground(Color.gray);
-//				}
+				userManager.addGuest(selectUserId);
+				updateUserList();
 			}
 		});
-		contralPanel.add(btnAgree);
-
-		setbtn2("Kick Out");
-		contralPanel.add(btnkickOut);
-		add(contralPanel, BorderLayout.SOUTH);
-
-	}
-
-	// Need a Listener for coming clients
-	protected void newClientListener() {
-		visitors = new Vector<String>();
-
-		if (true) { // if new client coming !!!!!!
-
-			selectClients = null;
-			// Add new client(s) list to the JList
-			for (int i = 0; i < visitors.size(); i++) {
-				model.add(0, "<html><font color=red>!" + visitors.get(i) + "!(asks for joining)</font></html>");
+		visitorControlPanel.add(btnAgree);
+		btnDisagree = new JButton("Disagree");
+		btnDisagree.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 			}
+		});
+		visitorControlPanel.add(btnDisagree);
 
-			setbtn2("Agree all");
-		}
+		// guest
+		guestControlPanel = new JPanel(new GridLayout(1, 1));
+		btnKickOut = new JButton("Kick Out");
+		btnKickOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 
-	}
+			}
+		});
+		guestControlPanel.add(btnKickOut);
 
-	private void setbtn2(String text) {
-		btnkickOut = new JButton(text);
-		if (text == "Kick Out") { // To reject client entering or Kick out
-			btnkickOut.setForeground(Color.black);
-			btnkickOut.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (selectClients.size() != 0) {
-
-						for (Iterator<String> it = selectClients.iterator(); it.hasNext();) {
-							String client;
-							String row = it.next();
-							String[] spl = row.split("!");
-							if (spl.length > 1) {
-								client = spl[1];
-							} else {
-								client = spl[0];
-							}
-							if (visitors.size() != 0 && visitors.indexOf(client) != -1) {
-								if (rejectJoining(client)) { // Reject client who wants to enter the room
-									visitors.remove(client);
-									model.removeElement(row);
-								}
-
-							} else {
-								if (clients.size() != 0 && clients.indexOf(client) != -1) {
-									if (kickOut(client)) { // Kick out the client
-										clients.remove(client);
-										model.removeElement(client);
-									}
-
-								}
-							}
+		// The user list should be create after the control panel.
+		userList = new JList<String>();
+		userList.setForeground(Color.black);
+		userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		// select client(s)
+		userList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (!userList.getValueIsAdjusting()) {
+					selectUserId = userList.getSelectedValue();
+					if (userManager.isHost()) {
+						int identity = userManager.getIdentity(selectUserId);
+						if (identity == User.HOST) {
+							remove(guestControlPanel);
+							remove(visitorControlPanel);
+							revalidate();
+							repaint();
+						} else if (identity == User.GUEST) {
+							remove(visitorControlPanel);
+							add(guestControlPanel, BorderLayout.SOUTH);
+							revalidate();
+							repaint();
+						} else {
+							remove(guestControlPanel);
+							add(visitorControlPanel, BorderLayout.SOUTH);
+							revalidate();
+							repaint();
 						}
-						JOptionPane.showMessageDialog(scrollpane, "Successful!");
-
-					} else {
-
-						JOptionPane.showMessageDialog(scrollpane, "Please select at least one client");
-
 					}
-
-					btnAgree.setForeground(Color.black);
-					btnkickOut.setForeground(Color.black);
 				}
-			});
-		} else {
-			// Agree all
-			btnAgree.setForeground(Color.red);
-			btnkickOut.setForeground(Color.red);
-			btnkickOut.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-//					for (Iterator<String> it = visitors.iterator(); it.hasNext();) {
-//						String client = it.next();
-//						if (agreeJoining(client)) {
-//							clients.add(client);
-//							model.removeElement(
-//									"<html><font color=red>!" + client + "!(asks for joining)</font></html>");
-//							model.addElement(client);
-//							it.remove();
-//						}
-//
-//					}
-//					btn1.setForeground(Color.black);
-//					btn2.setForeground(Color.black);
-				}
-			});
-		}
+			}
+		});
+		userListPanel.setLayout(new BorderLayout(0, 0));
 
+		scrollpane.add(userList);
+		scrollpane.setViewportView(userList);
+		userListPanel.add(scrollpane);
+		add(userListPanel, BorderLayout.CENTER);
 	}
-
-	// Kick out client(s) in RMI
-	private boolean kickOut(String clientname) {
-
-		return true;
-	}
-
-	// Agree client to enter in RMI
-	private boolean agreeJoining(String clientname) {
-
-		return true;
-	}
-
-	// Kick out client(s) in RMI
-	private boolean rejectJoining(String clientname) {
-
-		return true;
-	}
-
 }
