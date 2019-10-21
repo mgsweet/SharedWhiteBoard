@@ -82,7 +82,7 @@ public class ClientListScrollPanel extends JPanel {
 		btnDisagree.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				userManager.removeVistor(selectUserId);
+				userManager.kickVisitor(selectUserId);
 				removeBtns();
 			}
 		});

@@ -174,6 +174,16 @@ public class UserManager {
 	 * @param userId
 	 */
 	public void removeVistor(String userId) {
+		visitors.remove(userId);
+		visitorRemoteApps.remove(userId);
+
+		// refresh ui.
+		if (clsp != null) {
+			clsp.updateUserList();
+		}
+	}
+	
+	public void kickVisitor(String userId) {
 		try {
 			IRemoteApp remoteApp = visitorRemoteApps.get(userId);
 			remoteApp.askOut();
@@ -182,13 +192,7 @@ public class UserManager {
 			// TODO
 		}
 		
-		visitors.remove(userId);
-		visitorRemoteApps.remove(userId);
-
-		// refresh ui.
-		if (clsp != null) {
-			clsp.updateUserList();
-		}
+		removeVistor(userId);
 	}
 
 	/**
