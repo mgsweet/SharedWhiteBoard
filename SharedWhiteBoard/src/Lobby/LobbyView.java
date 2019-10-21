@@ -55,10 +55,9 @@ public class LobbyView {
 
 	protected JOptionPane waitPane;
 	protected JDialog waitDialog;
-	
+
 	protected JOptionPane beKickedPane;
 	protected JDialog beKickedDialog;
-	
 
 	/**
 	 * Create the application.
@@ -86,25 +85,27 @@ public class LobbyView {
 	 * @param isVisible
 	 */
 	public void setWaitDialogVisiable(Boolean isVisible) {
-		waitDialog.setVisible(isVisible);
+		if (waitDialog != null)
+			waitDialog.setVisible(isVisible);
 	}
-	
+
 	/**
 	 * Set beKickedDialog visiable.
 	 * 
 	 * @param isVisible
 	 */
 	public void setBeKickedDialogVisiable(Boolean isVisible) {
-		beKickedDialog.setVisible(isVisible);
+		if (beKickedDialog != null)
+			beKickedDialog.setVisible(isVisible);
 	}
-	
+
 	/**
 	 * Create a wait dialog, not visible.
 	 */
 	public void createWaitDialog() {
 		waitDialog = waitPane.createDialog(frame, "Waiting");
 	}
-	
+
 	/**
 	 * Create a beKicked dialog, visible.
 	 */
@@ -228,7 +229,7 @@ public class LobbyView {
 		JButton[] cancelBtnOption = { cancelBtn };
 		waitPane = new JOptionPane("Waiting for permission...", JOptionPane.INFORMATION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, cancelBtnOption, cancelBtnOption[0]);
-		
+
 		// Use to warn be kicked.
 		JButton okBtn = new JButton("OK");
 		okBtn.addActionListener(new ActionListener() {
@@ -236,7 +237,7 @@ public class LobbyView {
 				beKickedDialog.setVisible(false);
 			}
 		});
-		JButton[] okBtnOption = {okBtn};
+		JButton[] okBtnOption = { okBtn };
 		beKickedPane = new JOptionPane("You have been kicked out.", JOptionPane.INFORMATION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, okBtnOption, okBtnOption[0]);
 	}

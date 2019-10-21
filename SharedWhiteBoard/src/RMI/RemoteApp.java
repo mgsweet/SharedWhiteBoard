@@ -30,7 +30,6 @@ public class RemoteApp extends UnicastRemoteObject implements IRemoteApp{
 	@Override
 	public void askOut() throws RemoteException {
 		app.switch2Lobby();	
-		app.getLobbyView().setWaitDialogVisiable(false);
 		app.getLobbyView().createBeKickedDialog();
 	}
 }

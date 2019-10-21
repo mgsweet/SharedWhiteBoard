@@ -69,9 +69,10 @@ public class UserManager {
 	public Boolean isHost() {
 		return isHost;
 	}
-	
+
 	/**
 	 * Get remote UM.
+	 * 
 	 * @return
 	 */
 	public IRemoteUM getHostRemoteUM() {
@@ -98,18 +99,19 @@ public class UserManager {
 
 			IRemoteUM remoteUM = (IRemoteUM) clientRegistry.lookup("um");
 			guestRemoteUMs.put(guestId, remoteUM);
-			
+
 			// delete visitor
-			removeVistor(guestId);
-			
+			visitors.remove(guestId);
+			visitorRemoteApps.remove(guestId);
+
 			// set remote user manager
-			for(IRemoteUM x: guestRemoteUMs.values()) {
+			for (IRemoteUM x : guestRemoteUMs.values()) {
 				x.setGuests(guests);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		// refresh ui.
 		if (clsp != null) {
 			clsp.updateUserList();
@@ -176,10 +178,13 @@ public class UserManager {
 			IRemoteApp remoteApp = visitorRemoteApps.get(userId);
 			remoteApp.askOut();
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
+			// TODO
 		}
+		
 		visitors.remove(userId);
 		visitorRemoteApps.remove(userId);
+
 		// refresh ui.
 		if (clsp != null) {
 			clsp.updateUserList();

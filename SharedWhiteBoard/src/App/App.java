@@ -149,7 +149,11 @@ public class App {
 	 */
 	public void switch2Lobby() {
 		System.out.println("User: " + userId + " enter Lobby.");
-		lobbyView = new LobbyView(this);
+		if (lobbyView == null) lobbyView = new LobbyView(this);
+		
+		lobbyView.setWaitDialogVisiable(false);
+		lobbyView.setBeKickedDialogVisiable(false);
+		
 		signInView.getFrame().setVisible(false);
 		if (sharedWhiteBoard != null) {
 			sharedWhiteBoard.getView().getFrame().setVisible(false);
@@ -163,6 +167,9 @@ public class App {
 	 * Switch to whiteBoard.
 	 */
 	public void switch2WhiteBoard() {
+		lobbyView.setWaitDialogVisiable(false);
+		lobbyView.setBeKickedDialogVisiable(false);
+		
 		lobbyView.getFrame().setVisible(false);
 		signInView.getFrame().setVisible(false);
 		sharedWhiteBoard.getView().getFrame().setVisible(true);
@@ -201,7 +208,6 @@ public class App {
 	 */
 	public void joinRoom(String hostId, String hostIp, int hostRegisterPort) {
 		sharedWhiteBoard = tempClientWhiteBoard;
-		lobbyView.setWaitDialogVisiable(false);
 		switch2WhiteBoard();
 	}
 
