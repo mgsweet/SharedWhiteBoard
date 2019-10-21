@@ -194,6 +194,7 @@ public class App {
 	 */
 	public void joinRoom(String hostId, String hostIp, int hostRegisterPort) {
 		sharedWhiteBoard = new ClientWhiteBoard(this, hostId, hostIp, hostRegisterPort);
+		lobbyView.setDialogVisable(false);
 		switch2WhiteBoard();
 	}
 	

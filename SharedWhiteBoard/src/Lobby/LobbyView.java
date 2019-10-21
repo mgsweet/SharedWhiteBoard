@@ -75,6 +75,14 @@ public class LobbyView {
 	public JFrame getFrame() {
 		return this.frame;
 	}
+	
+	/**
+	 * Set dialog visable.
+	 * @param isVisible
+	 */
+	public void setDialogVisable(Boolean isVisible) {
+		dialog.setVisible(isVisible);
+	}
 
 	/**
 	 * Initialize the contents of the frame.

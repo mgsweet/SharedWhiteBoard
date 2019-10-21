@@ -194,4 +194,12 @@ public class UserManager {
 		}
 	}
 	
+	/**
+	 * Update all the guests.
+	 * @param guests
+	 */
+	public void setGuests(Map<String, User> guests) {
+		this.guests = guests;
+	}
+	
 }
