@@ -12,9 +12,9 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 	private IRemoteDoor remoteDoor;
 	
 	public ServerWhiteBoard(App app) {
-		super(app, PaintManager.SERVER_MODE);
-		userManager = new UserManager(true, app.getUserId(), app.getIp(), app.getRegistryPort(), -1);
+		super(app);
 		initDoorRMI();
+		initManager();
 		initPaintRMI();
 		initView();
 	}
@@ -31,6 +31,11 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void initManager() {
+		userManager = new UserManager(true, app.getUserId(), app.getIp(), app.getRegistryPort(), -1);
+		paintManager = new PaintManager(paintManager.SERVER_MODE, userManager);
 	}
 	
 }

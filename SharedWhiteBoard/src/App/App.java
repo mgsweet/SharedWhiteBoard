@@ -6,20 +6,18 @@ import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import Lobby.LobbyView;
-import RMI.IRemotePaint;
-import RMI.RemotePaint;
+import RMI.IRemoteUM;
+import RMI.RemoteUM;
 import SignIn.SignInView;
 import StateCode.StateCode;
 import WhiteBoard.ClientWhiteBoard;
 import WhiteBoard.ServerWhiteBoard;
 import WhiteBoard.SharedWhiteBoard;
-import WhiteBoard.WhiteBoardView;
+import util.Execute;
 
 /**
  * 
@@ -36,7 +34,7 @@ public class App {
 	private String userId = "";
 	// Central server information
 	private String serverIp = "";
-	private int port = -1;
+	private int serverPort = -1;
 	// RoomList
 	public Map<Integer, String> roomList = null;
 	// SharedWhiteBoard
@@ -44,6 +42,8 @@ public class App {
 	// RMI
 	private int registryPort;
 	private Registry registry;
+	// Privite Remote interface for user manager.
+	private IRemoteUM remoteUM;
 
 	public static void main(String[] args) {
 		App app = new App();
@@ -87,6 +87,21 @@ public class App {
 	public String getIp() {
 		return ip.getHostAddress();
 	}
+	
+	/**
+	 * Get central server's ip.
+	 * @return
+	 */
+	public String getServerIp() {
+		return serverIp;
+	}
+	
+	/**
+	 * Get central server's port.
+	 */
+	public int getServerPort() {
+		return serverPort;
+	}
 
 	/**
 	 * Set userId
@@ -119,8 +134,8 @@ public class App {
 	 * 
 	 * @param port
 	 */
-	public void setPort(int port) {
-		this.port = port;
+	public void setServerPort(int port) {
+		this.serverPort = port;
 	}
 
 	/**
@@ -132,10 +147,14 @@ public class App {
 		signInView.getFrame().setVisible(false);
 		if (sharedWhiteBoard != null) {
 			sharedWhiteBoard.getView().getFrame().setVisible(false);
+			sharedWhiteBoard = null;
 		}
 		lobbyView.getFrame().setVisible(true);
 	}
 
+	/**
+	 * Switch to whiteBoard.
+	 */
 	public void switch2WhiteBoard() {
 		lobbyView.getFrame().setVisible(false);
 		signInView.getFrame().setVisible(false);
@@ -157,7 +176,7 @@ public class App {
 		reqJSON.put("hostName", userId);
 		reqJSON.put("hostIp", ip);
 		reqJSON.put("hostPort", registryPort);
-		JSONObject resJSON = execute(reqJSON);
+		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);
 		int state = resJSON.getInteger("state");
 		if (state == StateCode.SUCCESS) {
 			sharedWhiteBoard.setRoomID(resJSON.getInteger("roomId"));
@@ -167,23 +186,19 @@ public class App {
 		}
 	}
 
-	public int joinRoom(int roomId, String password) {
-		JSONObject reqJSON = new JSONObject();
-		reqJSON.put("command", StateCode.GET_ROOM_INFO);
-		reqJSON.put("roomId", roomId);
-		reqJSON.put("password", password);
-		JSONObject resJSON = execute(reqJSON);
-		int state = resJSON.getInteger("state");
-		if (state == StateCode.SUCCESS) {
-			String hostIp = resJSON.getString("ip");
-			int hostRegisterPort = resJSON.getInteger("port");
-			String hostId = resJSON.getString("hostId");
-			sharedWhiteBoard = new ClientWhiteBoard(this, hostId, hostIp, hostRegisterPort);
-			switch2WhiteBoard();
-		} else {
-			System.out.println("Password Wrong!");
-		}
-		return state;
+	/**
+	 * 
+	 * @param hostId
+	 * @param hostIp
+	 * @param hostRegisterPort
+	 */
+	public void joinRoom(String hostId, String hostIp, int hostRegisterPort) {
+		sharedWhiteBoard = new ClientWhiteBoard(this, hostId, hostIp, hostRegisterPort);
+		switch2WhiteBoard();
+	}
+	
+	public void exitRoom() {
+		
 	}
 
 	/**
@@ -194,7 +209,7 @@ public class App {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.GET_ROOM_LIST);
 		System.out.println("Request for rooms list...");
-		JSONObject resJson = execute(reqJSON);
+		JSONObject resJson = Execute.execute(reqJSON, serverIp, serverPort);
 		roomList = (Map<Integer, String>) resJson.get("roomList");
 		System.out.println("Get rooms list!");
 	}
@@ -208,7 +223,7 @@ public class App {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.ADD_USER);
 		reqJSON.put("userId", userId);
-		JSONObject resJSON = execute(reqJSON);
+		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);;
 		int state = resJSON.getIntValue("state");
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
@@ -229,7 +244,7 @@ public class App {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.REMOVE_USER);
 		reqJSON.put("userId", userId);
-		JSONObject resJSON = execute(reqJSON);
+		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);;
 		int state = resJSON.getIntValue("state");
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
@@ -240,34 +255,6 @@ public class App {
 				System.out.println("Exit invalidly!");
 			}
 		}
-	}
-
-	/**
-	 * Send request to central server, which can detect whether the server address
-	 * is workable or not.
-	 * 
-	 * @param reqJSON
-	 * @return resJSON
-	 */
-	public JSONObject execute(JSONObject reqJSON) {
-		JSONObject resJSON = new JSONObject();
-		try {
-			System.out.println("Trying to connect to server...");
-			ExecuteThread eThread = new ExecuteThread(serverIp, port, reqJSON);
-			eThread.start();
-			eThread.join(1500);
-			if (eThread.isAlive()) {
-				eThread.interrupt();
-				throw new TimeoutException();
-			}
-			resJSON = eThread.getResJSON();
-			System.out.println("Connect Success!");
-		} catch (TimeoutException e) {
-			resJSON.put("state", StateCode.TIMEOUT);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return resJSON;
 	}
 
 	private void init() throws UnknownHostException {
@@ -289,6 +276,10 @@ public class App {
 			LocateRegistry.createRegistry(registryPort);
 			registry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
 
+			// Create a remote user manager
+			remoteUM = new RemoteUM(this);
+			registry.bind("umRMI", remoteUM);
+			
 			printInitialStates();
 		} catch (Exception e) {
 			e.printStackTrace();

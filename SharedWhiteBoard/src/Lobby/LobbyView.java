@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.ScrollPaneConstants;
 
 import App.App;
@@ -19,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -38,7 +40,7 @@ public class LobbyView {
 	protected JFrame frame;
 	protected JTextField roomNameTextField;
 	protected JTextField hostNameTextField;
-	
+
 	protected JPanel roomsListPanel;
 	protected JButton btnCreateRoom;
 	protected JPanel firstPanel;
@@ -47,9 +49,12 @@ public class LobbyView {
 	protected Vector<JButton> roomsBtnVec;
 	protected App app;
 	protected LobbyControler controler;
-	
+
 	protected String addImagePath = "images/add.png";
 	protected String joinImagePath = "images/join.png";
+
+	protected JOptionPane waitPane;
+	protected JDialog dialog;
 
 	/**
 	 * Create the application.
@@ -61,15 +66,16 @@ public class LobbyView {
 		controler = new LobbyControler(app, this);
 		controler.refreshRoomsList();
 	}
-	
+
 	/**
 	 * Get current frame.
+	 * 
 	 * @return
 	 */
 	public JFrame getFrame() {
 		return this.frame;
 	}
-	
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -82,21 +88,21 @@ public class LobbyView {
 		frame.addWindowListener(new WindowCloseListener(app));
 		frame.setMinimumSize(new Dimension(600, 500));
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-		
+
 		roomsListPanel = new JPanel();
-		//panel.setPreferredSize(new Dimension(0, 500));
+		// panel.setPreferredSize(new Dimension(0, 500));
 		scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(roomsListPanel);
 		roomsListPanel.setLayout(null);
-		
+
 		// FirstPanel In Roomslist Panel INIT
 		firstPanel = new JPanel();
 		firstPanel.setBounds(5, 5, 570, 160);
 		firstPanel.setLayout(new GridLayout(1, 2, 5, 0));
-		
+
 		// CREATE_ROOM button INIT
 		btnCreateRoom = new JButton();
 		btnCreateRoom.addActionListener(new ActionListener() {
@@ -105,18 +111,17 @@ public class LobbyView {
 			}
 		});
 		ImageIcon addIcon = new ImageIcon(addImagePath);
-		addIcon.setImage(addIcon.getImage().getScaledInstance(50, 50,
-				Image.SCALE_DEFAULT));
+		addIcon.setImage(addIcon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
 		btnCreateRoom.setIcon(addIcon);
-		
+
 		// init Blank Panel
-		blankPanel = new JPanel();	
-	
+		blankPanel = new JPanel();
+
 		JPanel controlBarPanel = new JPanel();
 		controlBarPanel.setPreferredSize(new Dimension(0, 100));
 		frame.getContentPane().add(controlBarPanel, BorderLayout.SOUTH);
 		controlBarPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		JButton btnRefresh = new JButton("REFRESH");
 		btnRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -124,62 +129,65 @@ public class LobbyView {
 			}
 		});
 		controlBarPanel.add(btnRefresh, BorderLayout.EAST);
-		
+
 		// filterPanel
 		JPanel filterPanel = new JPanel();
 		controlBarPanel.add(filterPanel, BorderLayout.CENTER);
 		filterPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		JButton btnFilt = new JButton("FILT");
 		btnFilt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controler.filtRoomsList();
 			}
 		});
-		
+
 		filterPanel.add(btnFilt, BorderLayout.EAST);
 		JPanel filterTextPanel = new JPanel();
 		filterPanel.add(filterTextPanel, BorderLayout.CENTER);
 		JLabel lblRoomName = new JLabel("Room Name:");
 		JLabel lblHostName = new JLabel("Host Name:");
-		
+
 		roomNameTextField = new JTextField();
 		roomNameTextField.setColumns(10);
-		
+
 		hostNameTextField = new JTextField();
 		hostNameTextField.setColumns(10);
 		GroupLayout gl_filterTextPanel = new GroupLayout(filterTextPanel);
-		gl_filterTextPanel.setHorizontalGroup(
-			gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_filterTextPanel.createSequentialGroup()
-					.addGap(50)
-					.addGroup(gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
+		gl_filterTextPanel.setHorizontalGroup(gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_filterTextPanel.createSequentialGroup().addGap(50).addGroup(gl_filterTextPanel
+						.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_filterTextPanel.createSequentialGroup()
-							.addComponent(lblRoomName, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-							.addGap(13)
-							.addComponent(roomNameTextField))
-						.addGroup(gl_filterTextPanel.createSequentialGroup()
-							.addGap(7)
-							.addComponent(lblHostName, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(hostNameTextField)))
-					.addGap(50))
-		);
-		gl_filterTextPanel.setVerticalGroup(
-			gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_filterTextPanel.createSequentialGroup()
-					.addGap(23)
-					.addGroup(gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_filterTextPanel.createSequentialGroup()
-							.addGap(5)
-							.addComponent(lblRoomName))
-						.addComponent(roomNameTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(2)
-					.addGroup(gl_filterTextPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(hostNameTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblHostName))
-					.addContainerGap(23, Short.MAX_VALUE))
-		);
+								.addComponent(lblRoomName, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+								.addGap(13).addComponent(roomNameTextField))
+						.addGroup(gl_filterTextPanel.createSequentialGroup().addGap(7)
+								.addComponent(lblHostName, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED).addComponent(hostNameTextField)))
+						.addGap(50)));
+		gl_filterTextPanel.setVerticalGroup(gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_filterTextPanel.createSequentialGroup().addGap(23)
+						.addGroup(gl_filterTextPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(
+										gl_filterTextPanel.createSequentialGroup().addGap(5).addComponent(lblRoomName))
+								.addComponent(roomNameTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE))
+						.addGap(2)
+						.addGroup(gl_filterTextPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(hostNameTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblHostName))
+						.addContainerGap(23, Short.MAX_VALUE)));
 		filterTextPanel.setLayout(gl_filterTextPanel);
+
+		JButton cancelBtn = new JButton("Cancel");
+		cancelBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
+				controler.cancelKnock();
+			}
+		});
+		JButton[] cancelBtnOption = { cancelBtn };
+		waitPane = new JOptionPane("Waiting for permission...", JOptionPane.INFORMATION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION, null, cancelBtnOption, cancelBtnOption[0]);
 	}
 }

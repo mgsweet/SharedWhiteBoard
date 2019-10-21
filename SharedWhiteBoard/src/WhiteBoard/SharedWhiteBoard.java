@@ -25,8 +25,7 @@ public abstract class SharedWhiteBoard {
 		this.roomId = roomId;
 	}
 	
-	public SharedWhiteBoard(App app, int mode) {
-		paintManager = new PaintManager(mode);
+	public SharedWhiteBoard(App app) {
 		this.app = app;
 	}
 	

@@ -87,7 +87,7 @@ public class SignInView {
 							try {
 								app.setUserId(controler.userId);
 								app.setServerIp(controler.address);
-								app.setPort(controler.port);
+								app.setServerPort(controler.port);
 								int state = app.register();
 								if (state == StateCode.SUCCESS) {
 									app.switch2Lobby();

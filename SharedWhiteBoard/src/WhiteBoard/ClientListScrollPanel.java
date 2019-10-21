@@ -18,15 +18,17 @@ public class ClientListScrollPanel extends JPanel {
 	private JScrollPane scrollpane;
 	private JList<String> clientList;
 	private DefaultListModel<String> model;
+	
 	private Vector<User> clients;
-	private Vector<String> newClients;
+	private Vector<String> visitors;
+	
 	private JButton btnAgree;
 	private JButton btnkickOut;
 	private List<String> selectClients;
 
 	public ClientListScrollPanel(UserManager userManager) {
 		// Get client-list
-		clients = userManager.getUserList();
+		clients = new Vector<User>();
 
 		// initialize
 		setLayout(new BorderLayout());
@@ -76,10 +78,10 @@ public class ClientListScrollPanel extends JPanel {
 //							client = spl[0];
 //						}
 //
-//						if (newClients.size() != 0 && newClients.indexOf(client) != -1) {
+//						if (visitors.size() != 0 && visitors.indexOf(client) != -1) {
 //							if (agreeJoining(client)) {
 //								clients.add(client);
-//								newClients.remove(client);
+//								visitors.remove(client);
 //								model.removeElement(row);
 //								model.addElement(client);
 //								it.remove();
@@ -94,7 +96,7 @@ public class ClientListScrollPanel extends JPanel {
 //					JOptionPane.showMessageDialog(scrollpane, "Please select at least one client");
 //
 //				}
-//				if (newClients.size() == 0) {
+//				if (visitors.size() == 0) {
 //					btn1.setForeground(Color.gray);
 //				}
 			}
@@ -107,22 +109,16 @@ public class ClientListScrollPanel extends JPanel {
 
 	}
 
-	// Get the client list in RMI
-	protected Vector<String> getClientList() {
-
-		return null;
-	}
-
 	// Need a Listener for coming clients
 	protected void newClientListener() {
-		newClients = new Vector<String>();
+		visitors = new Vector<String>();
 
 		if (true) { // if new client coming !!!!!!
 
 			selectClients = null;
 			// Add new client(s) list to the JList
-			for (int i = 0; i < newClients.size(); i++) {
-				model.add(0, "<html><font color=red>!" + newClients.get(i) + "!(asks for joining)</font></html>");
+			for (int i = 0; i < visitors.size(); i++) {
+				model.add(0, "<html><font color=red>!" + visitors.get(i) + "!(asks for joining)</font></html>");
 			}
 
 			setbtn2("Agree all");
@@ -147,9 +143,9 @@ public class ClientListScrollPanel extends JPanel {
 							} else {
 								client = spl[0];
 							}
-							if (newClients.size() != 0 && newClients.indexOf(client) != -1) {
+							if (visitors.size() != 0 && visitors.indexOf(client) != -1) {
 								if (rejectJoining(client)) { // Reject client who wants to enter the room
-									newClients.remove(client);
+									visitors.remove(client);
 									model.removeElement(row);
 								}
 
@@ -181,7 +177,7 @@ public class ClientListScrollPanel extends JPanel {
 			btnkickOut.setForeground(Color.red);
 			btnkickOut.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-//					for (Iterator<String> it = newClients.iterator(); it.hasNext();) {
+//					for (Iterator<String> it = visitors.iterator(); it.hasNext();) {
 //						String client = it.next();
 //						if (agreeJoining(client)) {
 //							clients.add(client);

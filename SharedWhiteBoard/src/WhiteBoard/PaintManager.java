@@ -2,8 +2,10 @@ package WhiteBoard;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Map;
 import java.util.Vector;
 
+import ClientUser.UserManager;
 import RMI.IRemotePaint;
 import Shape.MyShape;
 
@@ -18,10 +20,8 @@ public class PaintManager {
 	private Vector<MyShape> paintHistory = null;
 	// Use to store the current paintint area
 	private PaintBoardPanel paintArea;
-	// Store all the other client
-	private Vector<IRemotePaint> clientRemotePaints;
-	// Use to define whether the PaintManager belong to a server.
-	private IRemotePaint serveRemotePaint;
+	// User manager
+	private UserManager userManager;
 	// There are three kind of mode: server, client and offline
 	private int mode;
 	// Default mode.
@@ -30,13 +30,23 @@ public class PaintManager {
 	public static final int OFFLINE_MODE = 2;
 	
 	/**
+	 * 
+	 * @param mode There are three kind of mode: server, client and offline
+	 */
+	public PaintManager(int mode, UserManager userManager) {
+		this.mode = mode;
+		paintHistory = new Vector<MyShape>();
+	}
+	
+	
+	/**
 	 * Use in the client mode, when 
 	 */
 	public void pullRemoteHistory() {
 		if (mode == CLIENT_MODE) {
 			try {
-				if (serveRemotePaint != null) {
-					paintHistory = serveRemotePaint.getHistory();
+				if (userManager.getHostRemotePaint() != null) {
+					paintHistory = userManager.getHostRemotePaint().getHistory();
 				} else {
 					System.out.println("Err: serveRemotePaint is null!");
 				}
@@ -44,47 +54,6 @@ public class PaintManager {
 				e.printStackTrace();
 			}
 			paintArea.repaint();
-		}
-	}
-
-	/**
-	 * 
-	 * @param mode There are three kind of mode: server, client and offline
-	 */
-	public PaintManager(int mode) {
-		this.mode = mode;
-		paintHistory = new Vector<MyShape>();
-
-		if (mode == SERVER_MODE) {
-			clientRemotePaints = new Vector<IRemotePaint>();
-		}
-	}
-	
-	/**
-	 * Add a client clientRMI, onlu work in SERVER_MODE.
-	 * @param ip
-	 * @param port
-	 */
-	public void addClientRMI(String ip, int port) {
-		if (mode == SERVER_MODE) {
-			try {
-				Registry clientRegistry = LocateRegistry.getRegistry(ip, port);
-				IRemotePaint remotePaint = (IRemotePaint) clientRegistry.lookup("paintRMI");
-				clientRemotePaints.add(remotePaint);
-			} catch (Exception e) {
-				System.out.println("Can not get the client registry.");
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/**
-	 * Set the set ServeRemotePaint, only work in CLIENT_MODE
-	 * @param serverRemotePaint
-	 */
-	public void setServerRMI(IRemotePaint serverRemotePaint) {
-		if (mode == CLIENT_MODE) {
-			this.serveRemotePaint = serverRemotePaint;
 		}
 	}
 
@@ -125,7 +94,8 @@ public class PaintManager {
 	public void addShape(MyShape shape) {
 		if (mode == SERVER_MODE) {
 			paintHistory.add(shape);
-			for (IRemotePaint x : clientRemotePaints) {
+			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
+			for (IRemotePaint x : guestRemotePaint.values()) {
 				try {
 					x.setHistory(paintHistory);
 				} catch (Exception e) {
@@ -135,7 +105,7 @@ public class PaintManager {
 			paintArea.repaint();
 		} else if (mode == CLIENT_MODE) {
 			try {
-				serveRemotePaint.addShape(shape);
+				userManager.getHostRemotePaint().addShape(shape);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -150,7 +120,8 @@ public class PaintManager {
 	public void clearAll() {
 		if (mode == SERVER_MODE) {
 			paintHistory.clear();
-			for (IRemotePaint x : clientRemotePaints) {
+			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
+			for (IRemotePaint x : guestRemotePaint.values()) {
 				try {
 					x.clearHistory();
 				} catch (Exception e) {

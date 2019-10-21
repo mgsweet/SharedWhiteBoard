@@ -40,12 +40,6 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	}
 	
 	@Override
-	public void addClient(String ip, int port) throws RemoteException {
-		System.out.println("A new client join: " + ip + ' ' + port);
-		paintManager.addClientRMI(ip, port);
-	}
-	
-	@Override
 	public Vector<MyShape> getHistory() throws RemoteException {
 		return paintManager.getPaintHistory();
 	}

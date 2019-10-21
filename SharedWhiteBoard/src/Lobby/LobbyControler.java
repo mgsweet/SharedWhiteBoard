@@ -5,7 +5,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.KeyStore.Entry;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -13,8 +14,12 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.alibaba.fastjson.JSONObject;
+
 import App.App;
+import RMI.IRemoteDoor;
 import StateCode.StateCode;
+import util.Execute;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -25,7 +30,13 @@ public class LobbyControler {
 	private App app;
 	private LobbyView ui;
 
+	private String tempHostIp;
+	private int tempHostRegistorPort;
+	private IRemoteDoor tempRemoteDoor;
+	private Boolean isWaiting;
+
 	public LobbyControler(App app, LobbyView ui) {
+		isWaiting = false;
 		this.app = app;
 		this.ui = ui;
 	}
@@ -53,18 +64,40 @@ public class LobbyControler {
 			joinIcon.setImage(joinIcon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
 			tempBtn.setIcon(joinIcon);
 			tempBtn.addActionListener(new ActionListener() {
+				/**
+				 * Try to join a exist room.
+				 */
 				public void actionPerformed(ActionEvent e) {
-					String password = JOptionPane.showInputDialog(ui.frame, "Please Enter Password:", roomName,
-							JOptionPane.OK_CANCEL_OPTION);
+					String password = JOptionPane.showInputDialog(ui.frame, "Please Enter Password:",
+							"Room: " + roomName, JOptionPane.OK_CANCEL_OPTION);
 					if (password != null) {
 						// So wired! Should learn more about entrySet().
 						int roomId = Integer.parseInt(entry.getKey() + "");
-						int state = app.joinRoom(roomId, password);
-						if (state == StateCode.FAIL) {
-							JOptionPane.showConfirmDialog(ui.frame, "Password Wrong!", "Warning",
+						JSONObject reqJSON = new JSONObject();
+						reqJSON.put("command", StateCode.GET_ROOM_INFO);
+						reqJSON.put("roomId", roomId);
+						reqJSON.put("password", password);
+						JSONObject resJSON = Execute.execute(reqJSON, app.getServerIp(), app.getServerPort());
+						int state = resJSON.getInteger("state");
+						if (state == StateCode.SUCCESS) {
+							tempHostIp = resJSON.getString("ip");
+							tempHostRegistorPort = resJSON.getInteger("port");
+							isWaiting = true;
+							ui.dialog = ui.waitPane.createDialog(ui.frame, "Waiting");
+							ui.dialog.setVisible(true);
+							try {
+								Registry registry = LocateRegistry.getRegistry(tempHostIp, tempHostRegistorPort);
+								tempRemoteDoor = (IRemoteDoor) registry.lookup("door");
+								tempRemoteDoor.knock(app.getUserId(), app.getIp(), app.getRegistryPort());
+							} catch (Exception exception) {
+								exception.printStackTrace();
+								// TODO
+							}
+						} else if (state == StateCode.FAIL) {
+							JOptionPane.showMessageDialog(ui.frame, "Password Wrong!", "Warning",
 									JOptionPane.WARNING_MESSAGE);
 						} else if (state != StateCode.SUCCESS) {
-							JOptionPane.showConfirmDialog(ui.frame, "Can not connect to central server!", "Error",
+							JOptionPane.showMessageDialog(ui.frame, "Can not connect to central server!", "Error",
 									JOptionPane.ERROR_MESSAGE);
 						}
 					}
@@ -88,6 +121,18 @@ public class LobbyControler {
 			currentPanel.add(ui.blankPanel);
 		}
 	}
+	
+	protected void cancelKnock() {
+		isWaiting = false;
+		try {
+			tempRemoteDoor.cancelKnock(app.getUserId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		tempHostIp = null;
+		tempHostRegistorPort = -1;
+		tempRemoteDoor = null;
+	}
 
 	protected void reFreshRoomsListPanel() {
 		ui.roomsListPanel.removeAll();
@@ -101,7 +146,6 @@ public class LobbyControler {
 
 	protected void filtRoomsList() {
 		reFreshRoomsListPanel();
-
 		JPanel currentPanel = ui.firstPanel;
 		int i = 0;
 		for (JButton btn : ui.roomsBtnVec) {
