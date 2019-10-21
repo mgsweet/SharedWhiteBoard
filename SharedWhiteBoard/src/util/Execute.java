@@ -31,7 +31,6 @@ public class Execute {
 				throw new TimeoutException();
 			}
 			resJSON = eThread.getResJSON();
-			System.out.println("Connect Success!");
 		} catch (TimeoutException e) {
 			resJSON.put("state", StateCode.TIMEOUT);
 		} catch (Exception e) {

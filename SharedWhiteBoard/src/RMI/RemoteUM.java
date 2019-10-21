@@ -4,42 +4,30 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 
-import App.App;
 import ClientUser.User;
 import ClientUser.UserManager;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
- * @version Created: Oct 20, 2019 3:23:39 PM
+ * @version Created: Oct 21, 2019 5:41:14 PM
  */
 
-public class RemoteUM  extends UnicastRemoteObject implements IRemoteUM{
-	private UserManager um;
-	private App app;
+public class RemoteUM extends UnicastRemoteObject implements IRemoteUM {
+	UserManager um;
 	
-	public RemoteUM(App app) throws RemoteException {
-		this.app = app;
-	}
-	
-	/**
-	 * Open the um to the host.
-	 * @param um
-	 */
-	public void setUM(UserManager um) {
+	public RemoteUM(UserManager um) throws RemoteException {
 		this.um = um;
 	}
-	
-	public void updateGuest(Map<String, User> guests) {
-		um.setGuests(guests);
+
+	@Override
+	public void setGuests(Map<String, User> guest) throws RemoteException {
+		System.out.println("Host sett the guest list.");
+		um.setGuests(guest);
 	}
 
 	@Override
-	public void askIn(String hostId, String hostIp, int hostRegisterPort) throws RemoteException {
-		app.joinRoom(hostId, hostIp, hostRegisterPort);
-	}
-
-	@Override
-	public void askOut() throws RemoteException {
-		app.switch2Lobby();	
+	public Map<String, User> pullGuests() throws RemoteException {
+		System.out.println("A guest get the guest list.");
+		return um.getGuests();
 	}
 }

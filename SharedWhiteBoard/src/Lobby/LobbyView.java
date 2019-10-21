@@ -54,7 +54,11 @@ public class LobbyView {
 	protected String joinImagePath = "images/join.png";
 
 	protected JOptionPane waitPane;
-	protected JDialog dialog;
+	protected JDialog waitDialog;
+	
+	protected JOptionPane beKickedPane;
+	protected JDialog beKickedDialog;
+	
 
 	/**
 	 * Create the application.
@@ -75,13 +79,39 @@ public class LobbyView {
 	public JFrame getFrame() {
 		return this.frame;
 	}
-	
+
 	/**
-	 * Set dialog visable.
+	 * Set waitDialog visiable.
+	 * 
 	 * @param isVisible
 	 */
-	public void setDialogVisable(Boolean isVisible) {
-		dialog.setVisible(isVisible);
+	public void setWaitDialogVisiable(Boolean isVisible) {
+		waitDialog.setVisible(isVisible);
+	}
+	
+	/**
+	 * Set beKickedDialog visiable.
+	 * 
+	 * @param isVisible
+	 */
+	public void setBeKickedDialogVisiable(Boolean isVisible) {
+		beKickedDialog.setVisible(isVisible);
+	}
+	
+	/**
+	 * Create a wait dialog, not visible.
+	 */
+	public void createWaitDialog() {
+		waitDialog = waitPane.createDialog(frame, "Waiting");
+	}
+	
+	/**
+	 * Create a beKicked dialog, visible.
+	 */
+	public void createBeKickedDialog() {
+		beKickedDialog = beKickedPane.createDialog(frame, "Be Kicked");
+		beKickedDialog.setModal(false);
+		beKickedDialog.setVisible(true);
 	}
 
 	/**
@@ -187,15 +217,27 @@ public class LobbyView {
 						.addContainerGap(23, Short.MAX_VALUE)));
 		filterTextPanel.setLayout(gl_filterTextPanel);
 
+		// Use to cancel knock.
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dialog.setVisible(false);
+				waitDialog.setVisible(false);
 				controler.cancelKnock();
 			}
 		});
 		JButton[] cancelBtnOption = { cancelBtn };
 		waitPane = new JOptionPane("Waiting for permission...", JOptionPane.INFORMATION_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, cancelBtnOption, cancelBtnOption[0]);
+		
+		// Use to warn be kicked.
+		JButton okBtn = new JButton("OK");
+		okBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				beKickedDialog.setVisible(false);
+			}
+		});
+		JButton[] okBtnOption = {okBtn};
+		beKickedPane = new JOptionPane("You have been kicked out.", JOptionPane.INFORMATION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION, null, okBtnOption, okBtnOption[0]);
 	}
 }

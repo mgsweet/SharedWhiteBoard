@@ -7,11 +7,13 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import com.alibaba.fastjson.JSONObject;
 
 import Lobby.LobbyView;
-import RMI.IRemoteUM;
-import RMI.RemoteUM;
+import RMI.IRemoteApp;
+import RMI.RemoteApp;
 import SignIn.SignInView;
 import StateCode.StateCode;
 import WhiteBoard.ClientWhiteBoard;
@@ -43,7 +45,9 @@ public class App {
 	private int registryPort;
 	private Registry registry;
 	// Privite Remote interface for user manager.
-	private IRemoteUM remoteUM;
+	private IRemoteApp remoteApp;
+	// before being accept
+	private ClientWhiteBoard tempClientWhiteBoard = null;
 
 	public static void main(String[] args) {
 		App app = new App();
@@ -87,15 +91,16 @@ public class App {
 	public String getIp() {
 		return ip.getHostAddress();
 	}
-	
+
 	/**
 	 * Get central server's ip.
+	 * 
 	 * @return
 	 */
 	public String getServerIp() {
 		return serverIp;
 	}
-	
+
 	/**
 	 * Get central server's port.
 	 */
@@ -114,6 +119,7 @@ public class App {
 
 	/**
 	 * Get userId
+	 * 
 	 * @return
 	 */
 	public String getUserId() {
@@ -149,6 +155,7 @@ public class App {
 			sharedWhiteBoard.getView().getFrame().setVisible(false);
 			sharedWhiteBoard = null;
 		}
+		tempClientWhiteBoard = null;
 		lobbyView.getFrame().setVisible(true);
 	}
 
@@ -193,13 +200,30 @@ public class App {
 	 * @param hostRegisterPort
 	 */
 	public void joinRoom(String hostId, String hostIp, int hostRegisterPort) {
-		sharedWhiteBoard = new ClientWhiteBoard(this, hostId, hostIp, hostRegisterPort);
-		lobbyView.setDialogVisable(false);
+		sharedWhiteBoard = tempClientWhiteBoard;
+		lobbyView.setWaitDialogVisiable(false);
 		switch2WhiteBoard();
 	}
-	
-	public void exitRoom() {
-		
+
+	/**
+	 * Create a temporary client white board. If not, when the host try to get the
+	 * information of it, would fail.
+	 * 
+	 * @param hostId
+	 * @param hostIp
+	 * @param hostRegisterPort
+	 */
+	public void createTempClientWhiteBoard(String hostId, String hostIp, int hostRegisterPort) {
+		tempClientWhiteBoard = new ClientWhiteBoard(this, hostId, hostIp, hostRegisterPort);
+	}
+
+	/**
+	 * Get the Lobby view.
+	 * 
+	 * @return
+	 */
+	public LobbyView getLobbyView() {
+		return lobbyView;
 	}
 
 	/**
@@ -224,7 +248,8 @@ public class App {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.ADD_USER);
 		reqJSON.put("userId", userId);
-		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);;
+		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);
+		;
 		int state = resJSON.getIntValue("state");
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
@@ -245,7 +270,8 @@ public class App {
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.REMOVE_USER);
 		reqJSON.put("userId", userId);
-		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);;
+		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);
+		;
 		int state = resJSON.getIntValue("state");
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
@@ -278,9 +304,9 @@ public class App {
 			registry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
 
 			// Create a remote user manager
-			remoteUM = new RemoteUM(this);
-			registry.bind("umRMI", remoteUM);
-			
+			remoteApp = new RemoteApp(this);
+			registry.bind("app", remoteApp);
+
 			printInitialStates();
 		} catch (Exception e) {
 			e.printStackTrace();

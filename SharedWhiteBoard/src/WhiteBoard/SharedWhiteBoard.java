@@ -2,9 +2,10 @@ package WhiteBoard;
 
 import App.App;
 import ClientUser.UserManager;
-import RMI.IRemoteDoor;
 import RMI.IRemotePaint;
+import RMI.IRemoteUM;
 import RMI.RemotePaint;
+import RMI.RemoteUM;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -17,6 +18,7 @@ public abstract class SharedWhiteBoard {
 	protected WhiteBoardView ui;
 	protected App app;
 	private IRemotePaint remotePaint;
+	private IRemoteUM remoteUM;
 
 	// Room ID is unique in central server.
 	private int roomId;
@@ -33,10 +35,19 @@ public abstract class SharedWhiteBoard {
 		return ui;
 	}
 
-	public void initPaintRMI() {
+	protected void initPaintRMI() {
 		try {
 			remotePaint = new RemotePaint(paintManager);
-			app.getRegistry().bind("paintRMI", remotePaint);
+			app.getRegistry().bind("paint", remotePaint);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void initUmRMI() {
+		try {
+			remoteUM = new RemoteUM(userManager);
+			app.getRegistry().bind("um", remoteUM);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

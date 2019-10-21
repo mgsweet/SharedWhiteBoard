@@ -30,13 +30,12 @@ public class LobbyControler {
 	private App app;
 	private LobbyView ui;
 
+	private String tempHostId;
 	private String tempHostIp;
 	private int tempHostRegistorPort;
 	private IRemoteDoor tempRemoteDoor;
-	private Boolean isWaiting;
 
 	public LobbyControler(App app, LobbyView ui) {
-		isWaiting = false;
 		this.app = app;
 		this.ui = ui;
 	}
@@ -80,19 +79,22 @@ public class LobbyControler {
 						JSONObject resJSON = Execute.execute(reqJSON, app.getServerIp(), app.getServerPort());
 						int state = resJSON.getInteger("state");
 						if (state == StateCode.SUCCESS) {
+							tempHostId = resJSON.getString("hostId");
 							tempHostIp = resJSON.getString("ip");
 							tempHostRegistorPort = resJSON.getInteger("port");
-							isWaiting = true;
-							ui.dialog = ui.waitPane.createDialog(ui.frame, "Waiting");
+							// When create here, the window's position right.
+							ui.createWaitDialog();
 							try {
 								Registry registry = LocateRegistry.getRegistry(tempHostIp, tempHostRegistorPort);
 								tempRemoteDoor = (IRemoteDoor) registry.lookup("door");
+								app.createTempClientWhiteBoard(tempHostId, tempHostIp, tempHostRegistorPort);
 								tempRemoteDoor.knock(app.getUserId(), app.getIp(), app.getRegistryPort());
 							} catch (Exception exception) {
 								exception.printStackTrace();
 								// TODO
 							}
-							ui.dialog.setVisible(true);
+							// The follow code would block all code.
+							ui.setWaitDialogVisiable(true);
 						} else if (state == StateCode.FAIL) {
 							JOptionPane.showMessageDialog(ui.frame, "Password Wrong!", "Warning",
 									JOptionPane.WARNING_MESSAGE);
@@ -123,7 +125,6 @@ public class LobbyControler {
 	}
 	
 	protected void cancelKnock() {
-		isWaiting = false;
 		try {
 			tempRemoteDoor.cancelKnock(app.getUserId());
 			tempHostIp = null;

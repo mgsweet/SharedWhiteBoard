@@ -287,7 +287,7 @@ public class WhiteBoardView {
 		menuBar.add(new FileMenu(this));
 		menuBar.add(new EditMenu(this));
 
-		frame.setVisible(true);
+		frame.setVisible(false);
 
 	}
 }

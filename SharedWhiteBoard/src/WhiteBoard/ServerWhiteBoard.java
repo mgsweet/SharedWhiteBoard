@@ -3,7 +3,9 @@ package WhiteBoard;
 import App.App;
 import ClientUser.UserManager;
 import RMI.IRemoteDoor;
+import RMI.IRemoteUM;
 import RMI.RemoteDoor;
+import RMI.RemoteUM;
 
 public class ServerWhiteBoard extends SharedWhiteBoard {
 	
@@ -13,7 +15,8 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 		super(app);
 		initManager();
 		initDoorRMI();
-		initPaintRMI();
+		super.initUmRMI();
+		super.initPaintRMI();
 		initView();
 	}
 	
@@ -30,6 +33,7 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	private void initManager() {
 		userManager = new UserManager(true, app.getUserId(), app.getIp(), app.getRegistryPort(), -1);

@@ -74,7 +74,7 @@ public class ClientListScrollPanel extends JPanel {
 		btnAgree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				userManager.addGuest(selectUserId);
-				updateUserList();
+				removeBtns();
 			}
 		});
 		visitorControlPanel.add(btnAgree);
@@ -82,6 +82,8 @@ public class ClientListScrollPanel extends JPanel {
 		btnDisagree.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				userManager.removeVistor(selectUserId);
+				removeBtns();
 			}
 		});
 		visitorControlPanel.add(btnDisagree);
@@ -91,7 +93,8 @@ public class ClientListScrollPanel extends JPanel {
 		btnKickOut = new JButton("Kick Out");
 		btnKickOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				userManager.removeGuest(selectUserId);
+				removeBtns();
 			}
 		});
 		guestControlPanel.add(btnKickOut);
@@ -108,10 +111,7 @@ public class ClientListScrollPanel extends JPanel {
 					if (userManager.isHost()) {
 						int identity = userManager.getIdentity(selectUserId);
 						if (identity == User.HOST) {
-							remove(guestControlPanel);
-							remove(visitorControlPanel);
-							revalidate();
-							repaint();
+							removeBtns();
 						} else if (identity == User.GUEST) {
 							remove(visitorControlPanel);
 							add(guestControlPanel, BorderLayout.SOUTH);
@@ -133,5 +133,12 @@ public class ClientListScrollPanel extends JPanel {
 		scrollpane.setViewportView(userList);
 		userListPanel.add(scrollpane);
 		add(userListPanel, BorderLayout.CENTER);
+	}
+	
+	private void removeBtns() {
+		remove(guestControlPanel);
+		remove(visitorControlPanel);
+		revalidate();
+		repaint();
 	}
 }
