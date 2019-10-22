@@ -3,7 +3,6 @@ package Menus;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 import javax.swing.JMenu;
@@ -30,6 +29,7 @@ public class FileMenu extends JMenu {
 		newMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				paintManager.clearAll();
+				app.setCurrentSavePath(null);
 			}
 		});
 		if (paintManager.getMode() == PaintManager.CLIENT_MODE) {
@@ -39,16 +39,19 @@ public class FileMenu extends JMenu {
 
 		JMenuItem openMenuItem = new JMenuItem("Open", KeyEvent.VK_O);
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		openMenuItem.addActionListener(new FileOpenListener(wbv, paintManager));
+		openMenuItem.addActionListener(new FileOpenListener(wbv, app));
+		if (paintManager.getMode() == PaintManager.CLIENT_MODE) {
+			openMenuItem.setEnabled(false);
+		}
 		this.add(openMenuItem);
 
 		JMenuItem saveMenuItem = new JMenuItem("Save", KeyEvent.VK_S);
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		saveMenuItem.addActionListener(new FileSaveListener(wbv, "save"));
+		saveMenuItem.addActionListener(new FileSaveListener(wbv, app, "save"));
 		this.add(saveMenuItem);
 
 		JMenuItem saveAsMenuItem = new JMenuItem("Save As...");
-		saveAsMenuItem.addActionListener(new FileSaveListener(wbv, "saveAs"));
+		saveAsMenuItem.addActionListener(new FileSaveListener(wbv, app, "saveAs"));
 		this.add(saveAsMenuItem);
 
 		this.addSeparator();

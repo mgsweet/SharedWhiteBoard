@@ -1,43 +1,35 @@
 package Menus;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Vector;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileView;
 
-import Shape.MyImage;
-import Shape.MyPoint;
+import App.App;
 import Shape.MyShape;
-import WhiteBoard.PaintManager;
 import WhiteBoard.WhiteBoardView;
 
 public class FileOpenListener implements ActionListener {
 	private JFileChooser chooser;
 	private WhiteBoardView wbv;
-	private PaintManager paintManager;
+	private String currentPath;
+	
+	private App app;
 
-	public FileOpenListener(WhiteBoardView wbv, PaintManager paintManager) {
+	public FileOpenListener(WhiteBoardView wbv, App app) {
 		super();
 		this.wbv = wbv;
-		this.paintManager = paintManager;
+		this.app = app;
 		chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG/JPEG/PNG files", "jpg", "jpeg", "png");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("WhiteBoard files", "wb");
 		chooser.setFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setAccessory(new ImagePreviewer(chooser));
 		chooser.setFileView(new FileImageView(filter, new ImageIcon()));
 	}
@@ -48,19 +40,20 @@ public class FileOpenListener implements ActionListener {
 		chooser.setCurrentDirectory(new File("."));
 		int returnVal = chooser.showOpenDialog(wbv.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File imageFile = chooser.getSelectedFile();
-			BufferedImage image = null;
 			try {
-				image = ImageIO.read(imageFile);
-			} catch (IOException exception) {
+				currentPath = chooser.getSelectedFile().getPath();
+				app.setCurrentSavePath(currentPath);
+				System.out.println(currentPath);
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(currentPath));
+				Vector<MyShape> history = (Vector<MyShape>) ois.readObject();
+				wbv.getPaintManager().setPaintHistory(history);
+			} catch(Exception exception) {
 				exception.printStackTrace();
 			}
-			
-			if (image != null) {
-				paintManager.clearAll();
-				MyShape myShape = new MyImage(new MyPoint(0, 0), image);
-				wbv.getPaintManager().addShape(myShape);
-			}
 		}
+	}
+	
+	protected String getImagePath() {
+		return currentPath;
 	}
 }
