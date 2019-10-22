@@ -13,5 +13,4 @@ import ClientUser.User;
 
 public interface IRemoteUM extends Remote {
 	public void setGuests(Map<String, User> guest) throws RemoteException;
-	public Map<String, User> pullGuests() throws RemoteException;
 }

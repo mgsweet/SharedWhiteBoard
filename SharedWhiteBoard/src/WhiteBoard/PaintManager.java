@@ -38,25 +38,6 @@ public class PaintManager {
 		this.userManager = userManager;
 		paintHistory = new Vector<MyShape>();
 	}
-	
-	
-	/**
-	 * Use in the client mode, when 
-	 */
-	public void pullRemoteHistory() {
-		if (mode == CLIENT_MODE) {
-			try {
-				if (userManager.getHostRemotePaint() != null) {
-					paintHistory = userManager.getHostRemotePaint().getHistory();
-				} else {
-					System.out.println("Err: serveRemotePaint is null!");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			paintArea.repaint();
-		}
-	}
 
 	/**
 	 * Use to get the paint area.
@@ -97,11 +78,7 @@ public class PaintManager {
 			paintHistory.add(shape);
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
 			for (IRemotePaint x : guestRemotePaint.values()) {
-				try {
-					x.setHistory(paintHistory);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				updateRemoteHistory(x);
 			}
 			paintArea.repaint();
 		} else if (mode == CLIENT_MODE) {
@@ -112,6 +89,18 @@ public class PaintManager {
 			}
 		} else {
 			// TODO
+		}
+	}
+	
+	/**
+	 * Set a specific remoteHistory to current paint history.
+	 * @param remotePaint
+	 */
+	public void updateRemoteHistory(IRemotePaint remotePaint) {
+		try {
+			remotePaint.setHistory(paintHistory);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

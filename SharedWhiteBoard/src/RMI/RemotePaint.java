@@ -25,6 +25,7 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	
 	@Override
 	public void addShape(MyShape shape) throws RemoteException {
+		System.out.println("Guest add shape.");
 		paintManager.addShape(shape);
 	}
 	
@@ -37,10 +38,5 @@ public class RemotePaint extends UnicastRemoteObject implements IRemotePaint {
 	@Override
 	public void clearHistory() throws RemoteException {
 		paintManager.resetAll();
-	}
-	
-	@Override
-	public Vector<MyShape> getHistory() throws RemoteException {
-		return paintManager.getPaintHistory();
 	}
 }

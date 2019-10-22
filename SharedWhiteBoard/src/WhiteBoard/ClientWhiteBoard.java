@@ -15,12 +15,10 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 	public void initView() {
 		String title = "Client-" + app.getIp() + ":" + app.getRegistryPort();
 		ui = new WhiteBoardView(app, this.paintManager, userManager, title);
-//		userManager.pullGuests();
-		paintManager.pullRemoteHistory();
 	}
 	
 	private void initManager(String hostId, String hostIp, int registerPort) {
 		userManager = new UserManager(false, hostId, hostIp, registerPort, -1);
-		paintManager = new PaintManager(paintManager.SERVER_MODE, userManager);
+		paintManager = new PaintManager(paintManager.CLIENT_MODE, userManager);
 	}
 }

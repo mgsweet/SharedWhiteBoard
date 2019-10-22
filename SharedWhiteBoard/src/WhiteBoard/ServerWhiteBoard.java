@@ -17,6 +17,7 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 		initDoorRMI();
 		super.initUmRMI();
 		super.initPaintRMI();
+		userManager.setHostPaintManager(paintManager);
 		initView();
 	}
 	

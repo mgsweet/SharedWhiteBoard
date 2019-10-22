@@ -9,6 +9,7 @@ import RMI.IRemoteApp;
 import RMI.IRemotePaint;
 import RMI.IRemoteUM;
 import WhiteBoard.ClientListScrollPanel;
+import WhiteBoard.PaintManager;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -17,6 +18,7 @@ import WhiteBoard.ClientListScrollPanel;
 
 public class UserManager {
 	private Boolean isHost;
+	private PaintManager hostPaintManager;
 
 	// Host info
 	private User host;
@@ -60,6 +62,10 @@ public class UserManager {
 		visitors = new HashMap<String, User>();
 		visitorRemoteApps = new HashMap<String, IRemoteApp>();
 	}
+	
+	public void setHostPaintManager(PaintManager paintManager) {
+		if (isHost) this.hostPaintManager = paintManager;
+	}
 
 	/**
 	 * Check whether is the user manager belongs to host.
@@ -96,6 +102,9 @@ public class UserManager {
 
 			IRemotePaint remotePaint = (IRemotePaint) clientRegistry.lookup("paint");
 			guestRemotePaints.put(guestId, remotePaint);
+			if (hostPaintManager != null) {
+				remotePaint.setHistory(hostPaintManager.getPaintHistory());
+			}
 
 			IRemoteUM remoteUM = (IRemoteUM) clientRegistry.lookup("um");
 			guestRemoteUMs.put(guestId, remoteUM);
