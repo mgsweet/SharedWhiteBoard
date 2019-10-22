@@ -40,6 +40,7 @@ public class WhiteBoardView {
 	private JColorChooser colorChooser;
 	private DrawListener drawListener;
 	private PaintBoardPanel paintBoardPanel;
+	private JPanel chatRoomControlPanel;
 	private JButton btnCurrentColor;
 	// Color
 	private Color currentColor;
@@ -54,8 +55,6 @@ public class WhiteBoardView {
 	private UserManager userManager;
 	// Client
 	private App app;
-	// Chat Panel, need to set from outside.
-	private ChatPanel chatPanel;
 
 	// Default color display in the left bottom.
 	private static Color[] DEFAULTCOLORS = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
@@ -69,7 +68,7 @@ public class WhiteBoardView {
 	/**
 	 * Create the view with Paint Manager.
 	 */
-	public WhiteBoardView(App app, PaintManager paintManager, UserManager userManager, String title, ChatPanel chatPanel) {
+	public WhiteBoardView(App app, PaintManager paintManager, UserManager userManager, String title) {
 		this.title = title;
 		this.app = app;
 		currentColor = Color.BLACK;
@@ -78,8 +77,11 @@ public class WhiteBoardView {
 		colorChooser = new JColorChooser(currentColor);
 		this.paintManager = paintManager;
 		this.userManager = userManager;
-		this.chatPanel = chatPanel;
 		initialize();
+	}
+	
+	public void setChatPanel(ChatPanel chatPanel) {
+		chatRoomControlPanel.add(chatPanel, BorderLayout.CENTER);
 	}
 
 	/**
@@ -175,16 +177,13 @@ public class WhiteBoardView {
 		ClientListScrollPanel clientListScrollPanel = new ClientListScrollPanel(userManager);
 		userControlPanel.add(clientListScrollPanel, BorderLayout.CENTER);
 
-		JPanel chatRoomControlPanel = new JPanel();
+		chatRoomControlPanel = new JPanel();
 		userPanel.add(chatRoomControlPanel, BorderLayout.CENTER);
 		chatRoomControlPanel.setLayout(new BorderLayout(0, 0));
 
 		JLabel lblChatRoom = new JLabel("Chat Room:");
 		chatRoomControlPanel.add(lblChatRoom, BorderLayout.NORTH);
 		drawToolPanel.setLayout(new BorderLayout(0, 0));
-
-		// TODO
-		chatRoomControlPanel.add(chatPanel, BorderLayout.CENTER);
 
 		JPanel toolPanel = new JPanel();
 		toolPanel.setBorder(new TitledBorder(null, "Tool Bar", TitledBorder.LEADING, TitledBorder.TOP, null, null));

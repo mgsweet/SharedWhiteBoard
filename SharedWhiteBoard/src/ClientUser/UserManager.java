@@ -20,6 +20,7 @@ import WhiteBoard.PaintManager;
 public class UserManager {
 	private Boolean isHost;
 	private PaintManager hostPaintManager;
+	private int hostChatPort;
 
 	// Host info
 	private User host;
@@ -62,6 +63,18 @@ public class UserManager {
 
 		visitors = new HashMap<String, User>();
 		visitorRemoteApps = new HashMap<String, IRemoteApp>();
+	}
+	
+	public int getHostChatPort() {
+		return hostChatPort;
+	}
+	
+	/**
+	 * Set the host's chat port.
+	 * @param chatPort
+	 */
+	public void setHostChatPort(int chatPort) {
+		this.hostChatPort = chatPort;
 	}
 
 	/**
@@ -134,7 +147,7 @@ public class UserManager {
 		try {
 			Registry clientRegistry = LocateRegistry.getRegistry(guest.getIp(), guest.getRegisterPort());
 			IRemoteApp guestRemoteApp = (IRemoteApp) clientRegistry.lookup("app");
-			guestRemoteApp.askIn(host.getUserId(), host.getIp(), host.getRegisterPort());
+			guestRemoteApp.askIn(host.getIp(), hostChatPort);
 
 			IRemotePaint remotePaint = (IRemotePaint) clientRegistry.lookup("paint");
 			guestRemotePaints.put(guestId, remotePaint);

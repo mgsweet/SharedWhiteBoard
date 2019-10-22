@@ -17,10 +17,12 @@ import javax.swing.SwingUtilities;
 
 public class ChatServer implements Runnable{
 	private ChatPanel chatPanel;
-	public final static int DEFAULT_PORT = 6543;
 	protected ServerSocket listen_socket;
 	private Thread thread;
 	private Vector<Connection> clients;
+	
+	private String ip;
+	private int chatPort;
 	
 	public ChatServer() {
 		try {
@@ -29,6 +31,10 @@ public class ChatServer implements Runnable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public int getPort() {
+		return chatPort;
 	}
 	
 	public ChatPanel getPanel() {
@@ -74,13 +80,18 @@ public class ChatServer implements Runnable{
 	}
 
 	// Create a ServerSocket to listen for connections on; start the thread
-	public void ServerListen() {
+	public void ServerListen() {	
 		try {
-			listen_socket = new ServerSocket(DEFAULT_PORT);
+			// Get a random chat port (Available one).
+			ServerSocket tempSocket = new ServerSocket(0);
+			chatPort = tempSocket.getLocalPort();
+			tempSocket.close();
+			
+			listen_socket = new ServerSocket(chatPort);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		processMsg("Server: listening on port " + DEFAULT_PORT);
+		processMsg("Chat: listening on port " + chatPort);
 		// 这个线程是server thread，处理多个客户，下面的run()函数就是这个线程的
 		thread = new Thread(this);
 		thread.start();

@@ -2,6 +2,7 @@ package WhiteBoard;
 
 import App.App;
 import Chat.ChatClient;
+import Chat.ChatPanel;
 import ClientUser.UserManager;
 
 public class ClientWhiteBoard extends SharedWhiteBoard {
@@ -12,13 +13,17 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 		initManager(hostId, hostIp, registerPort);
 		initUmRMI();
 		initPaintRMI();
-		initChat();
 		initView();
 	}
 	
-	public void initView() {
+	private void initView() {
 		String title = "Client-" + app.getIp() + ":" + app.getRegistryPort();
-		ui = new WhiteBoardView(app, this.paintManager, userManager, title, chatClient.getPanel());
+		ui = new WhiteBoardView(app, this.paintManager, userManager, title);
+	}
+	
+	public void createChatClient(String hostIp, int chatPort) {
+		chatClient = new ChatClient(hostIp, chatPort);
+		ui.setChatPanel(chatClient.getPanel());
 	}
 	
 	private void initManager(String hostId, String hostIp, int registerPort) {
@@ -26,7 +31,4 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 		paintManager = new PaintManager(paintManager.CLIENT_MODE, userManager);
 	}
 	
-	private void initChat() {
-		chatClient = new ChatClient();
-	}
 }

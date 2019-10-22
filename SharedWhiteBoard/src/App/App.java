@@ -250,7 +250,8 @@ public class App {
 	 * @param hostIp
 	 * @param hostRegisterPort
 	 */
-	public void joinRoom(String hostId, String hostIp, int hostRegisterPort) {
+	public void joinRoom(String hostIp, int chatPort) {
+		tempClientWhiteBoard.createChatClient(hostIp, chatPort);
 		sharedWhiteBoard = tempClientWhiteBoard;
 		switch2WhiteBoard();
 	}

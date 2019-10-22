@@ -56,7 +56,8 @@ class Connection extends Thread {
 		try {
 			for (;;) {
 				String line = receiveMsg();
-				if (Thread.currentThread().isInterrupted()) break;
+				if (Thread.currentThread().isInterrupted()) 
+					break;
 				server.processMsg(line);
 				if (line == null)
 					break;

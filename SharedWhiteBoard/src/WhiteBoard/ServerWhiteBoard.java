@@ -27,7 +27,8 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 	
 	public void initView() {
 		String title = "Server-" + app.getIp() + ":" + app.getRegistryPort();
-		ui = new WhiteBoardView(app, this.paintManager, userManager, title, chatServer.getPanel());
+		ui = new WhiteBoardView(app, this.paintManager, userManager, title);
+		ui.setChatPanel(chatServer.getPanel());
 	}
 	
 	private void initDoorRMI() {
@@ -47,6 +48,7 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 	
 	private void initChat() {
 		chatServer = new ChatServer();
+		userManager.setHostChatPort(chatServer.getPort());
 	}
 	
 	

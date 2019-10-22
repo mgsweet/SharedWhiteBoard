@@ -15,23 +15,23 @@ import ClientUser.UserManager;
  * @version Created: Oct 20, 2019 3:23:39 PM
  */
 
-public class RemoteApp extends UnicastRemoteObject implements IRemoteApp{
+public class RemoteApp extends UnicastRemoteObject implements IRemoteApp {
 	private App app;
-	
+
 	public RemoteApp(App app) throws RemoteException {
 		this.app = app;
 	}
 
 	@Override
-	public void askIn(String hostId, String hostIp, int hostRegisterPort) throws RemoteException {
+	public void askIn(String hostIp, int chatPort) throws RemoteException {
 		System.out.println("The host agree.");
-		app.joinRoom(hostId, hostIp, hostRegisterPort);
+		app.joinRoom(hostIp, chatPort);
 	}
 
 	@Override
 	public void askOut() throws RemoteException {
 		System.out.println("Be kicked by the host.");
-		app.switch2Lobby();	
+		app.switch2Lobby();
 		app.getLobbyView().createBeKickedDialog();
 	}
 }

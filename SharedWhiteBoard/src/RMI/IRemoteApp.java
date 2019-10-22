@@ -18,6 +18,6 @@ public interface IRemoteApp extends Remote {
 	 * use to ask the client who has knock the door of host to come in.
 	 * @throws RemoteException
 	 */
-	public void askIn(String hostId, String hostIp, int hostRegisterPort) throws RemoteException;
+	public void askIn(String hostIp, int chatPort) throws RemoteException;
 	public void askOut() throws RemoteException;
 }

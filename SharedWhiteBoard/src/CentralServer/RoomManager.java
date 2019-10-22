@@ -53,6 +53,7 @@ public class RoomManager {
 			Room room = entry.getValue();
 			if (room.getHostName().equals(hostId)) {
 				rooms.remove(entry.getKey());
+				break;
 			}
 		}
 	}
