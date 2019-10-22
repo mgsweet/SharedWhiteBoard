@@ -79,17 +79,19 @@ public class App {
 		signInView.getFrame().setVisible(true);
 		System.out.println("App running");
 	}
-	
+
 	/**
 	 * Get the temporary remote door.
+	 * 
 	 * @return
 	 */
 	public IRemoteDoor getTempRemoteDoor() {
 		return tempRemoteDoor;
 	}
-	
+
 	/**
 	 * Set the temporary remote door.
+	 * 
 	 * @param tempRemoteDoor
 	 */
 	public void setTempRemoteDoor(IRemoteDoor tempRemoteDoor) {
@@ -175,19 +177,20 @@ public class App {
 	 */
 	public void switch2Lobby() {
 		System.out.println("User: " + userId + " enter Lobby.");
-		if (lobbyView == null) lobbyView = new LobbyView(this);
-		
+		if (lobbyView == null)
+			lobbyView = new LobbyView(this);
+
 		lobbyView.setWaitDialogVisiable(false);
 		lobbyView.setBeKickedDialogVisiable(false);
-		
+
 		signInView.getFrame().setVisible(false);
-		
+
 		unbindAndSetNull();
-		
+
 		lobbyView.getControler().refreshRoomsList();
 		lobbyView.getFrame().setVisible(true);
 	}
-	
+
 	public void unbindAndSetNull() {
 		try {
 			registry.unbind("um");
@@ -198,7 +201,7 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if (sharedWhiteBoard != null) {
 			sharedWhiteBoard.getView().getFrame().setVisible(false);
 			sharedWhiteBoard = null;
@@ -213,7 +216,7 @@ public class App {
 	public void switch2WhiteBoard() {
 		lobbyView.setWaitDialogVisiable(false);
 		lobbyView.setBeKickedDialogVisiable(false);
-		
+
 		lobbyView.getFrame().setVisible(false);
 		signInView.getFrame().setVisible(false);
 		sharedWhiteBoard.getView().getFrame().setVisible(true);
@@ -315,7 +318,8 @@ public class App {
 	}
 
 	/**
-	 * Delete all the information about the user in the third party.
+	 * Delete all the information about the user in the third party. In the central
+	 * server, since the user remove, it would auto remove the room of the user.
 	 */
 	public void removeUser() {
 		JSONObject reqJSON = new JSONObject();
@@ -333,7 +337,7 @@ public class App {
 			}
 		}
 	}
-	
+
 	public void removeRoom() {
 		int roomId = sharedWhiteBoard.getRoomId();
 		JSONObject reqJSON = new JSONObject();
@@ -351,15 +355,15 @@ public class App {
 			}
 		}
 	}
-	
+
 	public void setCurrentSavePath(String path) {
 		this.CurrentSavePath = path;
 	}
-	
+
 	public String getCurrentSavePath() {
 		return CurrentSavePath;
 	}
-		
+
 	private void init() throws UnknownHostException {
 		initRMI();
 		signInView = new SignInView(this);
@@ -393,5 +397,5 @@ public class App {
 		System.out.println("IP address : " + ip.getHostAddress());
 		System.out.println("Registry Port = " + registryPort);
 	}
-	
+
 }

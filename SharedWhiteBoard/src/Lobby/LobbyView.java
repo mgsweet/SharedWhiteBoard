@@ -14,6 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.ScrollPaneConstants;
 
 import App.App;
+import util.LobbyCloseListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -27,7 +28,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
 
-import util.WindowCloseListener;
 
 /**
  * 
@@ -127,7 +127,7 @@ public class LobbyView {
 		frame.setTitle("SharedWhiteBoard - Lobby");
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.addWindowListener(new WindowCloseListener(app));
+		frame.addWindowListener(new LobbyCloseListener(app));
 		frame.setMinimumSize(new Dimension(600, 500));
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 

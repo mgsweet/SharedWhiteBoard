@@ -11,11 +11,11 @@ import App.App;
  * @version Created: Oct 19, 2019 9:15:51 PM
  */
 
-public class WindowCloseListener extends WindowAdapter {
+public class LobbyCloseListener extends WindowAdapter {
 	
 	private App app;
 	
-	public WindowCloseListener(App app) {
+	public LobbyCloseListener(App app) {
 		this.app = app;
 	}
 	

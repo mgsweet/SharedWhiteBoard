@@ -24,7 +24,7 @@ import ClientUser.UserManager;
 import Menus.EditMenu;
 import Menus.FileMenu;
 import util.NumberTextField;
-import util.WindowCloseListener;
+import util.WhiteBoardCloseListener;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -135,7 +135,7 @@ public class WhiteBoardView {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// When close the window, it should remove its information in the system.
-		frame.addWindowListener(new WindowCloseListener(app));
+		frame.addWindowListener(new WhiteBoardCloseListener(app, paintManager, userManager));
 		frame.setSize(1000, 700);
 		frame.setTitle(title);
 		frame.setResizable(true);
