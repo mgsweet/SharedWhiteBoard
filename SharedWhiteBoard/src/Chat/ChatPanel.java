@@ -10,14 +10,14 @@ import javax.swing.JTextField;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JTextArea;
 
 
 public class ChatPanel extends JPanel {
 	private static final long serialVersionUID = 4162325845732304245L;
 	JTextField txtInput;
 	JButton btnSend;
-	JList<String> lstMsg;
-	DefaultListModel<String> lstMsgModel = new DefaultListModel<>();
+	protected JTextArea textArea;
 	
 	public ChatPanel() {
 		try {
@@ -29,10 +29,14 @@ public class ChatPanel extends JPanel {
 
 	private void init() throws Exception {
 		setLayout(new BorderLayout(0, 0));
-		lstMsg = new JList<>();
-		JScrollPane chatScrollPane = new JScrollPane(lstMsg);
+		JScrollPane chatScrollPane = new JScrollPane();
 		chatScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(chatScrollPane, BorderLayout.CENTER);
+		
+		textArea = new JTextArea();
+		textArea.setLineWrap(true);
+		textArea.setEditable(false);
+		chatScrollPane.setViewportView(textArea);
 		JPanel pnlFoot = new JPanel();
 		pnlFoot.setLayout(new BorderLayout(0, 0));
 		txtInput = new JTextField("", 10);
@@ -42,8 +46,6 @@ public class ChatPanel extends JPanel {
 		btnSend.setPreferredSize(new Dimension(60, 0));
 		pnlFoot.add(btnSend, BorderLayout.EAST);
 		add(pnlFoot, BorderLayout.SOUTH);
-
-		lstMsg.setModel(lstMsgModel);
 	}
 	
 }

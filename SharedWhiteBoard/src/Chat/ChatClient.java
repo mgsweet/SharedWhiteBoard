@@ -5,7 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.Key;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -45,7 +47,8 @@ public class ChatClient implements Runnable {
 		chatPanel.btnSend.addActionListener(e -> {
 			if (chatPanel.txtInput.getText().length() != 0) {
 				try {
-					sendMsg('[' + userId + "]: " + chatPanel.txtInput.getText());
+					SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+					sendMsg('[' + df.format(new Date()) + "] " + userId + ":\n" + this.chatPanel.txtInput.getText());
 				} catch (IOException e2) {
 					processMsg(e2.toString());
 				}
@@ -122,7 +125,7 @@ public class ChatClient implements Runnable {
 	// 处理信息（显示信息）
 	public void processMsg(String str) {
 		SwingUtilities.invokeLater(() -> {
-			chatPanel.lstMsgModel.addElement(str);
+			chatPanel.textArea.append(str + '\n');
 		});
 	}
 

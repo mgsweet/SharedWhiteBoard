@@ -4,20 +4,22 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-public class ChatServer implements Runnable{
+public class ChatServer implements Runnable {
 	private ChatPanel chatPanel;
 	protected ServerSocket listen_socket;
 	private Thread thread;
 	private Vector<Connection> clients;
 	private String userId;
-	
+
 	private int chatPort;
-	
+
 	public ChatServer(String userId) {
 		this.userId = userId;
 		try {
@@ -27,27 +29,28 @@ public class ChatServer implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public int getPort() {
 		return chatPort;
 	}
-	
+
 	public ChatPanel getPanel() {
 		return chatPanel;
 	}
-	
+
 	private void init() throws Exception {
 		chatPanel = new ChatPanel();
 		clients = new Vector<>();// Vector是clients的集合，是线程安全的！
 		chatPanel.btnSend.addActionListener((e) -> {
-			processMsg('[' + userId + "]: " + this.chatPanel.txtInput.getText());
+			SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+			processMsg('[' + df.format(new Date()) + "] " + userId + ":\n" + this.chatPanel.txtInput.getText());
 		});
 	}
 
 	// 处理信息：1.把信息显示到列表框里。2.广播信息
 	public void processMsg(String str) {
 		SwingUtilities.invokeLater(() -> {
-			chatPanel.lstMsgModel.addElement(str);
+			chatPanel.textArea.append(str + '\n');
 		});
 
 		broadcastMsg(str);
@@ -66,7 +69,7 @@ public class ChatServer implements Runnable{
 				iter.remove();
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
 
@@ -75,13 +78,13 @@ public class ChatServer implements Runnable{
 	}
 
 	// Create a ServerSocket to listen for connections on; start the thread
-	public void ServerListen() {	
+	public void ServerListen() {
 		try {
 			// Get a random chat port (Available one).
 			ServerSocket tempSocket = new ServerSocket(0);
 			chatPort = tempSocket.getLocalPort();
 			tempSocket.close();
-			
+
 			listen_socket = new ServerSocket(chatPort);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -103,12 +106,10 @@ public class ChatServer implements Runnable{
 				// 封装成功能更强的Connection对象
 				Connection c = new Connection(client_socket, this);
 				clients.add(c);
-				processMsg("One Client Comes in");
+				processMsg("One User Comes in");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 }
-
-
