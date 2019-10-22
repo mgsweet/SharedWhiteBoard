@@ -32,9 +32,8 @@ public class PaintBoardPanel extends JPanel {
 		this.setBackground(Color.WHITE);
 	}
 
-	public void clearShapes() {
+	public void clearBuffer() {
 		bufferShape = null;
-		paintManager.clearAll();
 	}
 
 	public void setBufferShape(MyShape bufferShape) {

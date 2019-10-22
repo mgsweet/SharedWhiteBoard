@@ -23,15 +23,18 @@ import javax.swing.filechooser.FileView;
 import Shape.MyImage;
 import Shape.MyPoint;
 import Shape.MyShape;
+import WhiteBoard.PaintManager;
 import WhiteBoard.WhiteBoardView;
 
 public class FileOpenListener implements ActionListener {
 	private JFileChooser chooser;
 	private WhiteBoardView wbv;
+	private PaintManager paintManager;
 
-	public FileOpenListener(WhiteBoardView wbv) {
+	public FileOpenListener(WhiteBoardView wbv, PaintManager paintManager) {
 		super();
 		this.wbv = wbv;
+		this.paintManager = paintManager;
 		chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG/JPEG/PNG files", "jpg", "jpeg", "png");
 		chooser.setFileFilter(filter);
@@ -54,7 +57,7 @@ public class FileOpenListener implements ActionListener {
 			}
 			
 			if (image != null) {
-				wbv.getPaintBoardPanel().clearShapes();
+				paintManager.clearAll();
 				MyShape myShape = new MyImage(new MyPoint(0, 0), image);
 				wbv.getPaintManager().addShape(myShape);
 			}

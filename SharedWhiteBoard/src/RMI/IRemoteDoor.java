@@ -11,4 +11,5 @@ import java.rmi.RemoteException;
 public interface IRemoteDoor extends Remote {
 	public void knock(String userId, String ip, int registerPort) throws RemoteException;
 	public void cancelKnock(String userId) throws RemoteException;
+	public void leave(String userId) throws RemoteException;
 }

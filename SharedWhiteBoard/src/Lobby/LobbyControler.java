@@ -33,7 +33,6 @@ public class LobbyControler {
 	private String tempHostId;
 	private String tempHostIp;
 	private int tempHostRegistorPort;
-	private IRemoteDoor tempRemoteDoor;
 
 	public LobbyControler(App app, LobbyView ui) {
 		this.app = app;
@@ -84,11 +83,12 @@ public class LobbyControler {
 							tempHostRegistorPort = resJSON.getInteger("port");
 							// When create here, the window's position right.
 							ui.createWaitDialog();
+							System.out.println("Klock the host's door.");
 							try {
 								Registry registry = LocateRegistry.getRegistry(tempHostIp, tempHostRegistorPort);
-								tempRemoteDoor = (IRemoteDoor) registry.lookup("door");
+								app.setTempRemoteDoor((IRemoteDoor) registry.lookup("door"));
 								app.createTempClientWhiteBoard(tempHostId, tempHostIp, tempHostRegistorPort);
-								tempRemoteDoor.knock(app.getUserId(), app.getIp(), app.getRegistryPort());
+								app.getTempRemoteDoor().knock(app.getUserId(), app.getIp(), app.getRegistryPort());
 							} catch (Exception exception) {
 								exception.printStackTrace();
 								// TODO
@@ -125,11 +125,12 @@ public class LobbyControler {
 	}
 	
 	protected void cancelKnock() {
+		System.out.println("Cancel klock.");
 		try {
-			tempRemoteDoor.cancelKnock(app.getUserId());
+			app.getTempRemoteDoor().cancelKnock(app.getUserId());
 			tempHostIp = null;
 			tempHostRegistorPort = -1;
-			tempRemoteDoor = null;
+			app.unbindAndSetNull();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

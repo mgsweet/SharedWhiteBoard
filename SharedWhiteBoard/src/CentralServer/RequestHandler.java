@@ -47,12 +47,12 @@ public class RequestHandler extends Thread {
 				String ipAddress = reqJSON.getString("hostIp");
 				int port = reqJSON.getInteger("hostPort");
 				// return roomId
-				int resID = controler.getRoomManager().addRoom(ipAddress, port, hostName, roomName, password);
+				roomId = controler.getRoomManager().addRoom(ipAddress, port, hostName, roomName, password);
 				controler.printOnBoth(
 						hostName + " create a room! Current room num: " + controler.getRoomManager().getRoomNum());
 				controler.printOnBoth("- Host: " + ipAddress + ": " + port);
 				resJSON.put("state", StateCode.SUCCESS);
-				resJSON.put("roomId", resID);
+				resJSON.put("roomId", roomId);
 				break;
 			case StateCode.REMOVE_ROOM:
 				roomId = Integer.parseInt(reqJSON.get("roomId").toString());

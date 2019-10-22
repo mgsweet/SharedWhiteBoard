@@ -3,6 +3,9 @@ package App;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
@@ -13,10 +16,13 @@ import com.alibaba.fastjson.JSONObject;
 
 import Lobby.LobbyView;
 import RMI.IRemoteApp;
+import RMI.IRemoteDoor;
 import RMI.RemoteApp;
+import RMI.RemoteDoor;
 import SignIn.SignInView;
 import StateCode.StateCode;
 import WhiteBoard.ClientWhiteBoard;
+import WhiteBoard.PaintManager;
 import WhiteBoard.ServerWhiteBoard;
 import WhiteBoard.SharedWhiteBoard;
 import util.Execute;
@@ -48,6 +54,8 @@ public class App {
 	private IRemoteApp remoteApp;
 	// before being accept
 	private ClientWhiteBoard tempClientWhiteBoard = null;
+	// Use to store the temporary remote door.
+	private IRemoteDoor tempRemoteDoor;
 
 	public static void main(String[] args) {
 		App app = new App();
@@ -68,6 +76,22 @@ public class App {
 	public void run() {
 		signInView.getFrame().setVisible(true);
 		System.out.println("App running");
+	}
+	
+	/**
+	 * Get the temporary remote door.
+	 * @return
+	 */
+	public IRemoteDoor getTempRemoteDoor() {
+		return tempRemoteDoor;
+	}
+	
+	/**
+	 * Set the temporary remote door.
+	 * @param tempRemoteDoor
+	 */
+	public void setTempRemoteDoor(IRemoteDoor tempRemoteDoor) {
+		this.tempRemoteDoor = tempRemoteDoor;
 	}
 
 	/**
@@ -155,12 +179,30 @@ public class App {
 		lobbyView.setBeKickedDialogVisiable(false);
 		
 		signInView.getFrame().setVisible(false);
+		
+		unbindAndSetNull();
+		
+		lobbyView.getControler().refreshRoomsList();
+		lobbyView.getFrame().setVisible(true);
+	}
+	
+	public void unbindAndSetNull() {
+		try {
+			registry.unbind("um");
+			registry.unbind("paint");
+			registry.unbind("door");
+		} catch (NotBoundException e) {
+			// do nothing
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if (sharedWhiteBoard != null) {
 			sharedWhiteBoard.getView().getFrame().setVisible(false);
 			sharedWhiteBoard = null;
 		}
 		tempClientWhiteBoard = null;
-		lobbyView.getFrame().setVisible(true);
+		tempRemoteDoor = null;
 	}
 
 	/**
@@ -182,7 +224,6 @@ public class App {
 	 * @param password
 	 */
 	public void createRoom(String roomName, String password) {
-		sharedWhiteBoard = new ServerWhiteBoard(this);
 		JSONObject reqJSON = new JSONObject();
 		reqJSON.put("command", StateCode.ADD_ROOM);
 		reqJSON.put("roomName", roomName);
@@ -193,7 +234,8 @@ public class App {
 		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);
 		int state = resJSON.getInteger("state");
 		if (state == StateCode.SUCCESS) {
-			sharedWhiteBoard.setRoomID(resJSON.getInteger("roomId"));
+			sharedWhiteBoard = new ServerWhiteBoard(this);
+			sharedWhiteBoard.setRoomId(resJSON.getInteger("roomId"));
 			switch2WhiteBoard();
 		} else {
 			System.out.println("Fail to create room.");
@@ -277,7 +319,6 @@ public class App {
 		reqJSON.put("command", StateCode.REMOVE_USER);
 		reqJSON.put("userId", userId);
 		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);
-		;
 		int state = resJSON.getIntValue("state");
 		if (state == StateCode.CONNECTION_FAIL) {
 			System.out.println("Connection Fail: " + state);
@@ -286,6 +327,24 @@ public class App {
 				System.out.println("Successfully exit from the central server!");
 			} else {
 				System.out.println("Exit invalidly!");
+			}
+		}
+	}
+	
+	public void removeRoom() {
+		int roomId = sharedWhiteBoard.getRoomId();
+		JSONObject reqJSON = new JSONObject();
+		reqJSON.put("command", StateCode.REMOVE_ROOM);
+		reqJSON.put("roomId", roomId);
+		JSONObject resJSON = Execute.execute(reqJSON, serverIp, serverPort);
+		int state = resJSON.getIntValue("state");
+		if (state == StateCode.CONNECTION_FAIL) {
+			System.out.println("Connection Fail: " + state);
+		} else {
+			if (state == StateCode.SUCCESS) {
+				System.out.println("Successfully remove room from server!");
+			} else {
+				System.out.println("Remove room fail!");
 			}
 		}
 	}

@@ -67,7 +67,10 @@ public class LobbyView {
 		roomsBtnVec = new Vector<JButton>();
 		initialize();
 		controler = new LobbyControler(app, this);
-		controler.refreshRoomsList();
+	}
+	
+	public LobbyControler getControler() {
+		return controler;
 	}
 
 	/**

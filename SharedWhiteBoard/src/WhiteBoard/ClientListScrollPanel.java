@@ -93,7 +93,7 @@ public class ClientListScrollPanel extends JPanel {
 		btnKickOut = new JButton("Kick Out");
 		btnKickOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				userManager.removeGuest(selectUserId);
+				userManager.kickGuest(selectUserId);
 				removeBtns();
 			}
 		});

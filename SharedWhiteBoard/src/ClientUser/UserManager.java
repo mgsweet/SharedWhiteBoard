@@ -1,5 +1,6 @@
 package ClientUser;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
@@ -62,9 +63,43 @@ public class UserManager {
 		visitors = new HashMap<String, User>();
 		visitorRemoteApps = new HashMap<String, IRemoteApp>();
 	}
-	
+
+	/**
+	 * This method is for host, set the host paint manager.
+	 * @param paintManager
+	 */
 	public void setHostPaintManager(PaintManager paintManager) {
-		if (isHost) this.hostPaintManager = paintManager;
+		if (isHost)
+			this.hostPaintManager = paintManager;
+	}
+
+	/**
+	 * Remove all the guest and visitor.
+	 */
+	public void clear() {
+		for (IRemoteApp remoteApp: guestRemoteApps.values()) {
+			try {
+				remoteApp.askOut();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
+		for (IRemoteApp remoteApp: visitorRemoteApps.values()) {
+			try {
+				remoteApp.askOut();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
+		guestRemoteApps.clear();
+		guestRemotePaints.clear();
+		guestRemoteUMs.clear();
+		guests.clear();
+		
+		visitorRemoteApps.clear();
+		visitors.clear();
 	}
 
 	/**
@@ -91,6 +126,7 @@ public class UserManager {
 	 * @param guestId
 	 */
 	public void addGuest(String guestId) {
+		System.out.println("Allow " + guestId + " enter.");
 		// add guest
 		User guest = visitors.get(guestId);
 		guests.put(guestId, guest);
@@ -112,13 +148,18 @@ public class UserManager {
 			// delete visitor
 			visitors.remove(guestId);
 			visitorRemoteApps.remove(guestId);
-
-			// set remote user manager
-			for (IRemoteUM x : guestRemoteUMs.values()) {
-				x.setGuests(guests);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		// set remote user manager
+		for (IRemoteUM x : guestRemoteUMs.values()) {
+			try {
+				x.setGuests(guests);
+			} catch (RemoteException e) {
+				// TODO Continue
+				e.printStackTrace();
+			}
 		}
 
 		// refresh ui.
@@ -133,6 +174,34 @@ public class UserManager {
 	 * @param gusetId
 	 */
 	public void removeGuest(String guestId) {
+		guests.remove(guestId);
+		guestRemoteUMs.remove(guestId);
+		guestRemotePaints.remove(guestId);
+		guestRemoteApps.remove(guestId);
+
+		// set remote user manager
+		for (IRemoteUM x : guestRemoteUMs.values()) {
+			try {
+				x.setGuests(guests);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		// refresh ui.
+		if (clsp != null) {
+			clsp.updateUserList();
+		}
+	}
+
+	/**
+	 * Kick a guest out of the room.
+	 * 
+	 * @param guestId
+	 */
+	public void kickGuest(String guestId) {
+		System.out.println("Kick " + guestId + " out.");
 		try {
 			IRemoteApp remoteApp = guestRemoteApps.get(guestId);
 			remoteApp.askOut();
@@ -140,16 +209,14 @@ public class UserManager {
 			e.printStackTrace();
 			// TODO
 		}
-		guests.remove(guestId);
-		guestRemoteUMs.remove(guestId);
-		guestRemotePaints.remove(guestId);
-		guestRemoteApps.remove(guestId);
-		// refresh ui.
-		if (clsp != null) {
-			clsp.updateUserList();
-		}
+		removeGuest(guestId);
 	}
 
+	/**
+	 * Get all the gusets' remotePaints
+	 * 
+	 * @return
+	 */
 	public Map<String, IRemotePaint> getGuestRemotePaints() {
 		return guestRemotePaints;
 	}
@@ -191,7 +258,7 @@ public class UserManager {
 			clsp.updateUserList();
 		}
 	}
-	
+
 	public void kickVisitor(String userId) {
 		try {
 			IRemoteApp remoteApp = visitorRemoteApps.get(userId);
@@ -200,7 +267,7 @@ public class UserManager {
 			e.printStackTrace();
 			// TODO
 		}
-		
+
 		removeVistor(userId);
 	}
 

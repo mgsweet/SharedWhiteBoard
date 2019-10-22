@@ -24,11 +24,13 @@ public class RemoteApp extends UnicastRemoteObject implements IRemoteApp{
 
 	@Override
 	public void askIn(String hostId, String hostIp, int hostRegisterPort) throws RemoteException {
+		System.out.println("The host agree.");
 		app.joinRoom(hostId, hostIp, hostRegisterPort);
 	}
 
 	@Override
 	public void askOut() throws RemoteException {
+		System.out.println("Be kicked by the host.");
 		app.switch2Lobby();	
 		app.getLobbyView().createBeKickedDialog();
 	}

@@ -284,7 +284,7 @@ public class WhiteBoardView {
 		// Add menu bar at the last, need to wait for creation of paintBoardPanel.
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		menuBar.add(new FileMenu(this));
+		menuBar.add(new FileMenu(app, this, paintManager, userManager));
 		menuBar.add(new EditMenu(this));
 
 		frame.setVisible(false);

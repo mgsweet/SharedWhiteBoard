@@ -108,6 +108,7 @@ public class PaintManager {
 	 * Use to clear the history, which would affect both server and client.
 	 */
 	public void clearAll() {
+		paintArea.clearBuffer();
 		if (mode == SERVER_MODE) {
 			paintHistory.clear();
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
@@ -143,5 +144,13 @@ public class PaintManager {
 	public void setPaintHistory(Vector<MyShape> paintHistory) {
 		this.paintHistory = paintHistory;
 		paintArea.repaint();
+	}
+	
+	/**
+	 * Get whether the manager belongs to a client or 
+	 * @return
+	 */
+	public int getMode() {
+		return mode;
 	}
 }

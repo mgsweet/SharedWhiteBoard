@@ -23,8 +23,12 @@ public abstract class SharedWhiteBoard {
 	// Room ID is unique in central server.
 	private int roomId;
 	
-	public void setRoomID(int roomId) {
+	public void setRoomId(int roomId) {
 		this.roomId = roomId;
+	}
+	
+	public int getRoomId() {
+		return roomId;
 	}
 	
 	public SharedWhiteBoard(App app) {
