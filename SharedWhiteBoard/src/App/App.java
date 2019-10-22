@@ -56,7 +56,7 @@ public class App {
 	private ClientWhiteBoard tempClientWhiteBoard = null;
 	// Use to store the temporary remote door.
 	private IRemoteDoor tempRemoteDoor;
-	
+	// Store the current save path.
 	private String CurrentSavePath;
 
 	public static void main(String[] args) {

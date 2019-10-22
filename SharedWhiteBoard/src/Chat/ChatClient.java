@@ -66,6 +66,18 @@ public class ChatClient implements Runnable{
             thread.start();
         }
     }
+    
+    public void endConnect() {
+    	try {
+			in.close();
+			out.close();
+			sock.close();
+			thread.interrupt();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 
     //run()方法作用：一直和服务端通讯，包括接收信息receiveMsg()、处理信息processMsg()
     public void run() {

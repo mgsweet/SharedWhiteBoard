@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.Key;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.crypto.Cipher;
@@ -53,13 +54,18 @@ public class ChatServer implements Runnable{
 
 	// 广播：用一个循环把信息发给所有连接
 	public void broadcastMsg(String str) {
-		for (Connection client : clients) {
+		Iterator<Connection> iter = clients.iterator();
+		Connection client;
+		while (iter.hasNext()) {
+			client = iter.next();
 			try {
 				client.sendMsg(str);
 			} catch (Exception e) {
-				client.interrupt();
-				clients.remove(client);
+				client.disconnect();
+				iter.remove();
+				e.printStackTrace();
 			}
+			
 		}
 	}
 
@@ -99,89 +105,4 @@ public class ChatServer implements Runnable{
 	}
 }
 
-// 每一个连接都是一个线程
-// This class is the thread that handles all communication with a client
-class Connection extends Thread {
-	protected Socket client;
-	protected DataInputStream in;
-	protected DataOutputStream out;
-	ChatServer server;
-
-	// Initialize the stream and start the thread
-	public Connection(Socket client_socket, ChatServer server_frame) {
-		client = client_socket;
-		server = server_frame;
-		try {
-			in = new DataInputStream(client.getInputStream());
-		    out = new DataOutputStream(client.getOutputStream());
-		} catch (IOException e) {
-			try {
-				client.close();
-			} catch (IOException e2) {
-				;
-			}
-			e.printStackTrace();
-			return;
-		}
-		this.start();
-	}
-
-	// Connection里面这个线程也是无限循环的，用来接收信息、处理信息
-	// Provide service.
-	// Read a line
-	public void run() {
-		try {
-			for (;;) {
-				String line = receiveMsg();
-				server.processMsg(line);
-				if (line == null)
-					break;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				client.close();
-			} catch (IOException e2) {
-				;
-			}
-		}
-	}
-
-	public void sendMsg(String msg) throws IOException {
-		out.writeUTF(msg);
-		out.flush();
-	}
-
-	public String receiveMsg() throws IOException {
-		try {
-			String msg = in.readUTF();
-			msg = decryptMessage(msg);
-			return msg;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return "";
-	}
-	
-	
-	private static String decryptMessage(String message){
-		// Decrypt result
-		try {
-    		String key = "5v8y/B?D(G+KbPeS";
-    		Key aesKey = new SecretKeySpec(key.getBytes(), "AES");
-			Cipher cipher = Cipher.getInstance("AES");
-			cipher.init(Cipher.DECRYPT_MODE, aesKey);
-			message = new String(cipher.doFinal(Base64.getDecoder().decode(message.getBytes())));
-			System.err.println("Decrypted message: "+message);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return message;
-	}
-	
-	
-}
 
