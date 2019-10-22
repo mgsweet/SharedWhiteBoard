@@ -1,6 +1,7 @@
 package Chat;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -10,14 +11,14 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
 
-public class ChatView extends JPanel {
+public class ChatPanel extends JPanel {
 	private static final long serialVersionUID = 4162325845732304245L;
-	JTextField txtInput = new JTextField("please input here", 20);
-	JButton btnSend = new JButton("Send");
+	JTextField txtInput;
+	JButton btnSend;
 	JList<String> lstMsg = new JList<>();
 	DefaultListModel<String> lstMsgModel = new DefaultListModel<>();
 	
-	public ChatView() {
+	public ChatPanel() {
 		try {
 			init();
 		} catch (Exception e) {
@@ -29,17 +30,15 @@ public class ChatView extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 		add(new JScrollPane(lstMsg), BorderLayout.CENTER);
 		JPanel pnlFoot = new JPanel();
-		pnlFoot.add(txtInput);
-		pnlFoot.add(btnSend);
+		pnlFoot.setLayout(new BorderLayout(0, 0));
+		txtInput = new JTextField("please input here", 10);
+		pnlFoot.add(txtInput, BorderLayout.CENTER);
+		btnSend = new JButton("Send");
+		btnSend.setPreferredSize(new Dimension(60, 0));
+		pnlFoot.add(btnSend, BorderLayout.EAST);
 		add(pnlFoot, BorderLayout.SOUTH);
 
 		lstMsg.setModel(lstMsgModel);
-//		btnSend.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				lstMsgModel.addElement(txtInput.getText());
-//			}
-//		});
-		this.setSize(400, 300);
 	}
 	
 }

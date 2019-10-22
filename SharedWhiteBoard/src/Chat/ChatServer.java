@@ -8,13 +8,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.Key;
 import java.util.Base64;
+import java.util.Vector;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
 public class ChatServer implements Runnable{
-	ChatView chatUI_Server;
+	private ChatPanel chatPanel;
+	public final static int DEFAULT_PORT = 6543;
+	protected ServerSocket listen_socket;
+	private Thread thread;
+	private Vector<Connection> clients;
+	
 	public ChatServer() {
 		try {
 			init();
@@ -24,23 +30,22 @@ public class ChatServer implements Runnable{
 		}
 	}
 	
-	private void init() throws Exception {
-		chatUI_Server = new ChatView();
-		chatUI_Server.btnSend.addActionListener((e) -> {
-			processMsg(this.chatUI_Server.txtInput.getText());
-		});
+	public ChatPanel getPanel() {
+		return chatPanel;
 	}
-
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> {
-			new ChatServer();
+	
+	private void init() throws Exception {
+		chatPanel = new ChatPanel();
+		clients = new Vector<>();// Vector是clients的集合，是线程安全的！
+		chatPanel.btnSend.addActionListener((e) -> {
+			processMsg(this.chatPanel.txtInput.getText());
 		});
 	}
 
 	// 处理信息：1.把信息显示到列表框里。2.广播信息
 	public void processMsg(String str) {
 		SwingUtilities.invokeLater(() -> {
-			chatUI_Server.lstMsgModel.addElement(str);
+			chatPanel.lstMsgModel.addElement(str);
 		});
 
 		broadcastMsg(str);
@@ -48,23 +53,19 @@ public class ChatServer implements Runnable{
 
 	// 广播：用一个循环把信息发给所有连接
 	public void broadcastMsg(String str) {
-		try {
-			for (Connection client : clients) {
+		for (Connection client : clients) {
+			try {
 				client.sendMsg(str);
+			} catch (Exception e) {
+				client.interrupt();
+				clients.remove(client);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
 	void btnSend_actionPerformed(ActionEvent e) {
-		broadcastMsg(chatUI_Server.txtInput.getText());
+		broadcastMsg(chatPanel.txtInput.getText());
 	}
-
-	public final static int DEFAULT_PORT = 6543;
-	protected ServerSocket listen_socket;
-	Thread thread;
-	java.util.Vector<Connection> clients = new java.util.Vector<>();// Vector是clients的集合，是线程安全的！
 
 	// Create a ServerSocket to listen for connections on; start the thread
 	public void ServerListen() {

@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
 public class ChatClient implements Runnable{
-	ChatView chatUI_Client;
+	ChatPanel chatPanel;
 
     Socket sock;
     Thread thread;
@@ -31,12 +31,16 @@ public class ChatClient implements Runnable{
         }
     }
 	
+	public ChatPanel getPanel() {
+		return chatPanel;
+	}
+	
 	private void init() throws Exception{
-		chatUI_Client = new ChatView();
-		chatUI_Client.btnSend.addActionListener(e-> {
-            if( chatUI_Client.txtInput.getText().length() != 0 ) {
+		chatPanel = new ChatPanel();
+		chatPanel.btnSend.addActionListener(e-> {
+            if( chatPanel.txtInput.getText().length() != 0 ) {
                 try {
-                    sendMsg( chatUI_Client.txtInput.getText() );
+                    sendMsg( chatPanel.txtInput.getText() );
                 } catch(IOException e2) {
                     processMsg(e2.toString());
                 }
@@ -44,13 +48,6 @@ public class ChatClient implements Runnable{
 
         });
 	}
-	
-	
-    public static void main(String[] args) {
-		SwingUtilities.invokeLater(()->{
-			new ChatClient();
-		});
-    }
 	
     public void startConnect() {
         bConnected = false;
@@ -107,7 +104,7 @@ public class ChatClient implements Runnable{
     //处理信息（显示信息）
     public void processMsg( String str ) {
         SwingUtilities.invokeLater( ()-> {
-            chatUI_Client.lstMsgModel.addElement(str);
+            chatPanel.lstMsgModel.addElement(str);
         });
     }
     

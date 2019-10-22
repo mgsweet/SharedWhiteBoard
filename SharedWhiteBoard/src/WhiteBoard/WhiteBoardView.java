@@ -19,6 +19,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import App.App;
+import Chat.ChatPanel;
 import ClientUser.UserManager;
 import Menus.EditMenu;
 import Menus.FileMenu;
@@ -53,6 +54,8 @@ public class WhiteBoardView {
 	private UserManager userManager;
 	// Client
 	private App app;
+	// Chat Panel, need to set from outside.
+	private ChatPanel chatPanel;
 
 	// Default color display in the left bottom.
 	private static Color[] DEFAULTCOLORS = { Color.BLACK, Color.BLUE, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN,
@@ -66,7 +69,7 @@ public class WhiteBoardView {
 	/**
 	 * Create the view with Paint Manager.
 	 */
-	public WhiteBoardView(App app, PaintManager paintManager, UserManager userManager, String title) {
+	public WhiteBoardView(App app, PaintManager paintManager, UserManager userManager, String title, ChatPanel chatPanel) {
 		this.title = title;
 		this.app = app;
 		currentColor = Color.BLACK;
@@ -75,6 +78,7 @@ public class WhiteBoardView {
 		colorChooser = new JColorChooser(currentColor);
 		this.paintManager = paintManager;
 		this.userManager = userManager;
+		this.chatPanel = chatPanel;
 		initialize();
 	}
 
@@ -180,7 +184,7 @@ public class WhiteBoardView {
 		drawToolPanel.setLayout(new BorderLayout(0, 0));
 
 		// TODO
-		// need a panel subclass
+		chatRoomControlPanel.add(chatPanel, BorderLayout.CENTER);
 
 		JPanel toolPanel = new JPanel();
 		toolPanel.setBorder(new TitledBorder(null, "Tool Bar", TitledBorder.LEADING, TitledBorder.TOP, null, null));
