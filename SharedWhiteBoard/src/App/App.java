@@ -56,6 +56,8 @@ public class App {
 	private ClientWhiteBoard tempClientWhiteBoard = null;
 	// Use to store the temporary remote door.
 	private IRemoteDoor tempRemoteDoor;
+	
+	private String CurrentSavePath;
 
 	public static void main(String[] args) {
 		App app = new App();
@@ -348,7 +350,15 @@ public class App {
 			}
 		}
 	}
-
+	
+	public void setCurrentSavePath(String path) {
+		this.CurrentSavePath = path;
+	}
+	
+	public String getCurrentSavePath() {
+		return CurrentSavePath;
+	}
+		
 	private void init() throws UnknownHostException {
 		initRMI();
 		signInView = new SignInView(this);
@@ -382,4 +392,5 @@ public class App {
 		System.out.println("IP address : " + ip.getHostAddress());
 		System.out.println("Registry Port = " + registryPort);
 	}
+	
 }
