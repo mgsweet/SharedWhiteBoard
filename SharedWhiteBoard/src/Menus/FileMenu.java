@@ -32,17 +32,11 @@ public class FileMenu extends JMenu {
 				app.setCurrentSavePath(null);
 			}
 		});
-		if (paintManager.getMode() == PaintManager.CLIENT_MODE) {
-			newMenuItem.setEnabled(false);
-		}
 		this.add(newMenuItem);
 
 		JMenuItem openMenuItem = new JMenuItem("Open", KeyEvent.VK_O);
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		openMenuItem.addActionListener(new FileOpenListener(wbv, app));
-		if (paintManager.getMode() == PaintManager.CLIENT_MODE) {
-			openMenuItem.setEnabled(false);
-		}
 		this.add(openMenuItem);
 
 		JMenuItem saveMenuItem = new JMenuItem("Save", KeyEvent.VK_S);
@@ -81,5 +75,14 @@ public class FileMenu extends JMenu {
 			}
 		});
 		this.add(closeMenuItem);
+	
+		if (paintManager.getMode() == PaintManager.CLIENT_MODE) {
+			newMenuItem.setEnabled(false);
+			openMenuItem.setEnabled(false);
+			saveMenuItem.setEnabled(false);
+			saveAsMenuItem.setEnabled(false);
+			closeMenuItem.setEnabled(false);
+		}
+		
 	}
 }
