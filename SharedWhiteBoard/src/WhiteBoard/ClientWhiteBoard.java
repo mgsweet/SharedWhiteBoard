@@ -2,7 +2,6 @@ package WhiteBoard;
 
 import App.App;
 import Chat.ChatClient;
-import Chat.ChatPanel;
 import ClientUser.UserManager;
 
 public class ClientWhiteBoard extends SharedWhiteBoard {
@@ -22,7 +21,7 @@ public class ClientWhiteBoard extends SharedWhiteBoard {
 	}
 	
 	public void createChatClient(String hostIp, int chatPort) {
-		chatClient = new ChatClient(hostIp, chatPort);
+		chatClient = new ChatClient(app.getUserId(), hostIp, chatPort);
 		ui.setChatPanel(chatClient.getPanel());
 	}
 	

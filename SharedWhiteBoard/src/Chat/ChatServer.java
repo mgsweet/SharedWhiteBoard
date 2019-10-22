@@ -1,18 +1,12 @@
 package Chat;
 
 import java.awt.event.ActionEvent;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.Key;
-import java.util.Base64;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.swing.SwingUtilities;
 
 public class ChatServer implements Runnable{
@@ -20,11 +14,12 @@ public class ChatServer implements Runnable{
 	protected ServerSocket listen_socket;
 	private Thread thread;
 	private Vector<Connection> clients;
+	private String userId;
 	
-	private String ip;
 	private int chatPort;
 	
-	public ChatServer() {
+	public ChatServer(String userId) {
+		this.userId = userId;
 		try {
 			init();
 			ServerListen();
@@ -45,7 +40,7 @@ public class ChatServer implements Runnable{
 		chatPanel = new ChatPanel();
 		clients = new Vector<>();// Vector是clients的集合，是线程安全的！
 		chatPanel.btnSend.addActionListener((e) -> {
-			processMsg(this.chatPanel.txtInput.getText());
+			processMsg('[' + userId + "]: " + this.chatPanel.txtInput.getText());
 		});
 	}
 

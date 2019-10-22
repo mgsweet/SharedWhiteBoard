@@ -28,10 +28,12 @@ public class ChatPanel extends JPanel {
 
 	private void init() throws Exception {
 		setLayout(new BorderLayout(0, 0));
-		add(new JScrollPane(lstMsg), BorderLayout.CENTER);
+		JScrollPane chatScrollPane = new JScrollPane(lstMsg);
+		add(chatScrollPane, BorderLayout.CENTER);
 		JPanel pnlFoot = new JPanel();
 		pnlFoot.setLayout(new BorderLayout(0, 0));
-		txtInput = new JTextField("please input here", 10);
+		txtInput = new JTextField("", 10);
+		txtInput.setToolTipText("Please input.");
 		pnlFoot.add(txtInput, BorderLayout.CENTER);
 		btnSend = new JButton("Send");
 		btnSend.setPreferredSize(new Dimension(60, 0));

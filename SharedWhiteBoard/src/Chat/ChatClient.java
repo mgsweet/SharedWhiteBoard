@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 
 public class ChatClient implements Runnable {
 	ChatPanel chatPanel;
+	String userId;
 
 	Socket socket;
 	Thread thread;
@@ -23,7 +24,8 @@ public class ChatClient implements Runnable {
 	int chatPort;
 	String ip;
 
-	public ChatClient(String ip, int chatPort) {
+	public ChatClient(String userId, String ip, int chatPort) {
+		this.userId = userId;
 		this.ip = ip;
 		this.chatPort = chatPort;
 		try {
@@ -43,7 +45,7 @@ public class ChatClient implements Runnable {
 		chatPanel.btnSend.addActionListener(e -> {
 			if (chatPanel.txtInput.getText().length() != 0) {
 				try {
-					sendMsg(chatPanel.txtInput.getText());
+					sendMsg('[' + userId + "]: " + chatPanel.txtInput.getText());
 				} catch (IOException e2) {
 					processMsg(e2.toString());
 				}
