@@ -9,13 +9,14 @@ import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.ScrollPaneConstants;
 
 
 public class ChatPanel extends JPanel {
 	private static final long serialVersionUID = 4162325845732304245L;
 	JTextField txtInput;
 	JButton btnSend;
-	JList<String> lstMsg = new JList<>();
+	JList<String> lstMsg;
 	DefaultListModel<String> lstMsgModel = new DefaultListModel<>();
 	
 	public ChatPanel() {
@@ -28,7 +29,9 @@ public class ChatPanel extends JPanel {
 
 	private void init() throws Exception {
 		setLayout(new BorderLayout(0, 0));
+		lstMsg = new JList<>();
 		JScrollPane chatScrollPane = new JScrollPane(lstMsg);
+		chatScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(chatScrollPane, BorderLayout.CENTER);
 		JPanel pnlFoot = new JPanel();
 		pnlFoot.setLayout(new BorderLayout(0, 0));
