@@ -288,7 +288,11 @@ public class WhiteBoardView {
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		menuBar.add(new FileMenu(app, this, paintManager, userManager));
-		menuBar.add(new EditMenu(this));
+		EditMenu editMenu = new EditMenu(this);
+		menuBar.add(editMenu);
+		
+		// Add the editMenu into paint manager, so it can be controlled.
+		paintManager.setEditMenu(editMenu);
 
 		frame.setVisible(false);
 

@@ -46,6 +46,7 @@ public class FileOpenListener implements ActionListener {
 				System.out.println(currentPath);
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(currentPath));
 				Vector<MyShape> history = (Vector<MyShape>) ois.readObject();
+				wbv.getPaintManager().clearRedoHistory();
 				wbv.getPaintManager().setPaintHistory(history);
 			} catch(Exception exception) {
 				exception.printStackTrace();

@@ -3,9 +3,11 @@ package WhiteBoard;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Vector;
 
 import ClientUser.UserManager;
+import Menus.EditMenu;
 import RMI.IRemotePaint;
 import Shape.MyShape;
 
@@ -18,8 +20,12 @@ import Shape.MyShape;
 public class PaintManager {
 	// Use to record all the shapes.
 	private Vector<MyShape> paintHistory = null;
+	// Use to handel redo and undo, only host can use.
+	private Stack<MyShape> redoHistory = null;
 	// Use to store the current paintint area
 	private PaintBoardPanel paintArea;
+	// Use to control the editMenu UI.
+	private EditMenu editMenu;
 	// User manager
 	private UserManager userManager;
 	// There are three kind of mode: server, client and offline
@@ -28,7 +34,7 @@ public class PaintManager {
 	public static final int SERVER_MODE = 0;
 	public static final int CLIENT_MODE = 1;
 	public static final int OFFLINE_MODE = 2;
-	
+
 	/**
 	 * 
 	 * @param mode There are three kind of mode: server, client and offline
@@ -37,6 +43,8 @@ public class PaintManager {
 		this.mode = mode;
 		this.userManager = userManager;
 		paintHistory = new Vector<MyShape>();
+		if (mode == SERVER_MODE)
+			redoHistory = new Stack<MyShape>();
 	}
 
 	/**
@@ -62,6 +70,10 @@ public class PaintManager {
 	 */
 	public void resetAll() {
 		paintHistory.clear();
+		if (mode == SERVER_MODE) {
+			redoHistory.clear();
+			if (editMenu != null) editMenu.updateEnable();
+		}
 		paintArea.removeAll();
 		paintArea.revalidate();
 		paintArea.repaint();
@@ -76,6 +88,8 @@ public class PaintManager {
 	public void addShape(MyShape shape) {
 		if (mode == SERVER_MODE) {
 			paintHistory.add(shape);
+			redoHistory.clear();
+			if (editMenu != null) editMenu.updateEnable();
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
 			for (IRemotePaint x : guestRemotePaint.values()) {
 				updateRemoteHistory(x);
@@ -87,13 +101,12 @@ public class PaintManager {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else {
-			// TODO
 		}
 	}
-	
+
 	/**
 	 * Set a specific remoteHistory to current paint history.
+	 * 
 	 * @param remotePaint
 	 */
 	public void updateRemoteHistory(IRemotePaint remotePaint) {
@@ -111,6 +124,8 @@ public class PaintManager {
 		paintArea.clearBuffer();
 		if (mode == SERVER_MODE) {
 			paintHistory.clear();
+			redoHistory.clear();
+			if (editMenu != null) editMenu.updateEnable();
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
 			for (IRemotePaint x : guestRemotePaint.values()) {
 				try {
@@ -143,14 +158,81 @@ public class PaintManager {
 	 */
 	public void setPaintHistory(Vector<MyShape> paintHistory) {
 		this.paintHistory = paintHistory;
+
+		if (mode == SERVER_MODE) {
+			if (editMenu != null) editMenu.updateEnable();
+			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
+			for (IRemotePaint x : guestRemotePaint.values()) {
+				updateRemoteHistory(x);
+			}
+		}
+
 		paintArea.repaint();
 	}
-	
+
 	/**
-	 * Get whether the manager belongs to a client or 
+	 * Get whether the manager belongs to a client or
+	 * 
 	 * @return
 	 */
 	public int getMode() {
 		return mode;
+	}
+
+	/**
+	 * Undo, only host can use.
+	 */
+	public void undo() {
+		if (mode == SERVER_MODE) {
+			redoHistory.push(paintHistory.lastElement());
+			paintHistory.remove(paintHistory.size() - 1);
+			setPaintHistory(paintHistory);
+		}
+	}
+
+	/**
+	 * Redo, only host can use.
+	 */
+	public void redo() {
+		if (mode == SERVER_MODE) {
+			paintHistory.add(redoHistory.pop());
+			setPaintHistory(paintHistory);
+		}
+	}
+	
+	/**
+	 * Check whether undo is allowed.
+	 * @return
+	 */
+	public Boolean isUndoAllow() {
+		if (mode == SERVER_MODE) {
+			return !paintHistory.isEmpty();
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Check whether redo is allowed.
+	 * @return
+	 */
+	public Boolean isRedoAllow() {
+		if (mode == SERVER_MODE) {
+			return !redoHistory.isEmpty();
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Set the editMenu UI.
+	 * @param editMenu
+	 */
+	public void setEditMenu(EditMenu editMenu) {
+		this.editMenu = editMenu;
+	}
+	
+	public void clearRedoHistory() {
+		if (redoHistory != null) redoHistory.clear();
 	}
 }
