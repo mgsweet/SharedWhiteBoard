@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019) (preloaded format=xelatex 2019.9.5)  23 OCT 2019 12:58
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019) (preloaded format=xelatex 2019.9.5)  23 OCT 2019 15:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -554,66 +554,47 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
 LaTeX Font Info:    ... okay on input line 19.
  ABD: EveryShipout initializing macros
 \c@lstlisting=\count143
- [1
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--41
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--41
+
+ []
+
+[1
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 37--38
 
- []
+! LaTeX Error: \begin{document} ended by \end{enumerate}.
 
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 57--58
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.60 \end{enumerate}
+                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
 
- []
+! Extra \endgroup.
+<recently read> \endgroup 
+                          
+l.60 \end{enumerate}
+                    
+Things are pretty mixed up, but I think the worst is over.
 
-
-Overfull \hbox (0.52133pt too wide) in paragraph at lines 69--69
-[]\TU/lmr/m/n/10 Meaning| 
- []
-
-
-Overfull \hbox (0.51622pt too wide) in paragraph at lines 66--71
-[][] 
- []
-
-
-Overfull \hbox (0.51622pt too wide) in paragraph at lines 80--89
-[][] 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 104--104
-[]\TU/lmr/m/n/10 Inadequate startup paramaters
- []
-
-
-Underfull \hbox (badness 4995) in paragraph at lines 107--107
-[]\TU/lmr/m/n/10 The dictionary file not exists
- []
-
-
-Overfull \hbox (0.5162pt too wide) in paragraph at lines 101--113
-[][] 
- []
-
-[3]
-Underfull \hbox (badness 4913) in paragraph at lines 123--123
-[]\TU/lmr/m/n/10 Connection Timed Out (client
- []
-
-
-Overfull \hbox (0.5162pt too wide) in paragraph at lines 120--126
-[][] 
- []
-
-[4] [5] (./report.aux) ) 
+[2] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 14032 strings out of 492916
- 275815 string characters out of 6133346
- 350970 words of memory out of 5000000
- 17816 multiletter control sequences out of 15000+600000
- 7568 words of font info for 36 fonts, out of 8000000 for 9000
+ 14026 strings out of 492916
+ 275658 string characters out of 6133346
+ 348970 words of memory out of 5000000
+ 17814 multiletter control sequences out of 15000+600000
+ 7098 words of font info for 32 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 62i,11n,81p,1007b,300s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,6n,81p,872b,221s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on report.xdv (5 pages, 111276 bytes).
+Output written on report.xdv (2 pages, 43172 bytes).

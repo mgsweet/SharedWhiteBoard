@@ -7,7 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
+
+import util.RealIp;
 
 /**
  * Central Server, act as a authentic third party to provide information about
@@ -23,11 +24,11 @@ public class CentralServer {
 	private int port;
 	private ServerSocket server;
 	private CentralServerView ui;
-	private InetAddress ip;
-	
+	private String ip;
+
 	private RoomManager rm;
 	private Map<String, String> userList;
-	
+
 	public static final int DEFAULT_PORT = 4443;
 
 	public static void main(String[] args) {
@@ -103,6 +104,7 @@ public class CentralServer {
 
 	/**
 	 * Print text on both command line and GUI.
+	 * 
 	 * @param str
 	 */
 	public void printOnBoth(String str) {
@@ -110,17 +112,19 @@ public class CentralServer {
 		if (ui != null)
 			ui.getlogArea().append(str + '\n');
 	}
-	
+
 	/**
 	 * Get the room manager.
+	 * 
 	 * @return
 	 */
 	public RoomManager getRoomManager() {
 		return rm;
 	}
-	
+
 	/**
 	 * Get the user list.
+	 * 
 	 * @return
 	 */
 	public Map<String, String> getUserlist() {
@@ -129,14 +133,15 @@ public class CentralServer {
 
 	private void init() throws IOException {
 		// Get IP address of Localhost
-		ip = InetAddress.getLocalHost();
+//		ip = InetAddress.getLocalHost();
+		ip = RealIp.getHostIp();
 		server = new ServerSocket(this.port);
-		
+
 		// Use to record the user add into the server.
 		userList = new HashMap<String, String>();
 
 		printInitialStats();
-		this.ui = new CentralServerView(ip.getHostAddress(), String.valueOf(port));
+		this.ui = new CentralServerView(ip, String.valueOf(port));
 	}
 
 	private void printInitialStats() throws UnknownHostException {
@@ -146,5 +151,4 @@ public class CentralServer {
 		System.out.println("Port = " + port);
 		System.out.println("Waiting for clinet connection...\n--------------");
 	}
-
 }

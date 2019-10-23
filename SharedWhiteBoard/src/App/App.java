@@ -26,6 +26,7 @@ import WhiteBoard.PaintManager;
 import WhiteBoard.ServerWhiteBoard;
 import WhiteBoard.SharedWhiteBoard;
 import util.Execute;
+import util.RealIp;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class App {
 	private SignInView signInView = null;
 	private LobbyView lobbyView = null;
 	// User information
-	private InetAddress ip;
+	private String ip;
 	private String userId = "";
 	// Central server information
 	private String serverIp = "";
@@ -117,7 +118,7 @@ public class App {
 	 * @return
 	 */
 	public String getIp() {
-		return ip.getHostAddress();
+		return ip;
 	}
 
 	/**
@@ -372,7 +373,8 @@ public class App {
 	private void initRMI() {
 		try {
 			// Get IP address of Localhost.
-			ip = InetAddress.getLocalHost();
+//			ip = InetAddress.getLocalHost();
+			ip = RealIp.getHostIp();
 
 			// Get a random port (Available one).
 			ServerSocket registrySocket = new ServerSocket(0);
@@ -381,7 +383,7 @@ public class App {
 
 			// Start RMI registry
 			LocateRegistry.createRegistry(registryPort);
-			registry = LocateRegistry.getRegistry(ip.getHostAddress(), registryPort);
+			registry = LocateRegistry.getRegistry(ip, registryPort);
 
 			// Create a remote user manager
 			remoteApp = new RemoteApp(this);
@@ -394,7 +396,7 @@ public class App {
 	}
 
 	private void printInitialStates() throws UnknownHostException {
-		System.out.println("IP address : " + ip.getHostAddress());
+		System.out.println("IP address : " + ip);
 		System.out.println("Registry Port = " + registryPort);
 	}
 
