@@ -58,6 +58,7 @@ public class RequestHandler extends Thread {
 				roomId = Integer.parseInt(reqJSON.get("roomId").toString());
 				int state = controler.getRoomManager().removeRoom(roomId);
 				resJSON.put("state", String.valueOf(state));
+				controler.printOnBoth("Room: " + roomId + " is removed.");
 				break;
 			case StateCode.GET_ROOM_LIST:
 				Map<Integer, String> roomList = controler.getRoomManager().getRoomList();
@@ -74,8 +75,10 @@ public class RequestHandler extends Thread {
 					resJSON.put("state", StateCode.SUCCESS);
 					resJSON.put("ip", room.getIpAddress());
 					resJSON.put("port", room.getPort());
+					controler.printOnBoth("A client asks room " + roomId + " with correct password.");
 				} else {
 					resJSON.put("state", StateCode.FAIL);
+					controler.printOnBoth("A client asks room " + roomId + " with worng password.");
 				}
 				break;
 			case StateCode.ADD_USER:

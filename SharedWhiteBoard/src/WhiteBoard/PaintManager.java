@@ -85,7 +85,7 @@ public class PaintManager {
 	 * @param shape a MyShape object which you want to add to the current painting
 	 *              area
 	 */
-	public void addShape(MyShape shape) {
+	public synchronized void addShape(MyShape shape) {
 		if (mode == SERVER_MODE) {
 			paintHistory.add(shape);
 			redoHistory.clear();

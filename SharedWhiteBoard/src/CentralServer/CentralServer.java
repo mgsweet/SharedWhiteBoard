@@ -35,7 +35,7 @@ public class CentralServer {
 		try {
 			CentralServer centralServer = null;
 
-			if (args.length != 0) {
+			if (args.length == 1) {
 				if (Integer.parseInt(args[0]) <= 1024 || Integer.parseInt(args[0]) >= 49151) {
 					System.out.println("Invalid Port Number: Port number should be between 1024 and 49151!");
 					System.exit(-1);
@@ -48,7 +48,7 @@ public class CentralServer {
 			centralServer.run();
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println(
-					"Lack of Parameters:\nPlease run like \"java - jar DictServer.jar <port> <dictionary-file>\"!");
+					"Lack of Parameters:\nPlease run like \"java - jar CentralServer.jar <port>\"!");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid Port Number: Port number should be between 1024 and 49151!");
 		} catch (Exception e) {
