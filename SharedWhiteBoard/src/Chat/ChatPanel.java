@@ -26,6 +26,10 @@ public class ChatPanel extends JPanel {
 			e.printStackTrace();
 		}
 	}
+	
+	public void appendText(String text) {
+		textArea.append(text);
+	}
 
 	private void init() throws Exception {
 		setLayout(new BorderLayout(0, 0));

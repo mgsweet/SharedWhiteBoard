@@ -47,9 +47,20 @@ public class SignInView {
 		this.controler = new SignInControler(this);
 	}
 	
-	
+	/**
+	 * Get the frame
+	 * @return
+	 */
 	public JFrame getFrame() {
 		return frame;
+	}
+	
+	/**
+	 * Set the text in the tips label.
+	 * @param text
+	 */
+	public void setTipsLabel(String text) {
+		tipsLabel.setText(text);
 	}
 
 	/**

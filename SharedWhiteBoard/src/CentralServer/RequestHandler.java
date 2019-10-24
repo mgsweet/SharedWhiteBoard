@@ -62,6 +62,7 @@ public class RequestHandler extends Thread {
 				break;
 			case StateCode.GET_ROOM_LIST:
 				Map<Integer, String> roomList = controler.getRoomManager().getRoomList();
+				resJSON.put("state", StateCode.SUCCESS);
 				resJSON.put("roomList", roomList);
 				System.out.println("A client request for roomlist info.");
 				break;

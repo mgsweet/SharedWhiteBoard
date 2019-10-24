@@ -96,7 +96,7 @@ public class LobbyControler {
 							// The follow code would block all code.
 							ui.setWaitDialogVisiable(true);
 						} else if (state == StateCode.FAIL) {
-							JOptionPane.showMessageDialog(ui.frame, "Password Wrong!", "Warning",
+							JOptionPane.showMessageDialog(ui.frame, "Password wrong or the room is removed, please refresh!", "Warning",
 									JOptionPane.WARNING_MESSAGE);
 						} else if (state != StateCode.SUCCESS) {
 							JOptionPane.showMessageDialog(ui.frame, "Can not connect to central server!", "Error",

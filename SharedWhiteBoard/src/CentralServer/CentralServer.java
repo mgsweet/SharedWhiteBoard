@@ -1,6 +1,7 @@
 package CentralServer;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -51,6 +52,8 @@ public class CentralServer {
 					"Lack of Parameters:\nPlease run like \"java - jar CentralServer.jar <port>\"!");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid Port Number: Port number should be between 1024 and 49151!");
+		} catch (BindException e) {
+			System.err.println("Address alerady in use, change one.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

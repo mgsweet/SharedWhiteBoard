@@ -192,6 +192,9 @@ public class App {
 		lobbyView.getFrame().setVisible(true);
 	}
 
+	/**
+	 * Unbind um paint door, so that next time when user create a whiteboard, they can be bind.
+	 */
 	public void unbindAndSetNull() {
 		try {
 			registry.unbind("um");
@@ -221,6 +224,26 @@ public class App {
 		lobbyView.getFrame().setVisible(false);
 		signInView.getFrame().setVisible(false);
 		sharedWhiteBoard.getView().getFrame().setVisible(true);
+	}
+	
+	/**
+	 * Switch to Signin window.
+	 */
+	public void switch2SignIn(Boolean isCentralServerCrush) {
+		if (lobbyView != null) {
+			lobbyView.getFrame().setVisible(false);
+		}
+		
+		if (sharedWhiteBoard != null) {
+			sharedWhiteBoard.getView().getFrame().setVisible(false);
+		}
+		
+		signInView.getFrame().setVisible(true);
+		
+		if (isCentralServerCrush) {
+			signInView.setTipsLabel("");
+			JOptionPane.showMessageDialog(signInView.getFrame(), "Can not connect to Central Server. Please reconnect.");
+		}
 	}
 
 	/**
@@ -290,7 +313,13 @@ public class App {
 		reqJSON.put("command", StateCode.GET_ROOM_LIST);
 		System.out.println("Request for rooms list...");
 		JSONObject resJson = Execute.execute(reqJSON, serverIp, serverPort);
-		roomList = (Map<Integer, String>) resJson.get("roomList");
+		int state = resJson.getIntValue("state");
+		if (state == StateCode.SUCCESS) {
+			roomList = (Map<Integer, String>) resJson.get("roomList");
+		} else {
+			System.out.println("Can not get rooms list!");
+			switch2SignIn(true);
+		}
 		System.out.println("Get rooms list!");
 	}
 

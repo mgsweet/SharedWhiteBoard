@@ -6,6 +6,7 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
+import Chat.ChatPanel;
 import RMI.IRemoteApp;
 import RMI.IRemotePaint;
 import RMI.IRemoteUM;
@@ -40,6 +41,7 @@ public class UserManager {
 
 	// Use to refresh ui
 	ClientListScrollPanel clsp;
+	ChatPanel chatPanel;
 
 	public UserManager(Boolean isHost, String hostId, String hostIp, int registerPort, int chatPort) {
 		this.isHost = isHost;
@@ -65,8 +67,16 @@ public class UserManager {
 		visitorRemoteApps = new HashMap<String, IRemoteApp>();
 	}
 	
+	/**
+	 * Get the host chat port.
+	 * @return
+	 */
 	public int getHostChatPort() {
 		return hostChatPort;
+	}
+	
+	public void setChatPanel(ChatPanel chatPanel) {
+		this.chatPanel = chatPanel;
 	}
 	
 	/**
@@ -251,6 +261,9 @@ public class UserManager {
 			System.out.println("Can not get the client registry.");
 			e.printStackTrace();
 		}
+		
+		if (chatPanel != null) chatPanel.appendText("Visitor " + userId + " wants to join!\n");
+		
 		// refresh ui.
 		if (clsp != null) {
 			clsp.updateUserList();
@@ -265,7 +278,7 @@ public class UserManager {
 	public void removeVistor(String userId) {
 		visitors.remove(userId);
 		visitorRemoteApps.remove(userId);
-
+		if (chatPanel != null) chatPanel.appendText("Visitor " + userId + " leaves!\n");
 		// refresh ui.
 		if (clsp != null) {
 			clsp.updateUserList();

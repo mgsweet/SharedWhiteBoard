@@ -45,17 +45,17 @@ public class ClientListScrollPanel extends JPanel {
 	public void updateUserList() {
 		Vector<String> listData = new Vector<String>();
 		// 1. add host.
-		listData.add(userManager.getHost().getUserId());
+		listData.add("[host] " + userManager.getHost().getUserId());
 		// 2. add guest.
 		Map<String, User> guests = userManager.getGuests();
 		for (User x : guests.values()) {
-			listData.add(x.getUserId());
+			listData.add("[guest] " + x.getUserId());
 		}
 
 		if (userManager.isHost()) {
 			Map<String, User> visitors = userManager.getVisitors();
 			for (User x : visitors.values()) {
-				listData.add(x.getUserId());
+				listData.add("[visitor] " + x.getUserId());
 			}
 		}
 		userList.setListData(listData);
@@ -107,22 +107,32 @@ public class ClientListScrollPanel extends JPanel {
 		userList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				if (!userList.getValueIsAdjusting()) {
-					selectUserId = userList.getSelectedValue();
-					if (userManager.isHost()) {
-						int identity = userManager.getIdentity(selectUserId);
-						if (identity == User.HOST) {
-							removeBtns();
-						} else if (identity == User.GUEST) {
-							remove(visitorControlPanel);
-							add(guestControlPanel, BorderLayout.SOUTH);
-							revalidate();
-							repaint();
+					String select = userList.getSelectedValue();
+					if (select != null) {
+						String[] tempStrings = userList.getSelectedValue().split("] ");
+						if (tempStrings[1] != null) {
+							selectUserId = tempStrings[1];
+							if (userManager.isHost()) {
+								int identity = userManager.getIdentity(selectUserId);
+								if (identity == User.HOST) {
+									removeBtns();
+								} else if (identity == User.GUEST) {
+									remove(visitorControlPanel);
+									add(guestControlPanel, BorderLayout.SOUTH);
+									revalidate();
+									repaint();
+								} else {
+									remove(guestControlPanel);
+									add(visitorControlPanel, BorderLayout.SOUTH);
+									revalidate();
+									repaint();
+								}
+							}
 						} else {
-							remove(guestControlPanel);
-							add(visitorControlPanel, BorderLayout.SOUTH);
-							revalidate();
-							repaint();
+							removeBtns();
 						}
+					} else {
+						removeBtns();
 					}
 				}
 			}

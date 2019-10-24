@@ -49,6 +49,7 @@ public class ServerWhiteBoard extends SharedWhiteBoard {
 	private void initChat() {
 		chatServer = new ChatServer(app.getUserId());
 		userManager.setHostChatPort(chatServer.getPort());
+		userManager.setChatPanel(chatServer.getPanel());
 	}
 	
 	
