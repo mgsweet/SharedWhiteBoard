@@ -32,6 +32,7 @@ public class Execute {
 			}
 			resJSON = eThread.getResJSON();
 		} catch (TimeoutException e) {
+			//resJSON = new JSONObject();
 			resJSON.put("state", StateCode.TIMEOUT);
 		} catch (Exception e) {
 			e.printStackTrace();

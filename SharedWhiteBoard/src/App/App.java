@@ -311,8 +311,10 @@ public class App {
 		} else {
 			if (state == StateCode.SUCCESS) {
 				System.out.println("Successfully register in the central server!");
-			} else {
+			} else if (state == StateCode.FAIL){
 				System.out.println("User name exist!");
+			} else {
+				System.out.println("Can not connect to the server.");
 			}
 		}
 		return state;

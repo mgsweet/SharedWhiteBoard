@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -50,7 +51,8 @@ public class ExecuteThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			socket = new Socket(address, port);  // has problem				
+			socket = new Socket();  // has problem		
+			socket.connect(new InetSocketAddress(address, port), 2000);
 			DataInputStream reader = new DataInputStream(socket.getInputStream());
 			DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
 			writer.writeUTF(reqJSON.toJSONString());
@@ -69,7 +71,7 @@ public class ExecuteThread extends Thread {
 			System.out.println("Error: COLLECTIONG REFUSED!");
 		} catch (SocketTimeoutException e) {
 			connectState = StateCode.TIMEOUT;
-			System.out.println("Timeoutr!");
+			System.out.println("Error: Timeout!");
 		} catch (SocketException e) {
 			connectState = StateCode.IO_ERROR;
 			System.out.println("Error: I/O ERROR!");
