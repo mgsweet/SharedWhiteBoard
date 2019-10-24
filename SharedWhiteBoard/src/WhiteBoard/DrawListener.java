@@ -90,7 +90,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 			currentFreeDraw = null;
 		} else if (toolName.equals("text")) {
 			String text = JOptionPane.showInputDialog(wbv.getFrame(), "Text:");
-			System.out.println(text);
 			if (text != null && text != "") {
 				myShape = new MyText(endP, text, thickness * 10, color);
 			}

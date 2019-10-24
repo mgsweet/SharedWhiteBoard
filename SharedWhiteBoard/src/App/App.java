@@ -372,6 +372,12 @@ public class App {
 
 	private void initRMI() {
 		try {
+			System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");
+			System.setProperty("sun.rmi.transport.tcp.readTimeout", "2000");
+			System.setProperty("sun.rmi.transport.connectionTimeout", "2000");
+			System.setProperty("sun.rmi.transport.proxy.connectTimeout", "2000");
+			System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", "2000");
+			
 			// Get IP address of Localhost.
 //			ip = InetAddress.getLocalHost();
 			ip = RealIp.getHostIp();
