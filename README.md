@@ -15,7 +15,6 @@ Since the application is implemented using a P2P architecture with a centralizd 
 
 ```
 java --jar CentralServer.jar
-
 ```
 
 If no port is provide, the server would run in the port 4444.
