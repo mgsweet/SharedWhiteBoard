@@ -1,5 +1,6 @@
 package WhiteBoard;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
@@ -91,8 +92,15 @@ public class PaintManager {
 			redoHistory.clear();
 			if (editMenu != null) editMenu.updateEnable();
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
-			for (IRemotePaint x : guestRemotePaint.values()) {
-				updateRemoteHistory(x);
+			for (String guestId : guestRemotePaint.keySet()) {
+				try {
+					updateRemoteHistory(guestRemotePaint.get(guestId));
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					userManager.removeGuest(guestId);
+					System.err.println("Can't connect to guest" + guestId);
+//					e.printStackTrace();
+				}
 			}
 			paintArea.repaint();
 		} else if (mode == CLIENT_MODE) {
@@ -108,13 +116,10 @@ public class PaintManager {
 	 * Set a specific remoteHistory to current paint history.
 	 * 
 	 * @param remotePaint
+	 * @throws RemoteException 
 	 */
-	public void updateRemoteHistory(IRemotePaint remotePaint) {
-		try {
-			remotePaint.setHistory(paintHistory);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void updateRemoteHistory(IRemotePaint remotePaint) throws RemoteException {
+		remotePaint.setHistory(paintHistory);
 	}
 
 	/**
@@ -163,7 +168,12 @@ public class PaintManager {
 			if (editMenu != null) editMenu.updateEnable();
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
 			for (IRemotePaint x : guestRemotePaint.values()) {
-				updateRemoteHistory(x);
+				try {
+					updateRemoteHistory(x);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
