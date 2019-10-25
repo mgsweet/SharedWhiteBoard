@@ -5,8 +5,12 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -20,6 +24,7 @@ import App.App;
 import RMI.IRemoteDoor;
 import StateCode.StateCode;
 import util.Execute;
+import util.LimitedTimeRegistry;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -85,7 +90,8 @@ public class LobbyControler {
 							ui.createWaitDialog();
 							System.out.println("Klock the host's door.");
 							try {
-								Registry registry = LocateRegistry.getRegistry(tempHostIp, tempHostRegistorPort);
+								Registry registry = LimitedTimeRegistry.getLimitedTimeRegistry(tempHostIp, tempHostRegistorPort, 1000);
+//								Registry registry = LocateRegistry.getRegistry(tempHostIp, tempHostRegistorPort);
 								app.setTempRemoteDoor((IRemoteDoor) registry.lookup("door"));
 								app.createTempClientWhiteBoard(tempHostId, tempHostIp, tempHostRegistorPort);
 								app.getTempRemoteDoor().knock(app.getUserId(), app.getIp(), app.getRegistryPort());
@@ -123,7 +129,7 @@ public class LobbyControler {
 			currentPanel.add(ui.blankPanel);
 		}
 	}
-	
+
 	protected void cancelKnock() {
 		System.out.println("Cancel klock.");
 		try {

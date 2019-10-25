@@ -12,6 +12,7 @@ import RMI.IRemotePaint;
 import RMI.IRemoteUM;
 import WhiteBoard.ClientListScrollPanel;
 import WhiteBoard.PaintManager;
+import util.LimitedTimeRegistry;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -155,7 +156,8 @@ public class UserManager {
 		guests.put(guestId, guest);
 		guestRemoteApps.put(guestId, visitorRemoteApps.get(guestId));
 		try {
-			Registry clientRegistry = LocateRegistry.getRegistry(guest.getIp(), guest.getRegisterPort());
+//			Registry clientRegistry = LocateRegistry.getRegistry(guest.getIp(), guest.getRegisterPort());
+			Registry clientRegistry = LimitedTimeRegistry.getLimitedTimeRegistry(guest.getIp(), guest.getRegisterPort(), 1000);
 			IRemoteApp guestRemoteApp = (IRemoteApp) clientRegistry.lookup("app");
 			guestRemoteApp.askIn(host.getIp(), hostChatPort);
 
@@ -254,7 +256,8 @@ public class UserManager {
 	public void addVistor(String userId, String ip, int registerPort) {
 		visitors.put(userId, new User(userId, User.VISTOR, ip, registerPort, -1));
 		try {
-			Registry clientRegistry = LocateRegistry.getRegistry(ip, registerPort);
+//			Registry clientRegistry = LocateRegistry.getRegistry(ip, registerPort);
+			Registry clientRegistry = LimitedTimeRegistry.getLimitedTimeRegistry(ip, registerPort, 1000);
 			IRemoteApp remoteVistorApp = (IRemoteApp) clientRegistry.lookup("app");
 			visitorRemoteApps.put(userId, remoteVistorApp);
 		} catch (Exception e) {
