@@ -50,7 +50,8 @@ public class UserManager {
 		this.host = new User(hostId, User.HOST, hostIp, registerPort, chatPort);
 		if (!isHost) {
 			try {
-				Registry registry = LocateRegistry.getRegistry(hostIp, registerPort);
+//				Registry registry = LocateRegistry.getRegistry(hostIp, registerPort);
+				Registry registry = LimitedTimeRegistry.getLimitedTimeRegistry(hostIp, registerPort, 1000);
 				hostRemotePaint = (IRemotePaint) registry.lookup("paint");
 				hostRemoteUM = (IRemoteUM) registry.lookup("um");
 				hostRemoteApp = (IRemoteApp) registry.lookup("app");
