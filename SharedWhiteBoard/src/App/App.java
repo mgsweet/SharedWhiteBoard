@@ -1,13 +1,17 @@
 package App;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMISocketFactory;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -35,6 +39,7 @@ import util.RealIp;
  */
 
 public class App {
+	public static final int TIMEOUTMILLS = 300;
 	// Views
 	private SignInView signInView = null;
 	private LobbyView lobbyView = null;
@@ -193,7 +198,8 @@ public class App {
 	}
 
 	/**
-	 * Unbind um paint door, so that next time when user create a whiteboard, they can be bind.
+	 * Unbind um paint door, so that next time when user create a whiteboard, they
+	 * can be bind.
 	 */
 	public void unbindAndSetNull() {
 		try {
@@ -225,7 +231,7 @@ public class App {
 		signInView.getFrame().setVisible(false);
 		sharedWhiteBoard.getView().getFrame().setVisible(true);
 	}
-	
+
 	/**
 	 * Switch to Signin window.
 	 */
@@ -233,16 +239,17 @@ public class App {
 		if (lobbyView != null) {
 			lobbyView.getFrame().setVisible(false);
 		}
-		
+
 		if (sharedWhiteBoard != null) {
 			sharedWhiteBoard.getView().getFrame().setVisible(false);
 		}
-		
+
 		signInView.getFrame().setVisible(true);
-		
+
 		if (isCentralServerCrush) {
 			signInView.setTipsLabel("");
-			JOptionPane.showMessageDialog(signInView.getFrame(), "Can not connect to Central Server. Please reconnect.");
+			JOptionPane.showMessageDialog(signInView.getFrame(),
+					"Can not connect to Central Server. Please reconnect.");
 		}
 	}
 
@@ -340,7 +347,7 @@ public class App {
 		} else {
 			if (state == StateCode.SUCCESS) {
 				System.out.println("Successfully register in the central server!");
-			} else if (state == StateCode.FAIL){
+			} else if (state == StateCode.FAIL) {
 				System.out.println("User name exist!");
 			} else {
 				System.out.println("Can not connect to the server.");
@@ -403,12 +410,28 @@ public class App {
 
 	private void initRMI() {
 		try {
-			System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");
-			System.setProperty("sun.rmi.transport.tcp.readTimeout", "2000");
-			System.setProperty("sun.rmi.transport.connectionTimeout", "2000");
-			System.setProperty("sun.rmi.transport.proxy.connectTimeout", "2000");
-			System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", "2000");
-			
+			System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(TIMEOUTMILLS));
+			System.setProperty("sun.net.client.defaultReadTimeout", String.valueOf(TIMEOUTMILLS));
+			System.setProperty("sun.rmi.transport.tcp.responseTimeout", String.valueOf(TIMEOUTMILLS));
+			System.setProperty("sun.rmi.transport.tcp.readTimeout", String.valueOf(TIMEOUTMILLS));
+			System.setProperty("sun.rmi.transport.connectionTimeout", String.valueOf(TIMEOUTMILLS));
+			System.setProperty("sun.rmi.transport.proxy.connectTimeout", String.valueOf(TIMEOUTMILLS));
+			System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", String.valueOf(TIMEOUTMILLS));
+
+			RMISocketFactory.setSocketFactory(new RMISocketFactory() {
+				public Socket createSocket(String host, int port) throws IOException {
+					Socket socket = new Socket();
+					socket.setSoTimeout(TIMEOUTMILLS);
+					socket.setSoLinger(false, 0);
+					socket.connect(new InetSocketAddress(host, port), TIMEOUTMILLS);
+					return socket;
+				}
+
+				public ServerSocket createServerSocket(int port) throws IOException {
+					return new ServerSocket(port);
+				}
+			});
+
 			// Get IP address of Localhost.
 //			ip = InetAddress.getLocalHost();
 			ip = RealIp.getHostIp();

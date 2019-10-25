@@ -12,7 +12,6 @@ import RMI.IRemotePaint;
 import RMI.IRemoteUM;
 import WhiteBoard.ClientListScrollPanel;
 import WhiteBoard.PaintManager;
-import util.LimitedTimeRegistry;
 
 /**
  * @author Aaron-Qiu E-mail: mgsweet@126.com
@@ -50,8 +49,8 @@ public class UserManager {
 		this.host = new User(hostId, User.HOST, hostIp, registerPort, chatPort);
 		if (!isHost) {
 			try {
-//				Registry registry = LocateRegistry.getRegistry(hostIp, registerPort);
-				Registry registry = LimitedTimeRegistry.getLimitedTimeRegistry(hostIp, registerPort, 1000);
+				Registry registry = LocateRegistry.getRegistry(hostIp, registerPort);
+//				Registry registry = LimitedTimeRegistry.getLimitedTimeRegistry(hostIp, registerPort, 1000);
 				hostRemotePaint = (IRemotePaint) registry.lookup("paint");
 				hostRemoteUM = (IRemoteUM) registry.lookup("um");
 				hostRemoteApp = (IRemoteApp) registry.lookup("app");
@@ -68,21 +67,23 @@ public class UserManager {
 		visitors = new HashMap<String, User>();
 		visitorRemoteApps = new HashMap<String, IRemoteApp>();
 	}
-	
+
 	/**
 	 * Get the host chat port.
+	 * 
 	 * @return
 	 */
 	public int getHostChatPort() {
 		return hostChatPort;
 	}
-	
+
 	public void setChatPanel(ChatPanel chatPanel) {
 		this.chatPanel = chatPanel;
 	}
-	
+
 	/**
 	 * Set the host's chat port.
+	 * 
 	 * @param chatPort
 	 */
 	public void setHostChatPort(int chatPort) {
@@ -91,6 +92,7 @@ public class UserManager {
 
 	/**
 	 * This method is for host, set the host paint manager.
+	 * 
 	 * @param paintManager
 	 */
 	public void setHostPaintManager(PaintManager paintManager) {
@@ -102,27 +104,27 @@ public class UserManager {
 	 * Remove all the guest and visitor.
 	 */
 	public void clear() {
-		for (IRemoteApp remoteApp: guestRemoteApps.values()) {
+		for (IRemoteApp remoteApp : guestRemoteApps.values()) {
 			try {
 				remoteApp.askOut();
 			} catch (Exception e) {
-				// TODO: handle exception
+				System.out.println("Discoever a guest has network problem when asking him out.");
 			}
 		}
-		
-		for (IRemoteApp remoteApp: visitorRemoteApps.values()) {
+
+		for (IRemoteApp remoteApp : visitorRemoteApps.values()) {
 			try {
 				remoteApp.askOut();
 			} catch (Exception e) {
-				// TODO: handle exception
+				System.out.println("Discoever a visitor has network problem when asking him out.");
 			}
 		}
-		
+
 		guestRemoteApps.clear();
 		guestRemotePaints.clear();
 		guestRemoteUMs.clear();
 		guests.clear();
-		
+
 		visitorRemoteApps.clear();
 		visitors.clear();
 	}
@@ -157,8 +159,8 @@ public class UserManager {
 		guests.put(guestId, guest);
 		guestRemoteApps.put(guestId, visitorRemoteApps.get(guestId));
 		try {
-//			Registry clientRegistry = LocateRegistry.getRegistry(guest.getIp(), guest.getRegisterPort());
-			Registry clientRegistry = LimitedTimeRegistry.getLimitedTimeRegistry(guest.getIp(), guest.getRegisterPort(), 1000);
+			Registry clientRegistry = LocateRegistry.getRegistry(guest.getIp(), guest.getRegisterPort());
+//			Registry clientRegistry = LimitedTimeRegistry.getLimitedTimeRegistry(guest.getIp(), guest.getRegisterPort(), 1000);
 			IRemoteApp guestRemoteApp = (IRemoteApp) clientRegistry.lookup("app");
 			guestRemoteApp.askIn(host.getIp(), hostChatPort);
 
@@ -184,12 +186,13 @@ public class UserManager {
 		}
 
 		// set remote user manager
-		for (IRemoteUM x : guestRemoteUMs.values()) {
+		for (String key : guestRemoteUMs.keySet()) {
 			try {
-				x.setGuests(guests);
+				guestRemoteUMs.get(key).setGuests(guests);
 			} catch (RemoteException e) {
-				// TODO Continue
-				e.printStackTrace();
+				System.err.println("Can't connect to guest " + key + ", Remove.");
+				removeGuest(key);
+				//e.printStackTrace();
 			}
 		}
 
@@ -211,16 +214,18 @@ public class UserManager {
 		guestRemoteApps.remove(guestId);
 
 		// set remote user manager
-		for (IRemoteUM x : guestRemoteUMs.values()) {
+		for (String key : guestRemoteUMs.keySet()) {
 			try {
-				x.setGuests(guests);
+				guestRemoteUMs.get(key).setGuests(guests);
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("Can't connect to guest " + key + ", Remove.");
+				removeGuest(key);
+				//e.printStackTrace();
 			}
 		}
-		
-		if (chatPanel != null) chatPanel.appendText("Guest " + guestId + " leaves!\n");
+
+		if (chatPanel != null)
+			chatPanel.appendText("Guest " + guestId + " leaves!\n");
 
 		// refresh ui.
 		if (clsp != null) {
@@ -239,8 +244,8 @@ public class UserManager {
 			IRemoteApp remoteApp = guestRemoteApps.get(guestId);
 			remoteApp.askOut();
 		} catch (Exception e) {
-			e.printStackTrace();
-			// TODO
+			System.err.println("Can't connect to guest " + guestId + ", Remove.");
+			//e.printStackTrace();
 		}
 		removeGuest(guestId);
 	}
@@ -264,17 +269,18 @@ public class UserManager {
 	public void addVistor(String userId, String ip, int registerPort) {
 		visitors.put(userId, new User(userId, User.VISTOR, ip, registerPort, -1));
 		try {
-//			Registry clientRegistry = LocateRegistry.getRegistry(ip, registerPort);
-			Registry clientRegistry = LimitedTimeRegistry.getLimitedTimeRegistry(ip, registerPort, 1000);
+			Registry clientRegistry = LocateRegistry.getRegistry(ip, registerPort);
+//			Registry clientRegistry = LimitedTimeRegistry.getLimitedTimeRegistry(ip, registerPort, 1000);
 			IRemoteApp remoteVistorApp = (IRemoteApp) clientRegistry.lookup("app");
 			visitorRemoteApps.put(userId, remoteVistorApp);
 		} catch (Exception e) {
-			System.out.println("Can not get the client registry.");
-			e.printStackTrace();
+			System.err.println("Can not get the client registry.");
+			//e.printStackTrace();
 		}
-		
-		if (chatPanel != null) chatPanel.appendText("Visitor " + userId + " wants to join!\n");
-		
+
+		if (chatPanel != null)
+			chatPanel.appendText("Visitor " + userId + " wants to join!\n");
+
 		// refresh ui.
 		if (clsp != null) {
 			clsp.updateUserList();
@@ -289,7 +295,8 @@ public class UserManager {
 	public void removeVistor(String userId) {
 		visitors.remove(userId);
 		visitorRemoteApps.remove(userId);
-		if (chatPanel != null) chatPanel.appendText("Visitor " + userId + " leaves!\n");
+		if (chatPanel != null)
+			chatPanel.appendText("Visitor " + userId + " leaves!\n");
 		// refresh ui.
 		if (clsp != null) {
 			clsp.updateUserList();
@@ -301,7 +308,8 @@ public class UserManager {
 			IRemoteApp remoteApp = visitorRemoteApps.get(userId);
 			remoteApp.askOut();
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println("Can not get the client registry.");
+			//e.printStackTrace();
 		}
 
 		removeVistor(userId);

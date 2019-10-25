@@ -96,7 +96,6 @@ public class PaintManager {
 				try {
 					updateRemoteHistory(guestRemotePaint.get(guestId));
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
 					userManager.removeGuest(guestId);
 					System.err.println("Can't connect to guest " + guestId + ", Remove.");
 //					e.printStackTrace();
@@ -142,9 +141,7 @@ public class PaintManager {
 			paintArea.repaint();
 		} else if (mode == CLIENT_MODE) {
 			System.out.println("Err: No clear opeartion access!");
-		} else {
-			// TODO
-		}
+		} 
 	}
 
 	/**
@@ -167,12 +164,12 @@ public class PaintManager {
 		if (mode == SERVER_MODE) {
 			if (editMenu != null) editMenu.updateEnable();
 			Map<String, IRemotePaint> guestRemotePaint = userManager.getGuestRemotePaints();
-			for (IRemotePaint x : guestRemotePaint.values()) {
+			for (String guestId : guestRemotePaint.keySet()) {
 				try {
-					updateRemoteHistory(x);
+					updateRemoteHistory(guestRemotePaint.get(guestId));
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					userManager.removeGuest(guestId);
+					//e.printStackTrace();
 				}
 			}
 		}
