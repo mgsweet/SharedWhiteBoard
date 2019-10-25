@@ -18,3 +18,5 @@ Draft
 doc/reportLaTeX
 
 *.cld
+
+*.wb
