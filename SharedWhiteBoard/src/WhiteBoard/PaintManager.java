@@ -98,7 +98,7 @@ public class PaintManager {
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					userManager.removeGuest(guestId);
-					System.err.println("Can't connect to guest" + guestId);
+					System.err.println("Can't connect to guest " + guestId + ", Remove.");
 //					e.printStackTrace();
 				}
 			}

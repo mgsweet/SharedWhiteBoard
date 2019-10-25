@@ -130,7 +130,7 @@ public class LobbyControler {
 		}
 	}
 
-	protected void cancelKnock() {
+	public void cancelKnock() {
 		System.out.println("Cancel klock.");
 		try {
 			app.getTempRemoteDoor().cancelKnock(app.getUserId());

@@ -178,8 +178,9 @@ public class UserManager {
 			removeGuest(guestId);
 			visitors.remove(guestId);
 			visitorRemoteApps.remove(guestId);
+			chatPanel.appendText("Can't connect to guest " + guestId + ", Remove.\n");
 			System.err.println("Can't connect to guest " + guestId + ", Remove.");
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 
 		// set remote user manager
@@ -218,6 +219,8 @@ public class UserManager {
 				e.printStackTrace();
 			}
 		}
+		
+		if (chatPanel != null) chatPanel.appendText("Guest " + guestId + " leaves!\n");
 
 		// refresh ui.
 		if (clsp != null) {
@@ -266,7 +269,6 @@ public class UserManager {
 			IRemoteApp remoteVistorApp = (IRemoteApp) clientRegistry.lookup("app");
 			visitorRemoteApps.put(userId, remoteVistorApp);
 		} catch (Exception e) {
-			
 			System.out.println("Can not get the client registry.");
 			e.printStackTrace();
 		}

@@ -15,6 +15,7 @@ import javax.swing.ScrollPaneConstants;
 
 import App.App;
 import util.LobbyCloseListener;
+import util.WaitDialogCloseListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -107,6 +108,7 @@ public class LobbyView {
 	 */
 	public void createWaitDialog() {
 		waitDialog = waitPane.createDialog(frame, "Waiting");
+		waitDialog.addWindowListener(new WaitDialogCloseListener(controler));
 	}
 
 	/**
