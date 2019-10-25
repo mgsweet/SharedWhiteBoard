@@ -5,7 +5,7 @@ A distribute share white board with chat window.
 
 In this project, we design and implement a shared whiteboard system that can be edited simultaneously, using a P2P structure with a centralized index server. The system supports a range of features such as freehand drawing, drawing multiple shapes such as lines, circles, rectangles, and oval with specific colours and thicknesses. Undo and Redo method is also provided to the user. We also implement a "File" menu, which allows the manager to new, open, or save a file in different formats. Besides, the system also provides a chat window so that all the users in the same shared whiteboard can send messages to each other. Chat contents are encrypted when transmitted, which ensures users' privacy. Moreover, we provide a lobby system for our users to create, join, and search for specific whiteboard rooms, which we think is a very user-friendly improvement.
 
-![wb](SharedWhiteBoard/SharedWhiteBoard/images/wb.png)
+![wb](SharedWhiteBoard/images/whiteboard.png)
 
 ## Usage
 
