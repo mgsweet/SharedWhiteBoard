@@ -15,7 +15,6 @@ Since the application is implemented using a P2P architecture with a centralizd 
 
 ```
 java --jar CentralServer.jar
-
 ```
 
 If no port is provide, the server would run in the port 4444.
@@ -34,13 +33,11 @@ In which "specific port" is the port number you want to run the server.
 java --jar App.jar
 ```
 
-## More Detail
+## More Details
 
-For more detial of the project, you can check the `report.pdf` in the `doc/`.  This project is an implementation of the Assignment 2 of COMP90015 Distributed Systems in Melbourne University. 
+For more details of the project, you can check the `report.pdf` in the `doc/`.  This project is an implementation of the Assignment 2 of COMP90015 Distributed Systems in Melbourne University. 
 
 ## Contributors
-
-*Actually, most of the code is coded by me...*
 
 - [mgsweet](mgsweet.com)
 - [Xie Sue](https://github.com/SueXie)
