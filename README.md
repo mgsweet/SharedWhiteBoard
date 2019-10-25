@@ -35,7 +35,7 @@ java --jar App.jar
 
 ## More Details
 
-For more details of the project, you can check the `report.pdf` in the `doc/`.  This project is an implementation of the Assignment 2 of COMP90015 Distributed Systems in Melbourne University. 
+For more details of the project, you can check the `report.pdf` in the `submission/`.  This project is an implementation of the Assignment 2 of COMP90015 Distributed Systems in Melbourne University. 
 
 ## Contributors
 
