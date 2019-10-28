@@ -39,7 +39,7 @@ import util.RealIp;
  */
 
 public class App {
-	public static final int TIMEOUTMILLS = 300;
+	public static final int TIMEOUTMILLS = 600;
 	// Views
 	private SignInView signInView = null;
 	private LobbyView lobbyView = null;
