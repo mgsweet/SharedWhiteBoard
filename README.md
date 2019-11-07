@@ -39,7 +39,7 @@ For more details of the project, you can check the `report.pdf` in the `submissi
 
 ## Contributors
 
-- [mgsweet](mgsweet.com)
+- [mgsweet](http://mgsweet.com/)
 - [Xie Sue](https://github.com/SueXie)
 - [Aoqi Zuo](https://github.com/aoqiz)
 - [Zhihan Guo](https://github.com/zhihan97)
